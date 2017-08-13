@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -105,6 +107,19 @@ namespace IronChain {
 
             //SENDING BLOCKS BLABLA
 
+            //GET HASHES NOW INTO BLOCK
+            nextBlock.addHash(ComputeHash(namesOfParticle));
+
+            Utility.storeFile(nextBlock, nextBlock.name+"");
+
+        }
+
+        private string ComputeHash(string filename) {
+            using (var md5 = MD5.Create()) {
+                using (var stream = File.OpenRead(filename)) {
+                    return Convert.ToBase64String(md5.ComputeHash(stream));
+                }
+            }
         }
 
         private void ShowParticles(object sender, EventArgs e) {
