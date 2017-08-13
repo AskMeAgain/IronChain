@@ -54,6 +54,8 @@ namespace IronChain {
                     Form1.instance.addToLog("Storing file succesful");
                 }
             } catch (Exception ex) {
+                Console.WriteLine(ex.ToString());
+                Form1.instance.addToLog("Storing file NOT succesful");
 
             }
         }

@@ -9,6 +9,7 @@ namespace IronChain {
     public class Block {
 
         public int name;
+        public List<string> hashOfParticles;
 
         public Block() {
             name = 0;
@@ -16,6 +17,9 @@ namespace IronChain {
 
         public Block(int n) {
             name = n;
+
+            
+
         }
 
     }
