@@ -22,12 +22,12 @@ namespace IronChain {
             TransactionPool = new List<Transaction>();
         }
 
-        private void onClickStoreFile(object sender, EventArgs e) {
+        private void createGenesisBlock(object sender, EventArgs e) {
 
-            Block b1 = new Block(3333);
+            Block genesis = new Block(0);
 
-            Utility.storeFile(b1, "test");
-
+            Utility.storeFile(genesis, genesis.name+"");
+            addToLog("Genesis Block created");
         }
 
         private void onClickLoadFile(object sender, EventArgs e) {
@@ -73,6 +73,7 @@ namespace IronChain {
         }
 
         private void onClickCreateParticles(object sender, EventArgs e) {
+
             createParticlesFromTP();
 
         }
@@ -85,6 +86,10 @@ namespace IronChain {
                 p.addTransaction(TransactionPool[0]);
                 TransactionPool.RemoveAt(0);
             }
+
+
+            //add hash to block before
+            //p.hashToBlock = Utility.ComputeHash();
 
             updateTransactionPoolWindow();
 
@@ -103,30 +108,32 @@ namespace IronChain {
 
             Particle p = Utility.loadFile<Particle>(namesOfParticle);
 
-            addToLog("MINER CREATED PARTICLE WITH " + p.allTransactions.Count);
+            addToLog("");
 
-            //SENDING BLOCKS BLABLA
+            addToLog("MINER CREATED PARTICLE");
 
             //GET HASHES NOW INTO BLOCK
-            nextBlock.addHash(ComputeHash(namesOfParticle));
+            nextBlock.addHash(Utility.ComputeHash(namesOfParticle));
 
+            //Store Block
             Utility.storeFile(nextBlock, nextBlock.name+"");
 
-        }
-
-        private string ComputeHash(string filename) {
-            using (var md5 = MD5.Create()) {
-                using (var stream = File.OpenRead(filename)) {
-                    return Convert.ToBase64String(md5.ComputeHash(stream));
-                }
-            }
-        }
+        }       
 
         private void ShowParticles(object sender, EventArgs e) {
 
             Particle p = Utility.loadFile<Particle>("Particle");
 
             addToLog(p.allTransactions.Count + " inside Particle");
+
+        }
+
+        int latestName;
+
+        private void calculateHead(object sender, EventArgs e) {
+
+           
+
 
         }
     }

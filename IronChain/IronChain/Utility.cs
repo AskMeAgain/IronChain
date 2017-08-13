@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -51,14 +52,21 @@ namespace IronChain {
                     xmlDocument.Load(stream);
                     xmlDocument.Save(fileName);
                     stream.Close();
-                    Form1.instance.addToLog("Storing file succesful");
+                    Form1.instance.addToLog("Storing \"" + fileName +  "\" succesful");
                 }
             } catch (Exception ex) {
                 Console.WriteLine(ex.ToString());
-                Form1.instance.addToLog("Storing file NOT succesful");
+                Form1.instance.addToLog("Storing \"" + fileName + "\" NOT succesful");
 
             }
         }
 
+        public static  string ComputeHash(string filename) {
+            using (var md5 = MD5.Create()) {
+                using (var stream = File.OpenRead(filename)) {
+                    return Convert.ToBase64String(md5.ComputeHash(stream));
+                }
+            }
+        }
     }
 }
