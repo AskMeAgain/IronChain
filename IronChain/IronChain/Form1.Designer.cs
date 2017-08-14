@@ -32,6 +32,7 @@
             this.button8 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button2
@@ -94,7 +95,7 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(829, 309);
+            this.button8.Location = new System.Drawing.Point(829, 280);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(133, 23);
             this.button8.TabIndex = 10;
@@ -104,13 +105,15 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(829, 280);
+            this.button9.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.button9.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.button9.Location = new System.Drawing.Point(829, 338);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(133, 23);
             this.button9.TabIndex = 11;
-            this.button9.Text = "Verify Chain";
-            this.button9.UseVisualStyleBackColor = true;
-            this.button9.Click += new System.EventHandler(this.onClickVerifyChain);
+            this.button9.Text = "Verify Chain Simple";
+            this.button9.UseVisualStyleBackColor = false;
+            this.button9.Click += new System.EventHandler(this.onClickVerifyChainSimple);
             // 
             // button1
             // 
@@ -122,11 +125,24 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.clearLog);
             // 
+            // button4
+            // 
+            this.button4.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.button4.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.button4.Location = new System.Drawing.Point(829, 309);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(133, 23);
+            this.button4.TabIndex = 13;
+            this.button4.Text = "Calculate Latest Block";
+            this.button4.UseVisualStyleBackColor = false;
+            this.button4.Click += new System.EventHandler(this.onClickCalculateLatestBlock);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1125, 578);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.button9);
             this.Controls.Add(this.button8);
@@ -153,6 +169,7 @@
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button4;
     }
 }
 

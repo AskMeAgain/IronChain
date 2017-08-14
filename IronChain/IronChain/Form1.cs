@@ -60,26 +60,33 @@ namespace IronChain {
             }
         }
 
-        private string createParticles() {
+        private List<string> createParticles() {
 
-            Particle p = new Particle();
+            List<string> nameList = new List<string>();
+
+            string particleName = "";
+            int i = 0;
 
             while (TransactionPool.Count > 0) {
+                Particle p = new Particle();
                 p.addTransaction(TransactionPool[0]);
                 TransactionPool.RemoveAt(0);
-            }
 
+                //add hash to block before
+                p.hashToBlock = Utility.ComputeHash("" + latestBlock);
 
-            //add hash to block before
-            p.hashToBlock = Utility.ComputeHash("" + latestBlock);
+                particleName = "P" + (latestBlock + 1) + "_" + i;
+
+                Utility.storeFile(p, particleName);
+                nameList.Add(particleName);
+
+                i++;
+            }    
 
             updateTransactionPoolWindow();
 
-            addToLog("Particle created:" + p.allTransactions.Count);
-
-            Utility.storeFile(p, "P" + (latestBlock+1));
-
-            return ("P" + (latestBlock+1));
+            addToLog("Particle created:" + nameList.Count );
+            return (nameList);
 
         }
 
@@ -88,21 +95,18 @@ namespace IronChain {
             calculateLatestBlock();
 
             Block nextBlock = new Block();
-            string namesOfParticle = createParticles();
+            List<string> namesOfParticle = createParticles();
 
-            Particle p = Utility.loadFile<Particle>(namesOfParticle);
+            foreach (string s in namesOfParticle) {
+                Particle p = Utility.loadFile<Particle>(s);
 
-
-
-            p.hashToBlock = Utility.ComputeHash(latestBlock + "");
-
+                //GET HASHES NOW INTO BLOCK
+                nextBlock.addHash(Utility.ComputeHash(s));
+            }
 
             addToLog("");
 
             addToLog("MINER CREATED PARTICLES");
-
-            //GET HASHES NOW INTO BLOCK
-            nextBlock.addHash(Utility.ComputeHash(namesOfParticle));
 
             //Store Block
             Utility.storeFile(nextBlock, (latestBlock + 1) + "");
@@ -115,9 +119,9 @@ namespace IronChain {
         }
 
         private void calculateLatestBlock() {
-            int i = 0;
+            int i = 1;
 
-            while (File.Exists(i + "")) {
+            while (File.Exists(i + "") && File.Exists("P"+1+"_0")) {
                 Console.WriteLine("yeha");
                 i++;
             }
@@ -163,34 +167,35 @@ namespace IronChain {
             printHashes();
         }
 
-        private void onClickVerifyChain(object sender, EventArgs e) {
+        //simple means we just check for the first particle
+        private void onClickVerifyChainSimple(object sender, EventArgs e) {
 
             textBox1.Text = "";
             calculateLatestBlock();
-            addToLog("Block chain is legit: " + verifyChain() + "   Latest Block:" + latestBlock);        
+            addToLog("Block chain is legit: " + verfiyChainSimple() + "   Latest Block:" + latestBlock);        
 
         }
 
-        private bool verifyChain() {
+        private bool verfiyChainSimple() {
             int i = 1;
 
             while (File.Exists(i + "")) {
 
                 Block b = Utility.loadFile<Block>(i + "");
-                Particle p = Utility.loadFile<Particle>("P"+i);
+                Particle p = Utility.loadFile<Particle>("P"+i+"_0");
 
                 Console.WriteLine(i);
-                if (!b.hashOfParticles[0].Equals(Utility.ComputeHash("P" + i)) || !p.hashToBlock.Equals(Utility.ComputeHash((i-1) + ""))) {
+                if (!b.hashOfParticles[0].Equals(Utility.ComputeHash("P" + i+"_0")) || !p.hashToBlock.Equals(Utility.ComputeHash((i-1) + ""))) {
                     return false;
                 }
                 i++;
             }
-
             return true;
         }
 
         private void clearLog(object sender, EventArgs e) {
             textBox1.Text = "";
         }
+
     }
 }
