@@ -39,6 +39,14 @@ namespace IronChain {
 
         }
 
+        public void addToLog2(string s) {
+
+            String text = textBox3.Text;
+            text += s + Environment.NewLine;
+            textBox3.Text = @text;
+
+        }
+
         private void onClickCreateTransactions(object sender, EventArgs e) {
             Random r = new Random();
             for (int i = 0; i < 10; i++) {
@@ -67,10 +75,20 @@ namespace IronChain {
             string particleName = "";
             int i = 0;
 
+            Random r = new Random();
+
             while (TransactionPool.Count > 0) {
                 Particle p = new Particle();
-                p.addTransaction(TransactionPool[0]);
-                TransactionPool.RemoveAt(0);
+
+                for (int n = 0; n < r.Next(2,4); n++) {
+
+                    if (TransactionPool.Count == 0) {
+                        break;
+                    }
+
+                    p.addTransaction(TransactionPool[0]);
+                    TransactionPool.RemoveAt(0);   
+                }
 
                 //add hash to block before
                 p.hashToBlock = Utility.ComputeHash("" + latestBlock);
@@ -126,7 +144,7 @@ namespace IronChain {
                 i++;
             }
 
-            addToLog("Head calculated: " + (i - 1));
+            addToLog("Latest Block: " + (i - 1));
 
             latestBlock =  i - 1;
         }
@@ -134,32 +152,50 @@ namespace IronChain {
         private void printHashes() {
 
             textBox1.Text = "";
+            addToLog("Block    0: " + Utility.ComputeHash("0"));
+            addToLog("");
 
-            for (int i = 0; i < latestBlock; i++) {
+            for (int i = 1; i <= latestBlock; i++) {
                 addToLog("Block    " + i + ": " + Utility.ComputeHash(i + ""));
-                addToLog("Particle " + (i+1) + ": " + Utility.ComputeHash("P" + (i+1)));
+                int ii = 0;
+                while (File.Exists("P"+i+"_"+ii)) {
+                    addToLog("Particle " + i +"_" + ii + ": " + Utility.ComputeHash("P" + i + "_" + ii));
+                    ii++;
+                }
+
                 addToLog("");
+
             }
 
             addToLog("----FINISHED----");
-            addToLog("");
-            addToLog("");
-            addToLog("");
-            addToLog("----PRINTLINK----");
+            
+            addToLog2("----PRINTLINK----");
+            textBox3.Text = "";
 
             for (int i = 1; i <= latestBlock; i++) {
 
-                Particle p = Utility.loadFile<Particle>("P" + i);
+                int ii = 0;
+
                 Block b = Utility.loadFile<Block>(i + "");
 
-                addToLog("Block:" + i + " hashes to " + b.hashOfParticles[0]);
-                addToLog("Particle:" + i + " hashes to " + p.hashToBlock);
-                addToLog("");
+                foreach (string s in b.hashOfParticles) {
+                    addToLog2("Block:" + i + " hashes to " + s);
+                }
+
+                addToLog2("");
+
+                while (File.Exists("P" + i + "_" + ii)){
+
+                    Particle p = Utility.loadFile<Particle>("P" + i + "_" + ii);
+
+                    addToLog2("Particle:" + i + "_" +ii +" hashes to " + p.hashToBlock);
+                    ii++;
+                }
+                addToLog2("");
+
             }
 
-            addToLog("----FINISHED----");
-            addToLog("Latest Block: " + latestBlock);
-
+            addToLog2("----FINISHED----");         
 
         }
 
