@@ -15,13 +15,18 @@ namespace IronChain {
 
         public static Form1 instance;
         public static List<Transaction> TransactionPool;
-        private int latestBlock;
+        public int latestBlock;
+        public string minerAddress;
 
         public Form1() {
             InitializeComponent();
             instance = this;
             TransactionPool = new List<Transaction>();
             calculateLatestBlock();
+
+            textBox4.Text = "KelvinPetry";
+            minerAddress = textBox4.Text;
+
         }
 
         private void createGenesisBlock(object sender, EventArgs e) {
@@ -120,11 +125,16 @@ namespace IronChain {
 
                 //GET HASHES NOW INTO BLOCK
                 nextBlock.addHash(Utility.ComputeHash(s));
+                nextBlock.numberOfTransactions += p.allTransactions.Count;
             }
+
+
 
             addToLog("");
 
             addToLog("MINER CREATED PARTICLES");
+
+            nextBlock.createCoins(minerAddress);
 
             //Store Block
             Utility.storeFile(nextBlock, (latestBlock + 1) + "");
@@ -155,6 +165,8 @@ namespace IronChain {
             addToLog("Block    0: " + Utility.ComputeHash("0"));
             addToLog("");
 
+            calculateLatestBlock();
+            
             for (int i = 1; i <= latestBlock; i++) {
                 addToLog("Block    " + i + ": " + Utility.ComputeHash(i + ""));
                 int ii = 0;
@@ -231,7 +243,35 @@ namespace IronChain {
 
         private void clearLog(object sender, EventArgs e) {
             textBox1.Text = "";
+            textBox3.Text = "";
         }
 
+        private void onMiningAddressChanged(object sender, EventArgs e) {
+
+            minerAddress = textBox4.Text;
+
+        }
+
+        private void onClickCalculateCoins(object sender, EventArgs e) {
+
+            int coinCounter = 0;
+            calculateLatestBlock();
+
+            for (int i = 0; i < latestBlock; i++) {
+
+                Block b = Utility.loadFile<Block>(i + "");
+
+                Console.WriteLine("All Coins:" + b.allCoins.Count);
+
+                foreach (Coin coin in b.allCoins) {
+                    if (coin.owner.Equals(minerAddress.Trim())) {
+                        coinCounter++;
+                    }
+                }
+            }
+
+            addToLog("Your Coins:" + coinCounter);
+
+        }
     }
 }
