@@ -253,25 +253,29 @@ namespace IronChain {
         }
 
         private void onClickCalculateCoins(object sender, EventArgs e) {
+            calculateCoinNumberOfAddress(minerAddress);
+        }
 
+        private int calculateCoinNumberOfAddress(string addresse) {
             int coinCounter = 0;
             calculateLatestBlock();
+            addresse = addresse.Trim();
 
             for (int i = 0; i < latestBlock; i++) {
 
-                Block b = Utility.loadFile<Block>(i + "");
+                Block b = Utility.loadFile<Block>(1 + "");
 
-                Console.WriteLine("All Coins:" + b.allCoins.Count);
-
-                foreach (Coin coin in b.allCoins) {
-                    if (coin.owner.Equals(minerAddress.Trim())) {
+                foreach (Block.Coin coin in b.allCoins) {
+                    if (coin.owner.Equals(addresse)) {
                         coinCounter++;
                     }
                 }
             }
 
             addToLog("Your Coins:" + coinCounter);
+            label3.Text = coinCounter + " Coins";
 
+            return coinCounter;
         }
     }
 }

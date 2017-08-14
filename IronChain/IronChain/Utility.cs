@@ -20,6 +20,7 @@ namespace IronChain {
             try {
                 XmlDocument xmlDocument = new XmlDocument();
                 xmlDocument.Load(fileName);
+                
                 string xmlString = xmlDocument.OuterXml;
 
                 using (StringReader read = new StringReader(xmlString)) {
