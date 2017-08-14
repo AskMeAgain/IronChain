@@ -15,33 +15,20 @@ namespace IronChain {
 
         public static Form1 instance;
         public static List<Transaction> TransactionPool;
+        private int latestBlock;
 
         public Form1() {
             InitializeComponent();
             instance = this;
             TransactionPool = new List<Transaction>();
-            calculateHead();
+            calculateLatestBlock();
         }
 
         private void createGenesisBlock(object sender, EventArgs e) {
-
             Block genesis = new Block(0);
             genesis.hashOfParticles = new List<string>() { "genesis" };
             Utility.storeFile(genesis, genesis.name + "");
             addToLog("Genesis Block created");
-        }
-
-        private void onClickLoadFile(object sender, EventArgs e) {
-
-            Block b = Utility.loadFile<Block>("test");
-
-            if (b != null) {
-                addToLog("Block loaded: " + b.name);
-            } else {
-                addToLog("Failure loading block!");
-
-            }
-
         }
 
         public void addToLog(string s) {
@@ -73,12 +60,6 @@ namespace IronChain {
             }
         }
 
-        private void onClickCreateParticles(object sender, EventArgs e) {
-
-            createParticles();
-
-        }
-
         private string createParticles() {
 
             Particle p = new Particle();
@@ -104,7 +85,7 @@ namespace IronChain {
 
         private void mineNextBlock(object sender, EventArgs e) {
 
-            calculateHead();
+            calculateLatestBlock();
 
             Block nextBlock = new Block();
             string namesOfParticle = createParticles();
@@ -125,23 +106,15 @@ namespace IronChain {
 
             //Store Block
             Utility.storeFile(nextBlock, (latestBlock + 1) + "");
-            calculateHead();
+            calculateLatestBlock();
 
         }
 
-        private void ShowParticles(object sender, EventArgs e) {
-
-            Particle p = Utility.loadFile<Particle>("Particle");
-
-            addToLog(p.allTransactions.Count + " inside Particle");
-
+        private void onClickCalculateLatestBlock(object sender, EventArgs e) {
+            calculateLatestBlock();
         }
 
-        private void onClickCalculateHead(object sender, EventArgs e) {
-            calculateHead();
-        }
-
-        private void calculateHead() {
+        private void calculateLatestBlock() {
             int i = 0;
 
             while (File.Exists(i + "")) {
@@ -186,9 +159,6 @@ namespace IronChain {
 
         }
 
-
-        private int latestBlock;
-
         private void onClickPrintChain(object sender, EventArgs e) {
             printHashes();
         }
@@ -196,9 +166,8 @@ namespace IronChain {
         private void onClickVerifyChain(object sender, EventArgs e) {
 
             textBox1.Text = "";
-            calculateHead();
-            addToLog("Block chain is legit: " + verifyChain() + "   Latest Block:" + latestBlock);
-            
+            calculateLatestBlock();
+            addToLog("Block chain is legit: " + verifyChain() + "   Latest Block:" + latestBlock);        
 
         }
 
@@ -216,7 +185,12 @@ namespace IronChain {
                 }
                 i++;
             }
+
             return true;
+        }
+
+        private void clearLog(object sender, EventArgs e) {
+            textBox1.Text = "";
         }
     }
 }
