@@ -20,13 +20,14 @@ namespace IronChain {
             InitializeComponent();
             instance = this;
             TransactionPool = new List<Transaction>();
+            calculateHead();
         }
 
         private void createGenesisBlock(object sender, EventArgs e) {
 
             Block genesis = new Block(0);
-
-            Utility.storeFile(genesis, genesis.name+"");
+            genesis.hashOfParticles = new List<string>() { "genesis" };
+            Utility.storeFile(genesis, genesis.name + "");
             addToLog("Genesis Block created");
         }
 
@@ -74,51 +75,59 @@ namespace IronChain {
 
         private void onClickCreateParticles(object sender, EventArgs e) {
 
-            createParticlesFromTP();
+            createParticles();
 
         }
 
-        private string createParticlesFromTP() {
+        private string createParticles() {
+
             Particle p = new Particle();
 
             while (TransactionPool.Count > 0) {
-
                 p.addTransaction(TransactionPool[0]);
                 TransactionPool.RemoveAt(0);
             }
 
 
             //add hash to block before
-            //p.hashToBlock = Utility.ComputeHash();
+            p.hashToBlock = Utility.ComputeHash("" + latestBlock);
 
             updateTransactionPoolWindow();
 
             addToLog("Particle created:" + p.allTransactions.Count);
 
-            Utility.storeFile(p, "Particle");
+            Utility.storeFile(p, "P" + (latestBlock+1));
 
-            return "Particle";
+            return ("P" + (latestBlock+1));
 
         }
 
         private void mineNextBlock(object sender, EventArgs e) {
 
+            calculateHead();
+
             Block nextBlock = new Block();
-            string namesOfParticle = createParticlesFromTP();
+            string namesOfParticle = createParticles();
 
             Particle p = Utility.loadFile<Particle>(namesOfParticle);
 
+
+
+            p.hashToBlock = Utility.ComputeHash(latestBlock + "");
+
+
             addToLog("");
 
-            addToLog("MINER CREATED PARTICLE");
+            addToLog("MINER CREATED PARTICLES");
 
             //GET HASHES NOW INTO BLOCK
             nextBlock.addHash(Utility.ComputeHash(namesOfParticle));
 
             //Store Block
-            Utility.storeFile(nextBlock, nextBlock.name+"");
+            Utility.storeFile(nextBlock, (latestBlock + 1) + "");
+            calculateHead();
 
-        }       
+        }
 
         private void ShowParticles(object sender, EventArgs e) {
 
@@ -128,13 +137,86 @@ namespace IronChain {
 
         }
 
-        int latestName;
+        private void onClickCalculateHead(object sender, EventArgs e) {
+            calculateHead();
+        }
 
-        private void calculateHead(object sender, EventArgs e) {
+        private void calculateHead() {
+            int i = 0;
 
-           
+            while (File.Exists(i + "")) {
+                Console.WriteLine("yeha");
+                i++;
+            }
+
+            addToLog("Head calculated: " + (i - 1));
+
+            latestBlock =  i - 1;
+        }
+
+        private void printHashes() {
+
+            textBox1.Text = "";
+
+            for (int i = 0; i < latestBlock; i++) {
+                addToLog("Block    " + i + ": " + Utility.ComputeHash(i + ""));
+                addToLog("Particle " + (i+1) + ": " + Utility.ComputeHash("P" + (i+1)));
+                addToLog("");
+            }
+
+            addToLog("----FINISHED----");
+            addToLog("");
+            addToLog("");
+            addToLog("");
+            addToLog("----PRINTLINK----");
+
+            for (int i = 1; i <= latestBlock; i++) {
+
+                Particle p = Utility.loadFile<Particle>("P" + i);
+                Block b = Utility.loadFile<Block>(i + "");
+
+                addToLog("Block:" + i + " hashes to " + b.hashOfParticles[0]);
+                addToLog("Particle:" + i + " hashes to " + p.hashToBlock);
+                addToLog("");
+            }
+
+            addToLog("----FINISHED----");
+            addToLog("Latest Block: " + latestBlock);
 
 
+        }
+
+
+        private int latestBlock;
+
+        private void onClickPrintChain(object sender, EventArgs e) {
+            printHashes();
+        }
+
+        private void onClickVerifyChain(object sender, EventArgs e) {
+
+            textBox1.Text = "";
+            calculateHead();
+            addToLog("Block chain is legit: " + verifyChain() + "   Latest Block:" + latestBlock);
+            
+
+        }
+
+        private bool verifyChain() {
+            int i = 1;
+
+            while (File.Exists(i + "")) {
+
+                Block b = Utility.loadFile<Block>(i + "");
+                Particle p = Utility.loadFile<Particle>("P"+i);
+
+                Console.WriteLine(i);
+                if (!b.hashOfParticles[0].Equals(Utility.ComputeHash("P" + i)) || !p.hashToBlock.Equals(Utility.ComputeHash((i-1) + ""))) {
+                    return false;
+                }
+                i++;
+            }
+            return true;
         }
     }
 }
