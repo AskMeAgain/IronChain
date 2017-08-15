@@ -14,9 +14,9 @@ Right now you can still change the latest block, this will be fixed in a later v
 
 ##### Features
 
-Lightmode
-Send your transactions
-Mine blocks
-Receive coins
+Lightmode  
+Send your transactions  
+Mine blocks  
+Receive coins  
 
 
