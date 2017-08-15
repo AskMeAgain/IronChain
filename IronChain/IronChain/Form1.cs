@@ -80,35 +80,37 @@ namespace IronChain {
             string particleName = "";
             int i = 0;
 
-            Random r = new Random();
 
+
+            //transaction particle
+            Particle p = new Particle();
             while (TransactionPool.Count > 0) {
-                Particle p = new Particle();
 
-                for (int n = 0; n < r.Next(2,4); n++) {
+                p.addTransaction(TransactionPool[0]);
+                TransactionPool.RemoveAt(0);
+            }
 
-                    if (TransactionPool.Count == 0) {
-                        break;
-                    }
+            //add hash to block before
+            p.hashToBlock = Utility.ComputeHash("" + latestBlock);
 
-                    p.addTransaction(TransactionPool[0]);
-                    TransactionPool.RemoveAt(0);   
-                }
+            particleName = "P" + (latestBlock + 1);
 
-                //add hash to block before
-                p.hashToBlock = Utility.ComputeHash("" + latestBlock);
-
-                particleName = "P" + (latestBlock + 1) + "_" + i;
-
-                Utility.storeFile(p, particleName);
-                nameList.Add(particleName);
-
-                i++;
-            }    
+            Utility.storeFile(p, particleName);
+            nameList.Add(particleName);
 
             updateTransactionPoolWindow();
 
-            addToLog("Particle created:" + nameList.Count );
+            addToLog("Particle created:" + nameList.Count);
+
+
+            //create light particle
+            Particle light = new Particle();
+            string lightName = "L" + (latestBlock + 1);
+            light.hashToBlock = Utility.ComputeHash("" + latestBlock);
+            Utility.storeFile(light, lightName);
+            nameList.Add(lightName);
+            addToLog("Light Particle created:" + nameList.Count);
+
             return (nameList);
 
         }
@@ -149,14 +151,14 @@ namespace IronChain {
         private void calculateLatestBlock() {
             int i = 1;
 
-            while (File.Exists(i + "") && File.Exists("P"+1+"_0")) {
+            while (File.Exists(i + "") && File.Exists("P" + 1 + "_0")) {
                 Console.WriteLine("yeha");
                 i++;
             }
 
             addToLog("Latest Block: " + (i - 1));
 
-            latestBlock =  i - 1;
+            latestBlock = i - 1;
         }
 
         private void printHashes() {
@@ -166,13 +168,13 @@ namespace IronChain {
             addToLog("");
 
             calculateLatestBlock();
-            
+
             for (int i = 1; i <= latestBlock; i++) {
                 addToLog("Block    " + i + ": " + Utility.ComputeHash(i + ""));
-                int ii = 0;
-                while (File.Exists("P"+i+"_"+ii)) {
-                    addToLog("Particle " + i +"_" + ii + ": " + Utility.ComputeHash("P" + i + "_" + ii));
-                    ii++;
+
+                if (File.Exists("P" + i) || File.Exists("L"+i)) {
+                    addToLog("Particle " + i + ": " + Utility.ComputeHash("P" + i));
+  
                 }
 
                 addToLog("");
@@ -180,7 +182,7 @@ namespace IronChain {
             }
 
             addToLog("----FINISHED----");
-            
+
             addToLog2("----PRINTLINK----");
             textBox3.Text = "";
 
@@ -196,18 +198,19 @@ namespace IronChain {
 
                 addToLog2("");
 
-                while (File.Exists("P" + i + "_" + ii)){
+                if (File.Exists("P" + i) || File.Exists("L" + i)) {
 
-                    Particle p = Utility.loadFile<Particle>("P" + i + "_" + ii);
+                    Particle p = Utility.loadFile<Particle>("P" + i);
 
-                    addToLog2("Particle:" + i + "_" +ii +" hashes to " + p.hashToBlock);
+                    addToLog2("Particle:" + i + " hashes to " + p.hashToBlock);
                     ii++;
                 }
+
                 addToLog2("");
 
             }
 
-            addToLog2("----FINISHED----");         
+            addToLog2("----FINISHED----");
 
         }
 
@@ -220,7 +223,7 @@ namespace IronChain {
 
             textBox1.Text = "";
             calculateLatestBlock();
-            addToLog("Block chain is legit: " + verfiyChainSimple() + "   Latest Block:" + latestBlock);        
+            addToLog("Block chain is legit: " + verfiyChainSimple() + "   Latest Block:" + latestBlock);
 
         }
 
@@ -230,10 +233,10 @@ namespace IronChain {
             while (File.Exists(i + "")) {
 
                 Block b = Utility.loadFile<Block>(i + "");
-                Particle p = Utility.loadFile<Particle>("P"+i+"_0");
+                Particle p = Utility.loadFile<Particle>("P" + i + "_0");
 
                 Console.WriteLine(i);
-                if (!b.hashOfParticles[0].Equals(Utility.ComputeHash("P" + i+"_0")) || !p.hashToBlock.Equals(Utility.ComputeHash((i-1) + ""))) {
+                if (!b.hashOfParticles[0].Equals(Utility.ComputeHash("P" + i + "_0")) || !p.hashToBlock.Equals(Utility.ComputeHash((i - 1) + ""))) {
                     return false;
                 }
                 i++;
