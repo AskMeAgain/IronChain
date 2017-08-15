@@ -22,7 +22,7 @@ namespace IronChain {
             InitializeComponent();
             instance = this;
             TransactionPool = new List<Transaction>();
-            calculateLatestBlock();
+            verifyChain();
 
             textBox4.Text = "KelvinPetry";
             minerAddress = textBox4.Text;
@@ -31,7 +31,7 @@ namespace IronChain {
 
         private void createGenesisBlock(object sender, EventArgs e) {
             Block genesis = new Block(0);
-            genesis.hashOfParticles = new List<string>() { "genesis" };
+            genesis.hashOfParticle = "genesis";
             Utility.storeFile(genesis, genesis.name + "");
             addToLog("Genesis Block created");
         }
@@ -73,14 +73,9 @@ namespace IronChain {
             }
         }
 
-        private List<string> createParticles() {
-
-            List<string> nameList = new List<string>();
+        private void createParticles() {
 
             string particleName = "";
-            int i = 0;
-
-
 
             //transaction particle
             Particle p = new Particle();
@@ -96,11 +91,8 @@ namespace IronChain {
             particleName = "P" + (latestBlock + 1);
 
             Utility.storeFile(p, particleName);
-            nameList.Add(particleName);
 
             updateTransactionPoolWindow();
-
-            addToLog("Particle created:" + nameList.Count);
 
 
             //create light particle
@@ -108,29 +100,22 @@ namespace IronChain {
             string lightName = "L" + (latestBlock + 1);
             light.hashToBlock = Utility.ComputeHash("" + latestBlock);
             Utility.storeFile(light, lightName);
-            nameList.Add(lightName);
-            addToLog("Light Particle created:" + nameList.Count);
-
-            return (nameList);
 
         }
 
         private void mineNextBlock(object sender, EventArgs e) {
 
-            calculateLatestBlock();
+            verifyChain();
 
             Block nextBlock = new Block();
-            List<string> namesOfParticle = createParticles();
-
-            foreach (string s in namesOfParticle) {
-                Particle p = Utility.loadFile<Particle>(s);
-
-                //GET HASHES NOW INTO BLOCK
-                nextBlock.addHash(Utility.ComputeHash(s));
-                nextBlock.numberOfTransactions += p.allTransactions.Count;
-            }
+            createParticles();
 
 
+            Particle p = Utility.loadFile<Particle>("P"+(latestBlock+1));
+            //GET HASHES NOW INTO BLOCK
+            nextBlock.addHash(latestBlock);
+            nextBlock.numberOfTransactions += p.allTransactions.Count;
+            nextBlock.name = (latestBlock+1);
 
             addToLog("");
 
@@ -140,77 +125,37 @@ namespace IronChain {
 
             //Store Block
             Utility.storeFile(nextBlock, (latestBlock + 1) + "");
-            calculateLatestBlock();
 
-        }
-
-        private void onClickCalculateLatestBlock(object sender, EventArgs e) {
-            calculateLatestBlock();
-        }
-
-        private void calculateLatestBlock() {
-            int i = 1;
-
-            while (File.Exists(i + "") && File.Exists("P" + 1 + "_0")) {
-                Console.WriteLine("yeha");
-                i++;
-            }
-
-            addToLog("Latest Block: " + (i - 1));
-
-            latestBlock = i - 1;
         }
 
         private void printHashes() {
 
             textBox1.Text = "";
-            addToLog("Block    0: " + Utility.ComputeHash("0"));
-            addToLog("");
 
-            calculateLatestBlock();
+            //display all hashes:
+            int i = 1;
+            while (File.Exists(i+".blk")){
 
-            for (int i = 1; i <= latestBlock; i++) {
-                addToLog("Block    " + i + ": " + Utility.ComputeHash(i + ""));
+                int counter = 0;
 
-                if (File.Exists("P" + i) || File.Exists("L"+i)) {
-                    addToLog("Particle " + i + ": " + Utility.ComputeHash("P" + i));
-  
+                if (File.Exists("P" + i + ".blk")) {
+                    addToLog2("P" + i + ".blk = " + Utility.ComputeHash("P" + i));
+                } else {
+                    counter++;
                 }
 
-                addToLog("");
+                if (File.Exists("L" + i + ".blk")) {
+                    addToLog2("L" + i + ".blk = " + Utility.ComputeHash("L" + i));
+                } else {
+                    counter++;
+                }
 
+                if (counter == 2) {
+                    break;
+                }
+
+                i++;
             }
-
-            addToLog("----FINISHED----");
-
-            addToLog2("----PRINTLINK----");
-            textBox3.Text = "";
-
-            for (int i = 1; i <= latestBlock; i++) {
-
-                int ii = 0;
-
-                Block b = Utility.loadFile<Block>(i + "");
-
-                foreach (string s in b.hashOfParticles) {
-                    addToLog2("Block:" + i + " hashes to " + s);
-                }
-
-                addToLog2("");
-
-                if (File.Exists("P" + i) || File.Exists("L" + i)) {
-
-                    Particle p = Utility.loadFile<Particle>("P" + i);
-
-                    addToLog2("Particle:" + i + " hashes to " + p.hashToBlock);
-                    ii++;
-                }
-
-                addToLog2("");
-
-            }
-
-            addToLog2("----FINISHED----");
 
         }
 
@@ -219,28 +164,62 @@ namespace IronChain {
         }
 
         //simple means we just check for the first particle
-        private void onClickVerifyChainSimple(object sender, EventArgs e) {
+        private void onClickVerifyChain(object sender, EventArgs e) {
 
             textBox1.Text = "";
-            calculateLatestBlock();
-            addToLog("Block chain is legit: " + verfiyChainSimple() + "   Latest Block:" + latestBlock);
+            verifyChain();
 
         }
 
-        private bool verfiyChainSimple() {
+        private bool verifyChain() {
+
             int i = 1;
 
-            while (File.Exists(i + "")) {
+            while (File.Exists(i + ".blk")) {
 
-                Block b = Utility.loadFile<Block>(i + "");
-                Particle p = Utility.loadFile<Particle>("P" + i + "_0");
+                Block b = Utility.loadFile<Block>(i+"");
+                string hashOfBlock = Utility.ComputeHash(i + "");
 
-                Console.WriteLine(i);
-                if (!b.hashOfParticles[0].Equals(Utility.ComputeHash("P" + i + "_0")) || !p.hashToBlock.Equals(Utility.ComputeHash((i - 1) + ""))) {
-                    return false;
+                if (File.Exists("P" + i + ".blk")) {
+                    //particle exists
+
+                    Particle p = Utility.loadFile<Particle>("P" + i);
+
+                    //block points to particle
+                    if (!Utility.ComputeHash("P" + i).Equals(b.hashOfParticle)) {
+                        break;
+                    }
+
+                    //particle points to block before
+                    if (!Utility.ComputeHash("" + (i - 1)).Equals(p.hashToBlock)){
+                        break;
+                    }
+
+                } else if (File.Exists("L" + i + ".blk")) {
+
+                    Particle p = Utility.loadFile<Particle>("L" + i);
+
+                    //block points to particle
+                    if (!Utility.ComputeHash("L" + i).Equals(b.hashOfLightParticle)) {
+                        break;
+                    }
+
+                    //particle points to block before
+                    if (!Utility.ComputeHash("" + (i - 1)).Equals(p.hashToBlock)){
+                        break;
+                    }
+
+                } else {
+                    break;
                 }
+                Console.WriteLine(i);
                 i++;
             }
+
+            i--;
+
+            addToLog("VERIFIED UNTIL" + i);
+            latestBlock = i;
             return true;
         }
 
@@ -260,13 +239,31 @@ namespace IronChain {
         }
 
         private int calculateCoinNumberOfAddress(string addresse) {
+
             int coinCounter = 0;
-            calculateLatestBlock();
+
+            verifyChain();
             addresse = addresse.Trim();
 
-            for (int i = 0; i < latestBlock; i++) {
+            for (int i = 0; i <= latestBlock; i++) {
 
-                Block b = Utility.loadFile<Block>(1 + "");
+                Block b = Utility.loadFile<Block>(i + "");
+
+                if (File.Exists("P" + i + ".blk")) {
+                    Particle p = Utility.loadFile<Particle>("P" + i);
+
+
+                    foreach (Transaction trans in p.allTransactions) {
+                        if (trans.receiver.Equals(addresse)) {
+                            coinCounter += trans.amount;
+                        }
+
+                        if (trans.owner.Equals(addresse)) {
+                            coinCounter -= trans.amount;
+                        }
+
+                    }
+                }
 
                 foreach (Block.Coin coin in b.allCoins) {
                     if (coin.owner.Equals(addresse)) {
@@ -279,6 +276,22 @@ namespace IronChain {
             label3.Text = coinCounter + " Coins";
 
             return coinCounter;
+        }
+
+        private void makeTransaction(object sender, EventArgs e) {
+
+            string receiver = textBox5.Text;
+            int amount = Convert.ToInt32(textBox6.Text);
+
+            Transaction t = new Transaction();
+            t.owner = minerAddress;
+            t.receiver = receiver;
+            t.amount = amount;
+            //TODO SIGN IT;
+
+            TransactionPool.Add(t);
+            updateTransactionPoolWindow();
+
         }
     }
 }

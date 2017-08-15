@@ -20,26 +20,30 @@ namespace IronChain {
         };
 
         public int name { get; set; }
-        public List<string> hashOfParticles { get; set; }
+        public string hashOfParticle { get; set; }
+        public string hashOfLightParticle { get; set; }
+
         public int numberOfTransactions { get; set; }
         public List<Coin> allCoins { get; set; }
 
         public Block() {
             name = 0;
-            hashOfParticles = new List<string>();
+            hashOfParticle = "";
             numberOfTransactions = 0;
             allCoins = new List<Coin>();
         }
 
         public Block(int n) {
             name = n;
-            hashOfParticles = new List<string>();
+            hashOfParticle = "";
             numberOfTransactions = 0;
             allCoins = new List<Coin>();
         }
 
-        public void addHash(string hash) {
-            hashOfParticles.Add(hash);
+        public void addHash(int i) {
+            hashOfParticle = Utility.ComputeHash("P"+ (i+1));
+            hashOfLightParticle = Utility.ComputeHash("L" + (i+1));
+
         }
 
         public void createCoins(string minerAddress) {

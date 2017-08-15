@@ -14,6 +14,7 @@ namespace IronChain {
         public string owner;
         public string receiver;
         public string proofOfOwnership;
+        public int amount;
 
         public Transaction(Random r) {
 
@@ -22,6 +23,7 @@ namespace IronChain {
             owner = "" + r.Next(3, 100);
             receiver = "" + r.Next(3, 100);
             proofOfOwnership = "" + r.Next(3, 100);
+            amount = 0;
         }
 
         public Transaction() {
