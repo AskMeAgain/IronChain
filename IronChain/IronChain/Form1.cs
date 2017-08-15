@@ -226,6 +226,7 @@ namespace IronChain {
         private void clearLog(object sender, EventArgs e) {
             textBox1.Text = "";
             textBox3.Text = "";
+
         }
 
         private void onMiningAddressChanged(object sender, EventArgs e) {
