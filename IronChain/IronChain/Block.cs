@@ -53,7 +53,10 @@ namespace IronChain {
                 allCoins.Add(new Coin(name,minerAddress));
             }
 
-            Console.WriteLine("lulaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + allCoins.Count);
+            allCoins.Add(new Coin("Bonus1", minerAddress));
+            allCoins.Add(new Coin("Bonus2", minerAddress));
+            allCoins.Add(new Coin("Bonus3", minerAddress));
+
         }
 
     }

@@ -73,16 +73,25 @@ namespace IronChain {
             }
         }
 
+        Dictionary<string, int> transHistory;
+
         private void createParticles() {
 
             string particleName = "";
 
             //transaction particle
             Particle p = new Particle();
+            transHistory = new Dictionary<string, int>();
+
             while (TransactionPool.Count > 0) {
 
-                p.addTransaction(TransactionPool[0]);
+                Transaction trans = TransactionPool[0];
                 TransactionPool.RemoveAt(0);
+
+                if (verifyTransaction(trans)) {
+                    p.addTransaction(trans);
+                }
+
             }
 
             //add hash to block before
@@ -100,6 +109,25 @@ namespace IronChain {
             string lightName = "L" + (latestBlock + 1);
             light.hashToBlock = Utility.ComputeHash("" + latestBlock);
             Utility.storeFile(light, lightName);
+
+        }
+
+        private bool verifyTransaction(Transaction trans) {
+
+            string owner = trans.owner;
+
+            int num = calculateCoinNumberOfAddress(owner);
+
+            if (!transHistory.ContainsKey(trans.owner)) {
+                transHistory.Add(trans.owner, 0);
+            }
+
+            if (num - (trans.amount + transHistory[trans.owner]) > 0) {
+                transHistory[owner] += trans.amount;
+                return true;
+            } else {
+                return false;
+            }
 
         }
 
@@ -125,6 +153,8 @@ namespace IronChain {
 
             //Store Block
             Utility.storeFile(nextBlock, (latestBlock + 1) + "");
+
+            calculateCoinNumberOfAddress(minerAddress);
 
         }
 
@@ -226,13 +256,10 @@ namespace IronChain {
         private void clearLog(object sender, EventArgs e) {
             textBox1.Text = "";
             textBox3.Text = "";
-
         }
 
         private void onMiningAddressChanged(object sender, EventArgs e) {
-
             minerAddress = textBox4.Text;
-
         }
 
         private void onClickCalculateCoins(object sender, EventArgs e) {
