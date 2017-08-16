@@ -17,6 +17,8 @@ namespace IronChain {
         public static List<Transaction> TransactionPool;
         public int latestBlock;
         public string minerAddress;
+        bool miningFlag = true;
+
 
         public Form1() {
             InitializeComponent();
@@ -32,6 +34,7 @@ namespace IronChain {
         private void createGenesisBlock(object sender, EventArgs e) {
             Block genesis = new Block(0);
             genesis.hashOfParticle = "genesis";
+            genesis.giveSomeCoins(minerAddress, 100);
             Utility.storeFile(genesis, genesis.name + "");
             addToLog("Genesis Block created");
         }
@@ -131,19 +134,25 @@ namespace IronChain {
 
         }
 
-        private void mineNextBlock(object sender, EventArgs e) {
+        private void onClickMineNextBlock(object sender, EventArgs e) {
+            mineNextBlock("LOL");
 
+        }
+
+        private void mineNextBlock(string nonce) {
             verifyChain();
 
             Block nextBlock = new Block();
             createParticles();
 
 
-            Particle p = Utility.loadFile<Particle>("P"+(latestBlock+1));
+            Particle p = Utility.loadFile<Particle>("P" + (latestBlock + 1));
             //GET HASHES NOW INTO BLOCK
             nextBlock.addHash(latestBlock);
             nextBlock.numberOfTransactions += p.allTransactions.Count;
-            nextBlock.name = (latestBlock+1);
+            nextBlock.name = (latestBlock + 1);
+            nextBlock.nonce = nonce;
+
 
             addToLog("");
 
@@ -155,7 +164,6 @@ namespace IronChain {
             Utility.storeFile(nextBlock, (latestBlock + 1) + "");
 
             calculateCoinNumberOfAddress(minerAddress);
-
         }
 
         private void printHashes() {
@@ -164,7 +172,7 @@ namespace IronChain {
 
             //display all hashes:
             int i = 1;
-            while (File.Exists(i+".blk")){
+            while (File.Exists(i + ".blk")) {
 
                 int counter = 0;
 
@@ -204,11 +212,19 @@ namespace IronChain {
         private bool verifyChain() {
 
             int i = 1;
+            int difficulty = Convert.ToInt32(textBox7.Text);
 
             while (File.Exists(i + ".blk")) {
 
-                Block b = Utility.loadFile<Block>(i+"");
+                Block b = Utility.loadFile<Block>(i + "");
                 string hashOfBlock = Utility.ComputeHash(i + "");
+
+                string proofHash = Utility.getHashSha256(b.nonce + "" + Utility.ComputeHash(i + ""));
+
+                if (Utility.verifyHashDifficulty(proofHash,difficulty)) {
+                    addToLog2("Block" + i + " has correct nonce:" + proofHash);
+                }
+
 
                 if (File.Exists("P" + i + ".blk")) {
                     //particle exists
@@ -221,7 +237,7 @@ namespace IronChain {
                     }
 
                     //particle points to block before
-                    if (!Utility.ComputeHash("" + (i - 1)).Equals(p.hashToBlock)){
+                    if (!Utility.ComputeHash("" + (i - 1)).Equals(p.hashToBlock)) {
                         break;
                     }
 
@@ -235,7 +251,7 @@ namespace IronChain {
                     }
 
                     //particle points to block before
-                    if (!Utility.ComputeHash("" + (i - 1)).Equals(p.hashToBlock)){
+                    if (!Utility.ComputeHash("" + (i - 1)).Equals(p.hashToBlock)) {
                         break;
                     }
 
@@ -320,6 +336,35 @@ namespace IronChain {
             TransactionPool.Add(t);
             updateTransactionPoolWindow();
 
+        }
+
+        private void onClickStartMining(object sender, EventArgs e) {
+            addToLog("MINING STARTED");
+            miningFlag = true;
+
+            int i = 0;
+
+            string hashFromLatestBlock = Utility.ComputeHash(latestBlock + "");
+            int difficulty = Convert.ToInt32(textBox7.Text);
+
+            while (miningFlag ) {
+
+                string hash = Utility.getHashSha256(i + "" + hashFromLatestBlock);
+
+                if (Utility.verifyHashDifficulty(hash,difficulty)) {
+                    Console.WriteLine(hash + " hash = " + i);
+                    mineNextBlock(i+"");
+                    break;
+                }
+
+                i++;
+            }
+
+        }
+
+        private void onClickStopMining(object sender, EventArgs e) {
+            miningFlag = false;
+            addToLog("MINING STOPPED");
         }
     }
 }

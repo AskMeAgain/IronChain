@@ -42,6 +42,9 @@
             this.label4 = new System.Windows.Forms.Label();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.button7 = new System.Windows.Forms.Button();
+            this.button10 = new System.Windows.Forms.Button();
+            this.button11 = new System.Windows.Forms.Button();
+            this.textBox7 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button2
@@ -100,7 +103,7 @@
             this.button5.TabIndex = 7;
             this.button5.Text = "Mine Next Block";
             this.button5.UseVisualStyleBackColor = false;
-            this.button5.Click += new System.EventHandler(this.mineNextBlock);
+            this.button5.Click += new System.EventHandler(this.onClickMineNextBlock);
             // 
             // button8
             // 
@@ -224,11 +227,41 @@
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.makeTransaction);
             // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(552, 85);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(134, 23);
+            this.button10.TabIndex = 23;
+            this.button10.Text = "Start Mining";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.onClickStartMining);
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(552, 115);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(134, 23);
+            this.button11.TabIndex = 24;
+            this.button11.Text = "Stop Mining";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.onClickStopMining);
+            // 
+            // textBox7
+            // 
+            this.textBox7.Location = new System.Drawing.Point(693, 85);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.Size = new System.Drawing.Size(28, 20);
+            this.textBox7.TabIndex = 25;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1125, 578);
+            this.Controls.Add(this.textBox7);
+            this.Controls.Add(this.button11);
+            this.Controls.Add(this.button10);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.label4);
@@ -275,6 +308,9 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.TextBox textBox7;
     }
 }
 

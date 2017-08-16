@@ -19,6 +19,7 @@ namespace IronChain {
             }
         };
 
+        public string nonce { get; set; }
         public int name { get; set; }
         public string hashOfParticle { get; set; }
         public string hashOfLightParticle { get; set; }
@@ -44,6 +45,14 @@ namespace IronChain {
             hashOfParticle = Utility.ComputeHash("P"+ (i+1));
             hashOfLightParticle = Utility.ComputeHash("L" + (i+1));
 
+        }
+
+        public void giveSomeCoins(string minerAddress, int num) {
+
+            for (int i = 0; i < num; i++) {
+                string name = "Coin_" + (Form1.instance.latestBlock + 1) + "_" + i;
+                allCoins.Add(new Coin(name, minerAddress));
+            }
         }
 
         public void createCoins(string minerAddress) {
