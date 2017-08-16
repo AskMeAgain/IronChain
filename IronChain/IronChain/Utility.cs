@@ -87,7 +87,7 @@ namespace IronChain {
             char[] charArr = hash.ToCharArray();
             for (int i = 0; i < difficulty; i++) {
 
-                if (charArr[i].Equals('0')) {
+                if (!charArr[i].Equals('0')) {
                     return false;
                 }
 

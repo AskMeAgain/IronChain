@@ -24,14 +24,24 @@ namespace IronChain {
             InitializeComponent();
             instance = this;
             TransactionPool = new List<Transaction>();
-            verifyChain();
 
             textBox4.Text = "KelvinPetry";
             minerAddress = textBox4.Text;
 
+            if (!File.Exists("0.blk")) {
+                createGenesisBlock();
+            }
+
+
+            verifyChain();
+
         }
 
-        private void createGenesisBlock(object sender, EventArgs e) {
+        private void onClickCreateGenesisBlock(object sender, EventArgs e) {
+            createGenesisBlock();
+        }
+
+        private void createGenesisBlock() {
             Block genesis = new Block(0);
             genesis.hashOfParticle = "genesis";
             genesis.giveSomeCoins(minerAddress, 100);
@@ -58,7 +68,7 @@ namespace IronChain {
         private void onClickCreateTransactions(object sender, EventArgs e) {
             Random r = new Random();
             for (int i = 0; i < 10; i++) {
-                Transaction t = new Transaction(r);
+                Transaction t = new Transaction(r, minerAddress);
                 Console.WriteLine(t.toString());
                 TransactionPool.Add(t);
             }
@@ -140,14 +150,14 @@ namespace IronChain {
         }
 
         private void mineNextBlock(string nonce) {
-            verifyChain();
 
             Block nextBlock = new Block();
             createParticles();
 
-
+            Console.WriteLine("LATEST BLOCK" + latestBlock);
             Particle p = Utility.loadFile<Particle>("P" + (latestBlock + 1));
             //GET HASHES NOW INTO BLOCK
+
             nextBlock.addHash(latestBlock);
             nextBlock.numberOfTransactions += p.allTransactions.Count;
             nextBlock.name = (latestBlock + 1);
@@ -163,7 +173,9 @@ namespace IronChain {
             //Store Block
             Utility.storeFile(nextBlock, (latestBlock + 1) + "");
 
-            calculateCoinNumberOfAddress(minerAddress);
+            verifyChain();
+
+
         }
 
         private void printHashes() {
@@ -219,10 +231,11 @@ namespace IronChain {
                 Block b = Utility.loadFile<Block>(i + "");
                 string hashOfBlock = Utility.ComputeHash(i + "");
 
-                string proofHash = Utility.getHashSha256(b.nonce + "" + Utility.ComputeHash(i + ""));
+                string proofHash = Utility.getHashSha256(b.nonce + "" + Utility.ComputeHash((i-1) + ""));
 
-                if (Utility.verifyHashDifficulty(proofHash,difficulty)) {
-                    addToLog2("Block" + i + " has correct nonce:" + proofHash);
+                if (!Utility.verifyHashDifficulty(proofHash, difficulty)) {
+                    addToLog("ERROR, NONCE WRONG");
+                    break;
                 }
 
 
@@ -266,6 +279,9 @@ namespace IronChain {
 
             addToLog("VERIFIED UNTIL" + i);
             latestBlock = i;
+
+            calculateCoinNumberOfAddress(minerAddress);
+
             return true;
         }
 
@@ -279,14 +295,13 @@ namespace IronChain {
         }
 
         private void onClickCalculateCoins(object sender, EventArgs e) {
-            calculateCoinNumberOfAddress(minerAddress);
+            label3.Text = calculateCoinNumberOfAddress(minerAddress) + " Coins";
         }
 
         private int calculateCoinNumberOfAddress(string addresse) {
 
             int coinCounter = 0;
 
-            verifyChain();
             addresse = addresse.Trim();
 
             for (int i = 0; i <= latestBlock; i++) {
@@ -316,7 +331,6 @@ namespace IronChain {
                 }
             }
 
-            addToLog("Your Coins:" + coinCounter);
             label3.Text = coinCounter + " Coins";
 
             return coinCounter;
@@ -339,11 +353,11 @@ namespace IronChain {
         }
 
         private void onClickStartMining(object sender, EventArgs e) {
+
             addToLog("MINING STARTED");
             miningFlag = true;
 
             int i = 0;
-
             string hashFromLatestBlock = Utility.ComputeHash(latestBlock + "");
             int difficulty = Convert.ToInt32(textBox7.Text);
 
@@ -351,8 +365,9 @@ namespace IronChain {
 
                 string hash = Utility.getHashSha256(i + "" + hashFromLatestBlock);
 
+
                 if (Utility.verifyHashDifficulty(hash,difficulty)) {
-                    Console.WriteLine(hash + " hash = " + i);
+                    Console.WriteLine(latestBlock + " " + hashFromLatestBlock);
                     mineNextBlock(i+"");
                     break;
                 }

@@ -55,7 +55,7 @@
             this.button2.TabIndex = 1;
             this.button2.Text = "Create Genesis Block";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.createGenesisBlock);
+            this.button2.Click += new System.EventHandler(this.onClickCreateGenesisBlock);
             // 
             // textBox1
             // 
@@ -253,6 +253,7 @@
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new System.Drawing.Size(28, 20);
             this.textBox7.TabIndex = 25;
+            this.textBox7.Text = "4";
             // 
             // Form1
             // 

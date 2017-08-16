@@ -16,14 +16,14 @@ namespace IronChain {
         public string proofOfOwnership;
         public int amount;
 
-        public Transaction(Random r) {
+        public Transaction(Random r, string name) {
 
             id = r.Next(0,100000);
             coinName = ""+r.Next(3, 100);
-            owner = "" + r.Next(3, 100);
+            owner = name;
             receiver = "" + r.Next(3, 100);
             proofOfOwnership = "" + r.Next(3, 100);
-            amount = 0;
+            amount = 3;
         }
 
         public Transaction() {
