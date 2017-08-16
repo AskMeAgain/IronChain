@@ -15,10 +15,11 @@ namespace IronChain {
 
         public static Form1 instance;
         public static List<Transaction> TransactionPool;
-        public int latestBlock;
         public string minerAddress;
         bool miningFlag = true;
-
+        Dictionary<string, int> transHistory;
+        public int latestBlock = 0;
+        int coinCounter = 0;
 
         public Form1() {
             InitializeComponent();
@@ -32,8 +33,15 @@ namespace IronChain {
                 createGenesisBlock();
             }
 
+            Block b = Utility.loadFile<Block>("0");
 
-            verifyChain();
+            foreach (Block.Coin coin in b.allCoins) {
+                if (coin.owner.Equals(minerAddress)) {
+                    coinCounter++;
+                }
+            }
+
+            analyseChain(1);
 
         }
 
@@ -86,8 +94,6 @@ namespace IronChain {
             }
         }
 
-        Dictionary<string, int> transHistory;
-
         private void createParticles() {
 
             string particleName = "";
@@ -127,6 +133,7 @@ namespace IronChain {
 
         private bool verifyTransaction(Transaction trans) {
 
+            /*
             string owner = trans.owner;
 
             int num = calculateCoinNumberOfAddress(owner);
@@ -140,12 +147,9 @@ namespace IronChain {
                 return true;
             } else {
                 return false;
-            }
+            }*/
 
-        }
-
-        private void onClickMineNextBlock(object sender, EventArgs e) {
-            mineNextBlock("LOL");
+            return true;
 
         }
 
@@ -154,186 +158,29 @@ namespace IronChain {
             Block nextBlock = new Block();
             createParticles();
 
-            Console.WriteLine("LATEST BLOCK" + latestBlock);
             Particle p = Utility.loadFile<Particle>("P" + (latestBlock + 1));
-            //GET HASHES NOW INTO BLOCK
 
+            //GET HASHES NOW INTO BLOCK
             nextBlock.addHash(latestBlock);
             nextBlock.numberOfTransactions += p.allTransactions.Count;
             nextBlock.name = (latestBlock + 1);
             nextBlock.nonce = nonce;
-
-
-            addToLog("");
-
-            addToLog("MINER CREATED PARTICLES");
 
             nextBlock.createCoins(minerAddress);
 
             //Store Block
             Utility.storeFile(nextBlock, (latestBlock + 1) + "");
 
-            verifyChain();
+            addToLog("");
 
+            addToLog("MINER CREATED BLOCK");
 
-        }
+            analyseChain(latestBlock);
 
-        private void printHashes() {
-
-            textBox1.Text = "";
-
-            //display all hashes:
-            int i = 1;
-            while (File.Exists(i + ".blk")) {
-
-                int counter = 0;
-
-                if (File.Exists("P" + i + ".blk")) {
-                    addToLog2("P" + i + ".blk = " + Utility.ComputeHash("P" + i));
-                } else {
-                    counter++;
-                }
-
-                if (File.Exists("L" + i + ".blk")) {
-                    addToLog2("L" + i + ".blk = " + Utility.ComputeHash("L" + i));
-                } else {
-                    counter++;
-                }
-
-                if (counter == 2) {
-                    break;
-                }
-
-                i++;
-            }
-
-        }
-
-        private void onClickPrintChain(object sender, EventArgs e) {
-            printHashes();
-        }
-
-        //simple means we just check for the first particle
-        private void onClickVerifyChain(object sender, EventArgs e) {
-
-            textBox1.Text = "";
-            verifyChain();
-
-        }
-
-        private bool verifyChain() {
-
-            int i = 1;
-            int difficulty = Convert.ToInt32(textBox7.Text);
-
-            while (File.Exists(i + ".blk")) {
-
-                Block b = Utility.loadFile<Block>(i + "");
-                string hashOfBlock = Utility.ComputeHash(i + "");
-
-                string proofHash = Utility.getHashSha256(b.nonce + "" + Utility.ComputeHash((i-1) + ""));
-
-                if (!Utility.verifyHashDifficulty(proofHash, difficulty)) {
-                    addToLog("ERROR, NONCE WRONG");
-                    break;
-                }
-
-
-                if (File.Exists("P" + i + ".blk")) {
-                    //particle exists
-
-                    Particle p = Utility.loadFile<Particle>("P" + i);
-
-                    //block points to particle
-                    if (!Utility.ComputeHash("P" + i).Equals(b.hashOfParticle)) {
-                        break;
-                    }
-
-                    //particle points to block before
-                    if (!Utility.ComputeHash("" + (i - 1)).Equals(p.hashToBlock)) {
-                        break;
-                    }
-
-                } else if (File.Exists("L" + i + ".blk")) {
-
-                    Particle p = Utility.loadFile<Particle>("L" + i);
-
-                    //block points to particle
-                    if (!Utility.ComputeHash("L" + i).Equals(b.hashOfLightParticle)) {
-                        break;
-                    }
-
-                    //particle points to block before
-                    if (!Utility.ComputeHash("" + (i - 1)).Equals(p.hashToBlock)) {
-                        break;
-                    }
-
-                } else {
-                    break;
-                }
-                Console.WriteLine(i);
-                i++;
-            }
-
-            i--;
-
-            addToLog("VERIFIED UNTIL" + i);
-            latestBlock = i;
-
-            calculateCoinNumberOfAddress(minerAddress);
-
-            return true;
-        }
-
-        private void clearLog(object sender, EventArgs e) {
-            textBox1.Text = "";
-            textBox3.Text = "";
         }
 
         private void onMiningAddressChanged(object sender, EventArgs e) {
             minerAddress = textBox4.Text;
-        }
-
-        private void onClickCalculateCoins(object sender, EventArgs e) {
-            label3.Text = calculateCoinNumberOfAddress(minerAddress) + " Coins";
-        }
-
-        private int calculateCoinNumberOfAddress(string addresse) {
-
-            int coinCounter = 0;
-
-            addresse = addresse.Trim();
-
-            for (int i = 0; i <= latestBlock; i++) {
-
-                Block b = Utility.loadFile<Block>(i + "");
-
-                if (File.Exists("P" + i + ".blk")) {
-                    Particle p = Utility.loadFile<Particle>("P" + i);
-
-
-                    foreach (Transaction trans in p.allTransactions) {
-                        if (trans.receiver.Equals(addresse)) {
-                            coinCounter += trans.amount;
-                        }
-
-                        if (trans.owner.Equals(addresse)) {
-                            coinCounter -= trans.amount;
-                        }
-
-                    }
-                }
-
-                foreach (Block.Coin coin in b.allCoins) {
-                    if (coin.owner.Equals(addresse)) {
-                        coinCounter++;
-                    }
-                }
-            }
-
-            label3.Text = coinCounter + " Coins";
-
-            return coinCounter;
         }
 
         private void makeTransaction(object sender, EventArgs e) {
@@ -361,14 +208,14 @@ namespace IronChain {
             string hashFromLatestBlock = Utility.ComputeHash(latestBlock + "");
             int difficulty = Convert.ToInt32(textBox7.Text);
 
-            while (miningFlag ) {
+            while (miningFlag) {
 
                 string hash = Utility.getHashSha256(i + "" + hashFromLatestBlock);
 
 
-                if (Utility.verifyHashDifficulty(hash,difficulty)) {
+                if (Utility.verifyHashDifficulty(hash, difficulty)) {
                     Console.WriteLine(latestBlock + " " + hashFromLatestBlock);
-                    mineNextBlock(i+"");
+                    mineNextBlock(i + "");
                     break;
                 }
 
@@ -380,6 +227,94 @@ namespace IronChain {
         private void onClickStopMining(object sender, EventArgs e) {
             miningFlag = false;
             addToLog("MINING STOPPED");
+        }
+
+        private void onClickAnalyseChain(object sender, EventArgs e) {
+            analyseChain(latestBlock);
+        }
+
+        private void analyseChain(int latestBlock) {
+            int difficulty = Convert.ToInt32(textBox7.Text);
+
+            int i = latestBlock+1;
+
+            while (File.Exists(i + ".blk")) {
+
+                Block b = Utility.loadFile<Block>(i + "");
+                string hashOfBlock = Utility.ComputeHash(i + "");
+
+                string proofHash = Utility.getHashSha256(b.nonce + "" + Utility.ComputeHash((i - 1) + ""));
+
+                //checking nonce
+                if (!Utility.verifyHashDifficulty(proofHash, difficulty)) {
+                    break;
+                }
+
+                if (File.Exists("P" + i + ".blk")) {
+                    //particle exists
+                    Particle p = Utility.loadFile<Particle>("P" + i);
+
+                    //block points to particle
+                    if (!Utility.ComputeHash("P" + i).Equals(b.hashOfParticle)) {
+                        break;
+                    }
+
+                    //particle points to block before
+                    if (!Utility.ComputeHash("" + (i - 1)).Equals(p.hashToBlock)) {
+                        break;
+                    }
+
+
+                    //after verifying the block, we now count the coins
+
+                    foreach (Transaction trans in p.allTransactions) {
+                        if (trans.receiver.Equals(minerAddress)) {
+                            coinCounter += trans.amount;
+                        }
+
+                        if (trans.owner.Equals(minerAddress)) {
+                            coinCounter -= trans.amount;
+                        }
+
+                    }
+
+                    foreach (Block.Coin coin in b.allCoins) {
+                        if (coin.owner.Equals(minerAddress)) {
+                            coinCounter++;
+                        }
+                    }
+
+                } else if (File.Exists("L" + i + ".blk")) {
+
+                    Particle p = Utility.loadFile<Particle>("L" + i);
+
+                    //block points to particle
+                    if (!Utility.ComputeHash("L" + i).Equals(b.hashOfLightParticle)) {
+                        break;
+                    }
+
+                    //particle points to block before
+                    if (!Utility.ComputeHash("" + (i - 1)).Equals(p.hashToBlock)) {
+                        break;
+                    }
+
+                } else {
+                    break;
+                }
+                Console.WriteLine(i);
+                i++;
+            }
+
+            i--;
+
+            label3.Text = coinCounter + " Coins";
+            addToLog("VERIFIED UNTIL" + i);
+            latestBlock = i;
+            label5.Text = "Latest Block" + latestBlock;
+        }
+
+        private void onClickAnalyseFromGenesis(object sender, EventArgs e) {
+            analyseChain(0);
         }
     }
 }
