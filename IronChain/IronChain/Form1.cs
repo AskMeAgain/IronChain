@@ -21,6 +21,8 @@ namespace IronChain {
         public int latestBlock = 0;
         int coinCounter = 0;
 
+        Account selectedAccount;
+
         public Form1() {
             InitializeComponent();
             instance = this;
@@ -40,6 +42,13 @@ namespace IronChain {
                     coinCounter++;
                 }
             }
+
+            Account thisAccount = new Account();
+            thisAccount.publicKey = "KelvinPetry";
+            comboBox1.Items.Add(thisAccount);
+            comboBox1.SelectedItem = thisAccount;
+
+            selectedAccount = thisAccount;
 
             analyseChain(1);
 
@@ -214,7 +223,7 @@ namespace IronChain {
 
 
                 if (Utility.verifyHashDifficulty(hash, difficulty)) {
-                    Console.WriteLine(latestBlock + " " + hashFromLatestBlock);
+                    Console.WriteLine(latestBlock + " BLOCK FOUND = true? " + hashFromLatestBlock);
                     mineNextBlock(i + "");
                     break;
                 }
@@ -233,16 +242,32 @@ namespace IronChain {
             analyseChain(latestBlock);
         }
 
-        private void analyseChain(int latestBlock) {
+        private void analyseChain(int num) {
             int difficulty = Convert.ToInt32(textBox7.Text);
 
-            int i = latestBlock+1;
+            int i = num+1;
+
+            Block b = Utility.loadFile<Block>("0");
+
+            selectedAccount = (Account)comboBox1.SelectedItem;
+
+            if (selectedAccount == null) {
+                return;
+            }
+
+            if (num == 0) {
+                coinCounter = 0;
+                foreach (Block.Coin coin in b.allCoins) {
+                    if (coin.owner.Equals(selectedAccount.publicKey)) {
+                        coinCounter++;
+                    }
+                }
+            }
 
             while (File.Exists(i + ".blk")) {
-
-                Block b = Utility.loadFile<Block>(i + "");
+                Console.WriteLine(i + " <<<<<<< i");
+                b = Utility.loadFile<Block>(i + "");
                 string hashOfBlock = Utility.ComputeHash(i + "");
-
                 string proofHash = Utility.getHashSha256(b.nonce + "" + Utility.ComputeHash((i - 1) + ""));
 
                 //checking nonce
@@ -267,22 +292,22 @@ namespace IronChain {
 
                     //after verifying the block, we now count the coins
 
-                    foreach (Transaction trans in p.allTransactions) {
-                        if (trans.receiver.Equals(minerAddress)) {
-                            coinCounter += trans.amount;
-                        }
-
-                        if (trans.owner.Equals(minerAddress)) {
-                            coinCounter -= trans.amount;
-                        }
-
-                    }
-
                     foreach (Block.Coin coin in b.allCoins) {
-                        if (coin.owner.Equals(minerAddress)) {
+                        if (coin.owner.Equals(selectedAccount.publicKey)) {
                             coinCounter++;
                         }
                     }
+
+                    foreach (Transaction trans in p.allTransactions) {
+                        if (trans.receiver.Equals(selectedAccount.publicKey)) {
+                            coinCounter += trans.amount;
+                        }
+
+                        if (trans.owner.Equals(selectedAccount.publicKey)) {
+                            coinCounter -= trans.amount;
+                        }
+
+                    }             
 
                 } else if (File.Exists("L" + i + ".blk")) {
 
@@ -308,12 +333,25 @@ namespace IronChain {
             i--;
 
             label3.Text = coinCounter + " Coins";
+
             addToLog("VERIFIED UNTIL" + i);
             latestBlock = i;
             label5.Text = "Latest Block" + latestBlock;
         }
 
         private void onClickAnalyseFromGenesis(object sender, EventArgs e) {
+            analyseChain(0);
+        }
+
+        private void onAccountChanged(object sender, EventArgs e) {
+            analyseChain(0);
+        }
+
+        private void onClickAddAccount(object sender, EventArgs e) {
+            Account a = new Account();
+            a.publicKey = textBox3.Text.Trim();
+            comboBox1.Items.Add(a);
+
             analyseChain(0);
         }
     }

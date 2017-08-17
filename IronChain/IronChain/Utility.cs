@@ -93,7 +93,7 @@ namespace IronChain {
 
             }
 
-
+            Form1.instance.addToLog("FOUND" + hash);
             return true;
         }
 
