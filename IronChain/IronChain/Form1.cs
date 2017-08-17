@@ -21,12 +21,13 @@ namespace IronChain {
         public int latestBlock = 0;
         int coinCounter = 0;
 
-        Account selectedAccount;
+        public Dictionary<String, Account> accountList;
 
         public Form1() {
             InitializeComponent();
             instance = this;
             TransactionPool = new List<Transaction>();
+            accountList = new Dictionary<string, Account>();
 
             textBox4.Text = "KelvinPetry";
             minerAddress = textBox4.Text;
@@ -43,14 +44,14 @@ namespace IronChain {
                 }
             }
 
-            Account thisAccount = new Account();
-            thisAccount.publicKey = "KelvinPetry";
+
+            //create account before
+            Account thisAccount = new Account("KelvinPetry", 0);
+            accountList.Add(thisAccount.publicKey, thisAccount);
             comboBox1.Items.Add(thisAccount);
             comboBox1.SelectedItem = thisAccount;
 
-            selectedAccount = thisAccount;
-
-            analyseChain(1);
+            analyseChain(comboBox1.SelectedItem.ToString());
 
         }
 
@@ -183,8 +184,8 @@ namespace IronChain {
             addToLog("");
 
             addToLog("MINER CREATED BLOCK");
-
-            analyseChain(latestBlock);
+            Console.WriteLine(comboBox1.SelectedIndex + " <<<< ");
+            analyseChain(comboBox1.SelectedItem.ToString());
 
         }
 
@@ -223,7 +224,7 @@ namespace IronChain {
 
 
                 if (Utility.verifyHashDifficulty(hash, difficulty)) {
-                    Console.WriteLine(latestBlock + " BLOCK FOUND = true? " + hashFromLatestBlock);
+                    Console.WriteLine(latestBlock + " HASH FOUND " + hashFromLatestBlock);
                     mineNextBlock(i + "");
                     break;
                 }
@@ -239,27 +240,22 @@ namespace IronChain {
         }
 
         private void onClickAnalyseChain(object sender, EventArgs e) {
-            analyseChain(latestBlock);
+            analyseChain(comboBox1.SelectedItem.ToString());
         }
 
-        private void analyseChain(int num) {
+        private void analyseChain(string accountIndex) {
+
+            Console.WriteLine(accountIndex + "<<< index");
+
             int difficulty = Convert.ToInt32(textBox7.Text);
 
-            int i = num+1;
-
             Block b = Utility.loadFile<Block>("0");
+            int i = (accountList[accountIndex].analysedBlock) + 1;
 
-            selectedAccount = (Account)comboBox1.SelectedItem;
-
-            if (selectedAccount == null) {
-                return;
-            }
-
-            if (num == 0) {
-                coinCounter = 0;
+            if (i == 1) {
                 foreach (Block.Coin coin in b.allCoins) {
-                    if (coin.owner.Equals(selectedAccount.publicKey)) {
-                        coinCounter++;
+                    if (coin.owner.Equals(accountList[accountIndex].publicKey)) {
+                        accountList[accountIndex].coinCounter++;
                     }
                 }
             }
@@ -293,18 +289,18 @@ namespace IronChain {
                     //after verifying the block, we now count the coins
 
                     foreach (Block.Coin coin in b.allCoins) {
-                        if (coin.owner.Equals(selectedAccount.publicKey)) {
-                            coinCounter++;
+                        if (coin.owner.Equals(accountList[accountIndex].publicKey)) {
+                            accountList[accountIndex].coinCounter++;
                         }
                     }
 
                     foreach (Transaction trans in p.allTransactions) {
-                        if (trans.receiver.Equals(selectedAccount.publicKey)) {
-                            coinCounter += trans.amount;
+                        if (trans.receiver.Equals(accountList[accountIndex].publicKey)) {
+                            accountList[accountIndex].coinCounter += trans.amount;
                         }
 
-                        if (trans.owner.Equals(selectedAccount.publicKey)) {
-                            coinCounter -= trans.amount;
+                        if (trans.owner.Equals(accountList[accountIndex].publicKey)) {
+                            accountList[accountIndex].coinCounter -= trans.amount;
                         }
 
                     }             
@@ -332,27 +328,26 @@ namespace IronChain {
 
             i--;
 
-            label3.Text = coinCounter + " Coins";
+            label3.Text = accountList[accountIndex].coinCounter + " Coins";
 
-            addToLog("VERIFIED UNTIL" + i);
+            accountList[accountIndex].analysedBlock = i;
+
             latestBlock = i;
             label5.Text = "Latest Block" + latestBlock;
-        }
 
-        private void onClickAnalyseFromGenesis(object sender, EventArgs e) {
-            analyseChain(0);
         }
 
         private void onAccountChanged(object sender, EventArgs e) {
-            analyseChain(0);
+            analyseChain(comboBox1.SelectedItem.ToString());
         }
 
         private void onClickAddAccount(object sender, EventArgs e) {
-            Account a = new Account();
-            a.publicKey = textBox3.Text.Trim();
+            Account a = new Account(textBox3.Text.Trim(),0);
+            accountList.Add(a.publicKey, a);
             comboBox1.Items.Add(a);
-
-            analyseChain(0);
+            comboBox1.SelectedItem = a;
+            analyseChain(comboBox1.SelectedItem.ToString());
         }
+
     }
 }
