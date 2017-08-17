@@ -4,7 +4,7 @@ A blockchain made from ground up to as a personal challenge. In the end it shoul
 
 After getting the main features done, iam gonna try to improve the IronChain with modern features, such as sharding, segwit etc.
 
-#### Basic Goals
+### Basic Goals
 
 Linking Blocks via hashes (done)    
 Peer to Peer system  
