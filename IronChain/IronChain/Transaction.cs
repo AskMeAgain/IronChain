@@ -16,14 +16,17 @@ namespace IronChain {
         public string proofOfOwnership;
         public int amount;
 
-        public Transaction(Random r, string name) {
+        public Transaction(string name, int amou, string receiv) {
+
+            Random r = new Random();
 
             id = r.Next(0,100000);
+
             coinName = ""+r.Next(3, 100);
             owner = name;
-            receiver = "" + r.Next(3, 100);
+            receiver = receiv;
             proofOfOwnership = "" + r.Next(3, 100);
-            amount = 3;
+            amount = amou;
         }
 
         public Transaction() {
@@ -31,7 +34,7 @@ namespace IronChain {
         }
 
         public string toString() {
-            return "TransactionID:" + id + ", send " + coinName + " from " + owner + " to " + receiver;
+            return "Transaction" + id + ": Sending " + amount + " from " + owner + " to " + receiver; 
         }
 
     }

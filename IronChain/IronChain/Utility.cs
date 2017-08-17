@@ -53,12 +53,9 @@ namespace IronChain {
                     xmlDocument.Load(stream);
                     xmlDocument.Save(fileName+ ".blk");
                     stream.Close();
-                    Form1.instance.addToLog("Storing \"" + fileName +  "\" succesful");
                 }
             } catch (Exception ex) {
                 Console.WriteLine(ex.ToString());
-                Form1.instance.addToLog("Storing \"" + fileName + "\" NOT succesful");
-
             }
         }
 
@@ -93,7 +90,6 @@ namespace IronChain {
 
             }
 
-            Form1.instance.addToLog("FOUND" + hash);
             return true;
         }
 

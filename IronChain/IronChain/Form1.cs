@@ -14,12 +14,13 @@ namespace IronChain {
     public partial class Form1 : Form {
 
         public static Form1 instance;
-        public static List<Transaction> TransactionPool;
+
+        public List<Transaction> TransactionPool;
+
         public string minerAddress;
         bool miningFlag = true;
         Dictionary<string, int> transHistory;
         public int latestBlock = 0;
-        int coinCounter = 0;
 
         public Dictionary<String, Account> accountList;
 
@@ -29,6 +30,8 @@ namespace IronChain {
             TransactionPool = new List<Transaction>();
             accountList = new Dictionary<string, Account>();
 
+            toolStripComboBox1.SelectedIndex = 0;
+
             textBox4.Text = "KelvinPetry";
             minerAddress = textBox4.Text;
 
@@ -36,22 +39,13 @@ namespace IronChain {
                 createGenesisBlock();
             }
 
-            Block b = Utility.loadFile<Block>("0");
-
-            foreach (Block.Coin coin in b.allCoins) {
-                if (coin.owner.Equals(minerAddress)) {
-                    coinCounter++;
-                }
-            }
-
-
             //create account before
             Account thisAccount = new Account("KelvinPetry", 0);
             accountList.Add(thisAccount.publicKey, thisAccount);
             comboBox1.Items.Add(thisAccount);
             comboBox1.SelectedItem = thisAccount;
 
-            analyseChain(comboBox1.SelectedItem.ToString());
+            //analyseChain(comboBox1.SelectedItem.ToString());
 
         }
 
@@ -64,38 +58,9 @@ namespace IronChain {
             genesis.hashOfParticle = "genesis";
             genesis.giveSomeCoins(minerAddress, 100);
             Utility.storeFile(genesis, genesis.name + "");
-            addToLog("Genesis Block created");
         }
 
-        public void addToLog(string s) {
-
-            String text = textBox1.Text;
-            text += s + Environment.NewLine;
-            textBox1.Text = @text;
-
-        }
-
-        public void addToLog2(string s) {
-
-            String text = textBox3.Text;
-            text += s + Environment.NewLine;
-            textBox3.Text = @text;
-
-        }
-
-        private void onClickCreateTransactions(object sender, EventArgs e) {
-            Random r = new Random();
-            for (int i = 0; i < 10; i++) {
-                Transaction t = new Transaction(r, minerAddress);
-                Console.WriteLine(t.toString());
-                TransactionPool.Add(t);
-            }
-            updateTransactionPoolWindow();
-            addToLog("10 Transactions created");
-
-        }
-
-        private void updateTransactionPoolWindow() {
+        public void updateTransactionPoolWindow() {
 
             textBox2.Text = "";
 
@@ -181,9 +146,6 @@ namespace IronChain {
             //Store Block
             Utility.storeFile(nextBlock, (latestBlock + 1) + "");
 
-            addToLog("");
-
-            addToLog("MINER CREATED BLOCK");
             Console.WriteLine(comboBox1.SelectedIndex + " <<<< ");
             analyseChain(comboBox1.SelectedItem.ToString());
 
@@ -195,28 +157,17 @@ namespace IronChain {
 
         private void makeTransaction(object sender, EventArgs e) {
 
-            string receiver = textBox5.Text;
-            int amount = Convert.ToInt32(textBox6.Text);
-
-            Transaction t = new Transaction();
-            t.owner = minerAddress;
-            t.receiver = receiver;
-            t.amount = amount;
-            //TODO SIGN IT;
-
-            TransactionPool.Add(t);
-            updateTransactionPoolWindow();
+            
 
         }
 
         private void onClickStartMining(object sender, EventArgs e) {
 
-            addToLog("MINING STARTED");
             miningFlag = true;
 
             int i = 0;
             string hashFromLatestBlock = Utility.ComputeHash(latestBlock + "");
-            int difficulty = Convert.ToInt32(textBox7.Text);
+            int difficulty = Convert.ToInt32(toolStripComboBox1.SelectedItem);
 
             while (miningFlag) {
 
@@ -236,29 +187,29 @@ namespace IronChain {
 
         private void onClickStopMining(object sender, EventArgs e) {
             miningFlag = false;
-            addToLog("MINING STOPPED");
         }
 
         private void onClickAnalyseChain(object sender, EventArgs e) {
             analyseChain(comboBox1.SelectedItem.ToString());
         }
 
-        private void analyseChain(string accountIndex) {
+        public void analyseChain(string accountIndex) {
 
-            Console.WriteLine(accountIndex + "<<< index");
-
-            int difficulty = Convert.ToInt32(textBox7.Text);
+            int difficulty = Convert.ToInt32(toolStripComboBox1.SelectedItem);
 
             Block b = Utility.loadFile<Block>("0");
             int i = (accountList[accountIndex].analysedBlock) + 1;
 
             if (i == 1) {
+                accountList[accountIndex].coinCounter = 0;
                 foreach (Block.Coin coin in b.allCoins) {
                     if (coin.owner.Equals(accountList[accountIndex].publicKey)) {
                         accountList[accountIndex].coinCounter++;
                     }
                 }
             }
+
+            Console.WriteLine(accountList[accountIndex].coinCounter + " << count" + accountList[accountIndex].analysedBlock);
 
             while (File.Exists(i + ".blk")) {
                 Console.WriteLine(i + " <<<<<<< i");
@@ -328,7 +279,7 @@ namespace IronChain {
 
             i--;
 
-            label3.Text = accountList[accountIndex].coinCounter + " Coins";
+            label3.Text = accountList[accountIndex].coinCounter + " Iron";
 
             accountList[accountIndex].analysedBlock = i;
 
@@ -338,15 +289,19 @@ namespace IronChain {
         }
 
         private void onAccountChanged(object sender, EventArgs e) {
-            analyseChain(comboBox1.SelectedItem.ToString());
+            analyseChain(comboBox1.Text);
         }
 
         private void onClickAddAccount(object sender, EventArgs e) {
-            Account a = new Account(textBox3.Text.Trim(),0);
-            accountList.Add(a.publicKey, a);
-            comboBox1.Items.Add(a);
-            comboBox1.SelectedItem = a;
-            analyseChain(comboBox1.SelectedItem.ToString());
+
+            Form f2 = new addAccount();
+            f2.ShowDialog();
+
+        }
+
+        private void onClickSendIron(object sender, EventArgs e) {
+            Form f2 = new sendIron();
+            f2.ShowDialog();
         }
 
     }
