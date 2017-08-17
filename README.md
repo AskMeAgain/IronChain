@@ -9,10 +9,10 @@ After getting the main features done, iam gonna try to improve the IronChain wit
 Linking Blocks via hashes (done)    
 Peer to Peer system  
 Proof-Of-Work mining (done)   
-Light mode  (90%)
-RSA verification
-Merkle tree transaction verification  
-10tx/s  
-All-in-One Client/Miner/Wallet software
+Light mode  (90%)  
+RSA verification  
+Merkle tree transaction verification   
+10tx/s   
+All-in-One Client/Miner/Wallet software  
 
 
