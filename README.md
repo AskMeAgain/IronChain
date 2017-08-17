@@ -1,22 +1,16 @@
 # IronChain
 
-A blockchain made from ground up to see if i can get a working blockchain done.
+A blockchain made from ground up to as a personal challenge.
 
 
+#### Goals
 
+Linking Blocks via hashes
+Peer to Peer system
+Proof-Of-Work mining
+Light mode
+Merkle tree transaction verification
+10tx/s
 
-
-##### How does it work?
-
-Each transaction is stored inside a transaction pool. Once a miner finds the next block, we collect all transactions and store them inside a file (i called them particles). This file also stores the hash to the block before. The new mined block will store the hash of the particle. This construct makes it impossible to change the data inbetween. 
-
-Right now you can still change the latest block, this will be fixed in a later version.
-
-##### Features
-
-Lightmode  
-Send your transactions  
-Mine blocks  
-Receive coins  
 
 
