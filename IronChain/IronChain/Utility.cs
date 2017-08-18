@@ -19,7 +19,7 @@ namespace IronChain {
 
             try {
                 XmlDocument xmlDocument = new XmlDocument();
-                xmlDocument.Load(fileName+".blk");
+                xmlDocument.Load(fileName);
                 
                 string xmlString = xmlDocument.OuterXml;
 
@@ -51,7 +51,7 @@ namespace IronChain {
                     serializer.Serialize(stream, serializableObject);
                     stream.Position = 0;
                     xmlDocument.Load(stream);
-                    xmlDocument.Save(fileName+ ".blk");
+                    xmlDocument.Save(fileName);
                     stream.Close();
                 }
             } catch (Exception ex) {
@@ -78,7 +78,6 @@ namespace IronChain {
             return hashString;
         }
 
-
         public static bool verifyHashDifficulty(string hash, int difficulty) {
 
             char[] charArr = hash.ToCharArray();
@@ -92,6 +91,23 @@ namespace IronChain {
 
             return true;
         }
+
+        public static string[] generateKeyFiles() {
+
+            string[] s = new string[] { "private key", " public key" };
+
+            Form1.instance.label1.Text = "done";
+            return s;
+        }
+
+        public static string decryptString() {
+            return "yes";
+        }
+
+        public static void encryptString(string s) {
+
+        }
+
 
     }
 }

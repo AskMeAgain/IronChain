@@ -32,24 +32,39 @@ namespace IronChain {
 
             toolStripComboBox1.SelectedIndex = 0;
 
-            
+
 
             if (!File.Exists("0.blk")) {
                 createGenesisBlock();
             }
 
             //create account before
-            Account thisAccount = new Account("KelvinPetry", 0);
-            accountList.Add(thisAccount.publicKey, thisAccount);
 
-            comboBox1.Items.Add(thisAccount);
-            comboBox1.SelectedItem = thisAccount;
+            string[] lul = Directory.GetFiles(Environment.CurrentDirectory, "*.acc");
+            foreach (string s in lul) {
+                string[] splitted = s.Split('\\');
+                string nameOfFile = splitted[splitted.Length - 1];
+                Account a = Utility.loadFile<Account>(nameOfFile);
+                
+                if(File.Exists(nameOfFile))
+                Console.WriteLine("TEST" + nameOfFile);
 
-            comboBox2.Items.Add(thisAccount);
-            comboBox2.SelectedItem = thisAccount;
+                accountList.Add(a.name, a);
 
-            //analyseChain(comboBox1.SelectedItem.ToString());
 
+                comboBox1.Items.Add(a);
+                comboBox1.SelectedItem = a;
+
+                comboBox2.Items.Add(a);
+                comboBox2.SelectedItem = a;
+
+            }
+
+
+        }
+
+        private static void updateAccount(Account thisAccount) {
+            Utility.storeFile(thisAccount, thisAccount.name + ".acc");
         }
 
         private void onClickCreateGenesisBlock(object sender, EventArgs e) {
@@ -60,7 +75,7 @@ namespace IronChain {
             Block genesis = new Block(0);
             genesis.hashOfParticle = "genesis";
             genesis.giveSomeCoins(minerAddress, 100);
-            Utility.storeFile(genesis, genesis.name + "");
+            Utility.storeFile(genesis, genesis.name + ".blk");
         }
 
         public void updateTransactionPoolWindow() {
@@ -96,7 +111,7 @@ namespace IronChain {
 
             particleName = "P" + (latestBlock + 1);
 
-            Utility.storeFile(p, particleName);
+            Utility.storeFile(p, particleName + ".blk");
 
             updateTransactionPoolWindow();
 
@@ -105,7 +120,7 @@ namespace IronChain {
             Particle light = new Particle();
             string lightName = "L" + (latestBlock + 1);
             light.hashToBlock = Utility.ComputeHash("" + latestBlock);
-            Utility.storeFile(light, lightName);
+            Utility.storeFile(light, lightName + ".blk");
 
         }
 
@@ -136,7 +151,7 @@ namespace IronChain {
             Block nextBlock = new Block();
             createParticles();
 
-            Particle p = Utility.loadFile<Particle>("P" + (latestBlock + 1));
+            Particle p = Utility.loadFile<Particle>("P" + (latestBlock + 1)+ ".blk");
 
             //GET HASHES NOW INTO BLOCK
             nextBlock.addHash(latestBlock);
@@ -147,7 +162,7 @@ namespace IronChain {
             nextBlock.createCoins(minerAddress);
 
             //Store Block
-            Utility.storeFile(nextBlock, (latestBlock + 1) + "");
+            Utility.storeFile(nextBlock, (latestBlock + 1) + ".blk");
 
             Console.WriteLine(comboBox1.SelectedIndex + " <<<< ");
             analyseChain(comboBox1.SelectedItem.ToString());
@@ -156,7 +171,7 @@ namespace IronChain {
 
         private void makeTransaction(object sender, EventArgs e) {
 
-            
+
 
         }
 
@@ -196,7 +211,7 @@ namespace IronChain {
 
             int difficulty = Convert.ToInt32(toolStripComboBox1.SelectedItem);
 
-            Block b = Utility.loadFile<Block>("0");
+            Block b = Utility.loadFile<Block>("0.blk");
             int i = (accountList[accountIndex].analysedBlock) + 1;
 
             if (i == 1) {
@@ -213,7 +228,7 @@ namespace IronChain {
 
             while (File.Exists(i + ".blk")) {
                 Console.WriteLine(i + " <<<<<<< i");
-                b = Utility.loadFile<Block>(i + "");
+                b = Utility.loadFile<Block>(i + ".blk");
                 string hashOfBlock = Utility.ComputeHash(i + "");
                 string proofHash = Utility.getHashSha256(b.nonce + "" + Utility.ComputeHash((i - 1) + ""));
 
@@ -224,7 +239,7 @@ namespace IronChain {
 
                 if (File.Exists("P" + i + ".blk")) {
                     //particle exists
-                    Particle p = Utility.loadFile<Particle>("P" + i);
+                    Particle p = Utility.loadFile<Particle>("P" + i + ".blk");
 
                     //block points to particle
                     if (!Utility.ComputeHash("P" + i).Equals(b.hashOfParticle)) {
@@ -254,11 +269,11 @@ namespace IronChain {
                             accountList[accountIndex].coinCounter -= trans.amount;
                         }
 
-                    }             
+                    }
 
                 } else if (File.Exists("L" + i + ".blk")) {
 
-                    Particle p = Utility.loadFile<Particle>("L" + i);
+                    Particle p = Utility.loadFile<Particle>("L" + i + ".blk");
 
                     //block points to particle
                     if (!Utility.ComputeHash("L" + i).Equals(b.hashOfLightParticle)) {
@@ -285,6 +300,7 @@ namespace IronChain {
 
             latestBlock = i;
             label5.Text = "Block " + latestBlock;
+            updateAccount(accountList[accountIndex]);
 
         }
 
@@ -293,10 +309,8 @@ namespace IronChain {
         }
 
         private void onClickAddAccount(object sender, EventArgs e) {
-
             Form f2 = new addAccount();
             f2.ShowDialog();
-
         }
 
         private void onClickSendIron(object sender, EventArgs e) {
@@ -314,6 +328,10 @@ namespace IronChain {
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e) {
+            Utility.generateKeyFiles();
         }
     }
 }

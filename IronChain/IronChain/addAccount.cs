@@ -16,8 +16,8 @@ namespace IronChain {
 
         private void button1_Click(object sender, EventArgs e) {
             Account a = new Account(textBox1.Text.Trim(), 0);
-            Console.WriteLine(a.publicKey);
-            Form1.instance.accountList.Add(a.publicKey, a);
+
+            Form1.instance.accountList.Add(a.name, a);
 
             Form1.instance.comboBox1.Items.Add(a);
             Form1.instance.comboBox1.SelectedItem = a;
@@ -25,6 +25,10 @@ namespace IronChain {
 
             Form1.instance.comboBox2.Items.Add(a);
             Form1.instance.comboBox2.SelectedItem = a;
+
+            a.addKeys(Utility.generateKeyFiles());
+
+            Utility.storeFile(a, a.name + ".acc");
 
             this.Close();
 
