@@ -30,41 +30,52 @@ namespace IronChain {
             TransactionPool = new List<Transaction>();
             accountList = new Dictionary<string, Account>();
 
+            //select difficulty WORKAROUND
             toolStripComboBox1.SelectedIndex = 0;
-
-
 
             if (!File.Exists("0.blk")) {
                 createGenesisBlock();
             }
 
-            //create account before
-
-            string[] lul = Directory.GetFiles(Environment.CurrentDirectory, "*.acc");
-            foreach (string s in lul) {
-                string[] splitted = s.Split('\\');
-                string nameOfFile = splitted[splitted.Length - 1];
-                Account a = Utility.loadFile<Account>(nameOfFile);
-                
-                if(File.Exists(nameOfFile))
-                Console.WriteLine("TEST" + nameOfFile);
-
-                accountList.Add(a.name, a);
-
-
-                comboBox1.Items.Add(a);
-                comboBox1.SelectedItem = a;
-
-                comboBox2.Items.Add(a);
-                comboBox2.SelectedItem = a;
-
-            }
-
+            //update account list
+            updateAccountList();
 
         }
 
-        private static void updateAccount(Account thisAccount) {
-            Utility.storeFile(thisAccount, thisAccount.name + ".acc");
+        public void updateAccountList() {
+
+            Account a = new Account("Add a new Account", 0);
+
+            string[] allAccountNames = Directory.GetFiles(Environment.CurrentDirectory, "*.acc");
+
+            accountList = new Dictionary<string, Account>();
+            comboBox1.Items.Clear();
+
+            foreach (string s in allAccountNames) {
+
+                string[] splitted = s.Split('\\');
+                string nameOfFile = splitted[splitted.Length - 1];
+                a = Utility.loadFile<Account>(nameOfFile);
+
+                string[] onlyName = nameOfFile.Split('.');
+
+                accountList.Add(onlyName[0], a);
+
+
+            }
+
+            foreach (Account acc in accountList.Values) {
+
+                comboBox1.Items.Add(acc);
+                comboBox2.Items.Add(acc);
+
+            }
+
+            //select later
+            /*comboBox1.SelectedItem = a;
+            comboBox2.SelectedItem = a;
+            */
+
         }
 
         private void onClickCreateGenesisBlock(object sender, EventArgs e) {
@@ -74,7 +85,7 @@ namespace IronChain {
         private void createGenesisBlock() {
             Block genesis = new Block(0);
             genesis.hashOfParticle = "genesis";
-            genesis.giveSomeCoins(minerAddress, 100);
+            genesis.giveSomeCoins("KelvinPetry", 100);
             Utility.storeFile(genesis, genesis.name + ".blk");
         }
 
@@ -151,7 +162,7 @@ namespace IronChain {
             Block nextBlock = new Block();
             createParticles();
 
-            Particle p = Utility.loadFile<Particle>("P" + (latestBlock + 1)+ ".blk");
+            Particle p = Utility.loadFile<Particle>("P" + (latestBlock + 1) + ".blk");
 
             //GET HASHES NOW INTO BLOCK
             nextBlock.addHash(latestBlock);
@@ -165,13 +176,7 @@ namespace IronChain {
             Utility.storeFile(nextBlock, (latestBlock + 1) + ".blk");
 
             Console.WriteLine(comboBox1.SelectedIndex + " <<<< ");
-            analyseChain(comboBox1.SelectedItem.ToString());
-
-        }
-
-        private void makeTransaction(object sender, EventArgs e) {
-
-
+            analyseChain();
 
         }
 
@@ -204,27 +209,26 @@ namespace IronChain {
         }
 
         private void onClickAnalyseChain(object sender, EventArgs e) {
-            analyseChain(comboBox1.SelectedItem.ToString());
+            analyseChain();
         }
 
-        public void analyseChain(string accountIndex) {
+        public void analyseChain() {
 
             int difficulty = Convert.ToInt32(toolStripComboBox1.SelectedItem);
 
             Block b = Utility.loadFile<Block>("0.blk");
-            int i = (accountList[accountIndex].analysedBlock) + 1;
 
-            if (i == 1) {
-                accountList[accountIndex].coinCounter = 0;
+            //get genesis block too
+            foreach (Account acc in accountList.Values) {
+                acc.coinCounter = 0;
                 foreach (Block.Coin coin in b.allCoins) {
-
-                    if (accountList[accountIndex].publicKey.Equals(coin.owner)) {
-                        accountList[accountIndex].coinCounter++;
+                    if (acc.name.Equals(coin.owner)) {
+                        acc.coinCounter += coin.amount;
                     }
                 }
             }
 
-            Console.WriteLine(accountList[accountIndex].coinCounter + " << count" + accountList[accountIndex].analysedBlock);
+            int i = 1;
 
             while (File.Exists(i + ".blk")) {
                 Console.WriteLine(i + " <<<<<<< i");
@@ -253,22 +257,25 @@ namespace IronChain {
 
 
                     //after verifying the block, we now count the coins
-
                     foreach (Block.Coin coin in b.allCoins) {
-                        if (coin.owner.Equals(accountList[accountIndex].name)) {
-                            accountList[accountIndex].coinCounter++;
+                        foreach (Account acc in accountList.Values) {
+                            if (coin.owner.Equals(acc.name)) {
+                                acc.coinCounter += coin.amount;
+                            }
                         }
                     }
 
                     foreach (Transaction trans in p.allTransactions) {
-                        if (trans.receiver.Equals(accountList[accountIndex].name)) {
-                            accountList[accountIndex].coinCounter += trans.amount;
-                        }
+                        foreach (Account acc in accountList.Values) {
 
-                        if (trans.owner.Equals(accountList[accountIndex].name)) {
-                            accountList[accountIndex].coinCounter -= trans.amount;
-                        }
+                            if (trans.receiver.Equals(acc.name)) {
+                                acc.coinCounter += trans.amount;
+                            }
 
+                            if (trans.owner.Equals(acc.name)) {
+                                acc.coinCounter -= trans.amount;
+                            }
+                        }
                     }
 
                 } else if (File.Exists("L" + i + ".blk")) {
@@ -294,18 +301,16 @@ namespace IronChain {
 
             i--;
 
-            label3.Text = accountList[accountIndex].coinCounter + " Iron";
 
-            accountList[accountIndex].analysedBlock = i;
+            label3.Text = accountList[comboBox1.Text].coinCounter + " Iron";
 
             latestBlock = i;
             label5.Text = "Block " + latestBlock;
-            updateAccount(accountList[accountIndex]);
 
         }
 
         private void onAccountChanged(object sender, EventArgs e) {
-            analyseChain(comboBox1.Text);
+            analyseChain();
         }
 
         private void onClickAddAccount(object sender, EventArgs e) {
@@ -322,16 +327,28 @@ namespace IronChain {
             minerAddress = comboBox2.Text.Trim();
         }
 
-        private void label5_Click(object sender, EventArgs e) {
-
-        }
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) {
-
-        }
-
         private void button1_Click(object sender, EventArgs e) {
             Utility.generateKeyFiles();
+        }
+
+        private void onClickDeleteIronChain(object sender, EventArgs e) {
+
+            string[] allFiles = Directory.GetFiles(Environment.CurrentDirectory, "*.blk");
+            foreach (string s in allFiles) {
+                string[] splitted = s.Split('\\');
+                string nameOfFile = splitted[splitted.Length - 1];
+                File.Delete(nameOfFile);
+            }
+        }
+
+        private void onClickDeleteAllAccounts(object sender, EventArgs e) {
+
+            string[] allFiles = Directory.GetFiles(Environment.CurrentDirectory, "*.acc");
+            foreach (string s in allFiles) {
+                string[] splitted = s.Split('\\');
+                string nameOfFile = splitted[splitted.Length - 1];
+                File.Delete(nameOfFile);
+            }
         }
     }
 }

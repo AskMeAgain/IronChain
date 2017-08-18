@@ -11,11 +11,11 @@ namespace IronChain {
         [Serializable]
         public struct Coin {
             public string owner { get; set; }
-            public string name { get; set; }
+            public int amount { get; set; }
 
-            public Coin(string n, string o) {
-                owner = o;
-                name = n;
+            public Coin(string owner, int amount) {
+                this.owner = owner;
+                this.amount = amount;
             }
         };
 
@@ -48,24 +48,11 @@ namespace IronChain {
         }
 
         public void giveSomeCoins(string minerAddress, int num) {
-
-            for (int i = 0; i < num; i++) {
-                string name = "Coin_" + (Form1.instance.latestBlock + 1) + "_" + i;
-                allCoins.Add(new Coin(name, minerAddress));
-            }
+                allCoins.Add(new Coin(minerAddress,num));
         }
 
         public void createCoins(string minerAddress) {
-
-            for (int i = 0; i < numberOfTransactions; i++) {
-                string name = "Coin_" + (Form1.instance.latestBlock+1)+"_"+i;
-                allCoins.Add(new Coin(name,minerAddress));
-            }
-
-            allCoins.Add(new Coin("Bonus1", minerAddress));
-            allCoins.Add(new Coin("Bonus2", minerAddress));
-            allCoins.Add(new Coin("Bonus3", minerAddress));
-
+                allCoins.Add(new Coin(minerAddress, numberOfTransactions+3));
         }
 
     }

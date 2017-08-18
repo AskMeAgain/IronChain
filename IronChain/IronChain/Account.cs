@@ -26,13 +26,9 @@ namespace IronChain {
         }
 
         public void addKeys(string[] s) {
-
             privateKey = s[0];
             publicKey = s[1];
-
         }
-
-
 
         public override string ToString() {
             return name;
