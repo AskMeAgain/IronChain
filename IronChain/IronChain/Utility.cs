@@ -94,6 +94,22 @@ namespace IronChain {
 
         public static string[] generateKeyFiles() {
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             string[] s = new string[] { "private key", " public key" };
 
             Form1.instance.label1.Text = "done";
