@@ -255,17 +255,17 @@ namespace IronChain {
                     //after verifying the block, we now count the coins
 
                     foreach (Block.Coin coin in b.allCoins) {
-                        if (coin.owner.Equals(accountList[accountIndex].publicKey)) {
+                        if (coin.owner.Equals(accountList[accountIndex].name)) {
                             accountList[accountIndex].coinCounter++;
                         }
                     }
 
                     foreach (Transaction trans in p.allTransactions) {
-                        if (trans.receiver.Equals(accountList[accountIndex].publicKey)) {
+                        if (trans.receiver.Equals(accountList[accountIndex].name)) {
                             accountList[accountIndex].coinCounter += trans.amount;
                         }
 
-                        if (trans.owner.Equals(accountList[accountIndex].publicKey)) {
+                        if (trans.owner.Equals(accountList[accountIndex].name)) {
                             accountList[accountIndex].coinCounter -= trans.amount;
                         }
 

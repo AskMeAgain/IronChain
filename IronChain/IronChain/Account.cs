@@ -35,7 +35,7 @@ namespace IronChain {
 
 
         public override string ToString() {
-            return publicKey;
+            return name;
         }
     }
 }
