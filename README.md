@@ -14,5 +14,6 @@ RSA verification
 Merkle tree transaction verification   
 10tx/s   
 All-in-One Client/Miner/Wallet software  
+Account system  (done)  
 
 
