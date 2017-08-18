@@ -49,7 +49,6 @@ namespace IronChain {
             string[] allAccountNames = Directory.GetFiles(Environment.CurrentDirectory, "*.acc");
 
             accountList = new Dictionary<string, Account>();
-            comboBox1.Items.Clear();
 
             foreach (string s in allAccountNames) {
 
@@ -61,8 +60,10 @@ namespace IronChain {
 
                 accountList.Add(onlyName[0], a);
 
-
             }
+
+            comboBox1.Items.Clear();
+            comboBox2.Items.Clear();
 
             foreach (Account acc in accountList.Values) {
 
@@ -72,9 +73,9 @@ namespace IronChain {
             }
 
             //select later
-            /*comboBox1.SelectedItem = a;
+            comboBox1.SelectedItem = a;
             comboBox2.SelectedItem = a;
-            */
+
 
         }
 
@@ -337,8 +338,12 @@ namespace IronChain {
             foreach (string s in allFiles) {
                 string[] splitted = s.Split('\\');
                 string nameOfFile = splitted[splitted.Length - 1];
-                File.Delete(nameOfFile);
+
+                if (!nameOfFile.Equals("0.blk"))
+                    File.Delete(nameOfFile);
             }
+
+            analyseChain();
         }
 
         private void onClickDeleteAllAccounts(object sender, EventArgs e) {
@@ -349,6 +354,8 @@ namespace IronChain {
                 string nameOfFile = splitted[splitted.Length - 1];
                 File.Delete(nameOfFile);
             }
+
+            updateAccountList();
         }
     }
 }
