@@ -32,8 +32,7 @@ namespace IronChain {
 
             toolStripComboBox1.SelectedIndex = 0;
 
-            textBox4.Text = "KelvinPetry";
-            minerAddress = textBox4.Text;
+            
 
             if (!File.Exists("0.blk")) {
                 createGenesisBlock();
@@ -42,8 +41,12 @@ namespace IronChain {
             //create account before
             Account thisAccount = new Account("KelvinPetry", 0);
             accountList.Add(thisAccount.publicKey, thisAccount);
+
             comboBox1.Items.Add(thisAccount);
             comboBox1.SelectedItem = thisAccount;
+
+            comboBox2.Items.Add(thisAccount);
+            comboBox2.SelectedItem = thisAccount;
 
             //analyseChain(comboBox1.SelectedItem.ToString());
 
@@ -151,10 +154,6 @@ namespace IronChain {
 
         }
 
-        private void onMiningAddressChanged(object sender, EventArgs e) {
-            minerAddress = textBox4.Text;
-        }
-
         private void makeTransaction(object sender, EventArgs e) {
 
             
@@ -203,7 +202,8 @@ namespace IronChain {
             if (i == 1) {
                 accountList[accountIndex].coinCounter = 0;
                 foreach (Block.Coin coin in b.allCoins) {
-                    if (coin.owner.Equals(accountList[accountIndex].publicKey)) {
+
+                    if (accountList[accountIndex].publicKey.Equals(coin.owner)) {
                         accountList[accountIndex].coinCounter++;
                     }
                 }
@@ -284,7 +284,7 @@ namespace IronChain {
             accountList[accountIndex].analysedBlock = i;
 
             latestBlock = i;
-            label5.Text = "Latest Block" + latestBlock;
+            label5.Text = "Block " + latestBlock;
 
         }
 
@@ -304,5 +304,16 @@ namespace IronChain {
             f2.ShowDialog();
         }
 
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e) {
+            minerAddress = comboBox2.Text.Trim();
+        }
+
+        private void label5_Click(object sender, EventArgs e) {
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) {
+
+        }
     }
 }

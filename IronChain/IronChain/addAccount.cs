@@ -23,6 +23,9 @@ namespace IronChain {
             Form1.instance.comboBox1.SelectedItem = a;
             Form1.instance.analyseChain(Form1.instance.comboBox1.SelectedItem.ToString());
 
+            Form1.instance.comboBox2.Items.Add(a);
+            Form1.instance.comboBox2.SelectedItem = a;
+
             this.Close();
 
         }
