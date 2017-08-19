@@ -20,12 +20,15 @@ namespace IronChain {
             comboBox1.SelectedIndex = 0;
         }
 
-        private void button1_Click(object sender, EventArgs e) {
+        private void onClickSendIron(object sender, EventArgs e) {
 
             string receiver = textBox2.Text;
             int amount = Convert.ToInt32(textBox1.Text);
 
-            Transaction t = new Transaction(comboBox1.Text,amount,receiver);
+            Transaction t = new Transaction(Form1.instance.latestBlock+amount);
+
+            Console.WriteLine(t.id);
+
             //TODO SIGN IT;
 
             Form1.instance.TransactionPool.Add(t);

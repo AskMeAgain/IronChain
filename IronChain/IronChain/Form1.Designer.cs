@@ -44,13 +44,14 @@
             this.analyseFromGenesisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startFromGenesisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteIronChainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteAllAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
-            this.deleteAllAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button2 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -241,6 +242,13 @@
             this.deleteIronChainToolStripMenuItem.Text = "Delete IronChain";
             this.deleteIronChainToolStripMenuItem.Click += new System.EventHandler(this.onClickDeleteIronChain);
             // 
+            // deleteAllAccountsToolStripMenuItem
+            // 
+            this.deleteAllAccountsToolStripMenuItem.Name = "deleteAllAccountsToolStripMenuItem";
+            this.deleteAllAccountsToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.deleteAllAccountsToolStripMenuItem.Text = "Delete all Accounts";
+            this.deleteAllAccountsToolStripMenuItem.Click += new System.EventHandler(this.onClickDeleteAllAccounts);
+            // 
             // comboBox2
             // 
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -298,18 +306,22 @@
             this.label6.TabIndex = 42;
             this.label6.Text = "label6";
             // 
-            // deleteAllAccountsToolStripMenuItem
+            // button2
             // 
-            this.deleteAllAccountsToolStripMenuItem.Name = "deleteAllAccountsToolStripMenuItem";
-            this.deleteAllAccountsToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.deleteAllAccountsToolStripMenuItem.Text = "Delete all Accounts";
-            this.deleteAllAccountsToolStripMenuItem.Click += new System.EventHandler(this.onClickDeleteAllAccounts);
+            this.button2.Location = new System.Drawing.Point(653, 321);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(211, 23);
+            this.button2.TabIndex = 43;
+            this.button2.Text = "import rsa key from account";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1022, 578);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
@@ -361,8 +373,9 @@
         private System.Windows.Forms.Label label4;
         public System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label6;
+        public System.Windows.Forms.Label label6;
         private System.Windows.Forms.ToolStripMenuItem deleteAllAccountsToolStripMenuItem;
+        private System.Windows.Forms.Button button2;
     }
 }
 

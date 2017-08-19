@@ -42,17 +42,17 @@ namespace IronChain {
         }
 
         public void addHash(int i) {
-            hashOfParticle = Utility.ComputeHash("P"+ (i+1));
-            hashOfLightParticle = Utility.ComputeHash("L" + (i+1));
+            hashOfParticle = Utility.ComputeHash("P" + i);
+            hashOfLightParticle = Utility.ComputeHash("L" + i);
 
         }
 
         public void giveSomeCoins(string minerAddress, int num) {
-                allCoins.Add(new Coin(minerAddress,num));
+            allCoins.Add(new Coin(minerAddress, num));
         }
 
-        public void createCoins(string minerAddress) {
-                allCoins.Add(new Coin(minerAddress, numberOfTransactions+3));
+        public void createCoins(Account acc) {
+            allCoins.Add(new Coin(acc.publicKey, numberOfTransactions + 3));
         }
 
     }

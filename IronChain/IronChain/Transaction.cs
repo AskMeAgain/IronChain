@@ -10,27 +10,17 @@ namespace IronChain {
 
         public int id;
 
-        public string coinName;
         public string owner;
         public string receiver;
         public string proofOfOwnership;
         public int amount;
 
-        public Transaction(string name, int amou, string receiv) {
-
-            Random r = new Random();
-
-            id = r.Next(0,100000);
-
-            coinName = ""+r.Next(3, 100);
-            owner = name;
-            receiver = receiv;
-            proofOfOwnership = "" + r.Next(3, 100);
-            amount = amou;
-        }
-
         public Transaction() {
 
+        }
+
+        public Transaction(int id) {
+            this.id = id;
         }
 
         public string toString() {

@@ -20,7 +20,7 @@ namespace IronChain {
             try {
                 XmlDocument xmlDocument = new XmlDocument();
                 xmlDocument.Load(fileName);
-                
+
                 string xmlString = xmlDocument.OuterXml;
 
                 using (StringReader read = new StringReader(xmlString)) {
@@ -53,15 +53,16 @@ namespace IronChain {
                     xmlDocument.Load(stream);
                     xmlDocument.Save(fileName);
                     stream.Close();
+                    Console.WriteLine("storing successfull");
                 }
             } catch (Exception ex) {
                 Console.WriteLine(ex.ToString());
             }
         }
 
-        public static  string ComputeHash(string filename) {
+        public static string ComputeHash(string filename) {
             using (var md5 = MD5.Create()) {
-                using (var stream = File.OpenRead(filename+".blk")) {
+                using (var stream = File.OpenRead(filename + ".blk")) {
                     return Convert.ToBase64String(md5.ComputeHash(stream));
                 }
             }
@@ -92,36 +93,68 @@ namespace IronChain {
             return true;
         }
 
-        public static string[] generateKeyFiles() {
+        public static string generateKeyFiles() {
+
+            // Variables
+            RSACryptoServiceProvider rsaProvider = null;
+            string privateKey = "";
+
+            rsaProvider = new RSACryptoServiceProvider(512);
 
 
+            // Export keys
+            XmlDocument xmlDoc = new XmlDocument();
 
+            privateKey = rsaProvider.ToXmlString(true);
+            xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(privateKey);
 
+            //Console.WriteLine(privateKey);
 
+            //XmlNodeList test2 = xmlDoc.GetElementsByTagName("Modulus");
 
+            //string[] s = new string[] { test2[0].InnerText , "lul" };
 
-
-
-
-
-
-
-
-
-
-
-            string[] s = new string[] { "private key", " public key" };
+            string s = privateKey;
 
             Form1.instance.label1.Text = "done";
+            Form1.instance.label6.Text = "";
+
             return s;
         }
 
-        public static string decryptString() {
-            return "yes";
+        public static string decryptString(Account account , string s) {
+
+            RSACryptoServiceProvider provider = new RSACryptoServiceProvider(512);
+
+            provider.FromXmlString(account.privateKey);
+
+            var bytesCypherText = Convert.FromBase64String(s);         
+
+            //decrypt and strip pkcs#1.5 padding
+            var bytesPlainTextData = provider.Decrypt(bytesCypherText, false);
+
+            //get our original plainText back...
+            string plainTextData = System.Text.Encoding.Unicode.GetString(bytesPlainTextData);
+
+            return plainTextData;
         }
 
-        public static void encryptString(string s) {
+        public static string encryptString(string publicKey, string s) {
 
+            RSACryptoServiceProvider provider = new RSACryptoServiceProvider(512);
+
+            provider.FromXmlString(publicKey);
+
+            var bytesPlainTextData = System.Text.Encoding.Unicode.GetBytes(s);
+
+            //apply pkcs#1.5 padding and encrypt our data 
+            var bytesCypherText = provider.Encrypt(bytesPlainTextData, false);
+
+            //we might want a string representation of our cypher text... base64 will do
+            var cypherText = Convert.ToBase64String(bytesCypherText);
+
+            return cypherText;
         }
 
 

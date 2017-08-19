@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace IronChain {
     [Serializable]
@@ -25,9 +26,14 @@ namespace IronChain {
             privateKey = "lul";
         }
 
-        public void addKeys(string[] s) {
-            privateKey = s[0];
-            publicKey = s[1];
+        public void addKeys(string s) {
+
+            RSACryptoServiceProvider provider = new RSACryptoServiceProvider(512);
+
+            provider.FromXmlString(s);
+
+            privateKey = provider.ToXmlString(true);
+            publicKey = provider.ToXmlString(false);
         }
 
         public override string ToString() {

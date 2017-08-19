@@ -9,6 +9,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Security.Cryptography;
+
 
 namespace IronChain {
     public partial class Form1 : Form {
@@ -134,6 +136,8 @@ namespace IronChain {
             light.hashToBlock = Utility.ComputeHash("" + latestBlock);
             Utility.storeFile(light, lightName + ".blk");
 
+            Console.WriteLine("HEEEREEEEE?");
+
         }
 
         private bool verifyTransaction(Transaction trans) {
@@ -166,17 +170,16 @@ namespace IronChain {
             Particle p = Utility.loadFile<Particle>("P" + (latestBlock + 1) + ".blk");
 
             //GET HASHES NOW INTO BLOCK
-            nextBlock.addHash(latestBlock);
+            nextBlock.addHash((latestBlock+1));
             nextBlock.numberOfTransactions += p.allTransactions.Count;
             nextBlock.name = (latestBlock + 1);
             nextBlock.nonce = nonce;
 
-            nextBlock.createCoins(minerAddress);
+            nextBlock.createCoins(accountList[comboBox2.Text]);
 
             //Store Block
             Utility.storeFile(nextBlock, (latestBlock + 1) + ".blk");
 
-            Console.WriteLine(comboBox1.SelectedIndex + " <<<< ");
             analyseChain();
 
         }
@@ -223,7 +226,7 @@ namespace IronChain {
             foreach (Account acc in accountList.Values) {
                 acc.coinCounter = 0;
                 foreach (Block.Coin coin in b.allCoins) {
-                    if (acc.name.Equals(coin.owner)) {
+                    if (acc.publicKey.Equals(coin.owner)) {
                         acc.coinCounter += coin.amount;
                     }
                 }
@@ -232,7 +235,7 @@ namespace IronChain {
             int i = 1;
 
             while (File.Exists(i + ".blk")) {
-                Console.WriteLine(i + " <<<<<<< i");
+
                 b = Utility.loadFile<Block>(i + ".blk");
                 string hashOfBlock = Utility.ComputeHash(i + "");
                 string proofHash = Utility.getHashSha256(b.nonce + "" + Utility.ComputeHash((i - 1) + ""));
@@ -260,7 +263,7 @@ namespace IronChain {
                     //after verifying the block, we now count the coins
                     foreach (Block.Coin coin in b.allCoins) {
                         foreach (Account acc in accountList.Values) {
-                            if (coin.owner.Equals(acc.name)) {
+                            if (coin.owner.Equals(acc.publicKey)) {
                                 acc.coinCounter += coin.amount;
                             }
                         }
@@ -269,11 +272,11 @@ namespace IronChain {
                     foreach (Transaction trans in p.allTransactions) {
                         foreach (Account acc in accountList.Values) {
 
-                            if (trans.receiver.Equals(acc.name)) {
+                            if (trans.receiver.Equals(acc.publicKey)) {
                                 acc.coinCounter += trans.amount;
                             }
 
-                            if (trans.owner.Equals(acc.name)) {
+                            if (trans.owner.Equals(acc.publicKey)) {
                                 acc.coinCounter -= trans.amount;
                             }
                         }
@@ -356,6 +359,12 @@ namespace IronChain {
             }
 
             updateAccountList();
+        }
+
+        private void button2_Click(object sender, EventArgs e) {
+
+            
+
         }
     }
 }
