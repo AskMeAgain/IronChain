@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -123,28 +124,24 @@ namespace IronChain {
             return s;
         }
 
-        public static string decryptString(Account account , string s) {
+        public static string decryptString(string key , string s) {
 
             RSACryptoServiceProvider provider = new RSACryptoServiceProvider(512);
 
-            provider.FromXmlString(account.privateKey);
-
             var bytesCypherText = Convert.FromBase64String(s);         
 
-            //decrypt and strip pkcs#1.5 padding
             var bytesPlainTextData = provider.Decrypt(bytesCypherText, false);
 
-            //get our original plainText back...
             string plainTextData = System.Text.Encoding.Unicode.GetString(bytesPlainTextData);
 
             return plainTextData;
         }
 
-        public static string encryptString(string publicKey, string s) {
+        public static string encryptString(string key, string s) {
 
             RSACryptoServiceProvider provider = new RSACryptoServiceProvider(512);
 
-            provider.FromXmlString(publicKey);
+            provider.FromXmlString(key);
 
             var bytesPlainTextData = System.Text.Encoding.Unicode.GetBytes(s);
 
@@ -157,6 +154,47 @@ namespace IronChain {
             return cypherText;
         }
 
+        public static string SignData(string message, string privateKey) {
+
+            ASCIIEncoding ByteConverter = new ASCIIEncoding();
+
+            // Create some bytes to be signed.
+            byte[] dataBytes = ByteConverter.GetBytes("Here is some data to sign!");
+
+            // Create a buffer for the memory stream.
+            byte[] buffer = new byte[dataBytes.Length];
+
+            // Create a MemoryStream.
+            MemoryStream mStream = new MemoryStream(buffer);
+
+            // Write the bytes to the stream and flush it.
+            mStream.Write(dataBytes, 0, dataBytes.Length);
+
+            mStream.Flush();
+
+            // Create a new instance of the RSACryptoServiceProvider class 
+            // and automatically create a new key-pair.
+            RSACryptoServiceProvider RSAalg = new RSACryptoServiceProvider();
+
+            // Export the key information to an RSAParameters object.
+            // You must pass true to export the private key for signing.
+            // However, you do not need to export the private key
+            // for verification.
+            RSAParameters Key = RSAalg.ExportParameters(true);
+
+            // Hash and sign the data.
+            byte[] signedData = RSAalg.HashAndSignBytes(mStream, Key);
+
+            mStream.Position = 0;
+
+            // Create a new instance of RSACryptoServiceProvider using the 
+            // key from RSAParameters.  
+
+            // Hash and sign the data. Pass a new instance of SHA1CryptoServiceProvider
+            // to specify the use of SHA1 for hashing.
+            return RSAalg.SignData(mStream, new SHA1CryptoServiceProvider());
+
+        }
 
     }
 }

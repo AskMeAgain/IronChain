@@ -366,5 +366,22 @@ namespace IronChain {
             
 
         }
+
+        private void button3_Click(object sender, EventArgs e) {
+
+            Transaction t = TransactionPool[0];
+
+            string stringToDecrypt = t.proofOfOwnership;
+
+            Console.WriteLine(t.id + " < id");
+            Console.WriteLine(Utility.decryptString(t.owner, stringToDecrypt));
+
+        }
+
+        private void button4_Click(object sender, EventArgs e) {
+
+            Console.WriteLine(Utility.SignData("ironChain!!",accountList[comboBox1.Text].privateKey));
+
+        }
     }
 }
