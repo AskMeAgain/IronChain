@@ -117,7 +117,7 @@ namespace IronChain {
                     p.addTransaction(trans);
                 }
 
-            }
+            } 
 
             //add hash to block before
             p.hashToBlock = Utility.ComputeHash("" + latestBlock);
@@ -127,7 +127,6 @@ namespace IronChain {
             Utility.storeFile(p, particleName + ".blk");
 
             updateTransactionPoolWindow();
-
 
             //create light particle
             Particle light = new Particle();
@@ -304,7 +303,6 @@ namespace IronChain {
                 File.Delete("L" + i + ".blk");
 
                 i--;
-
             }
 
             latestBlock = i;
