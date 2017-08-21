@@ -417,9 +417,12 @@ namespace IronChain {
 
             string original = "test";
 
-            string signedHash = Utility.SignData(original, accountList[comboBox1.Text].privateKey);
+            string priv = accountList[comboBox1.Text].privateKey;
+            string publ = accountList[comboBox1.Text].publicKey;
 
-            if (Utility.VerifyData(signedHash, accountList[comboBox1.Text].publicKey, original)) {
+            string signedHash = Utility.SignData(original, priv);
+
+            if (Utility.VerifyData(original, publ, signedHash)) {
                 Console.WriteLine("TRUE NICE!");
             } else {
                 Console.WriteLine("FALSE SHIT");

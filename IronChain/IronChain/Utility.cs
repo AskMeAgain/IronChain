@@ -124,18 +124,6 @@ namespace IronChain {
             return cypherText;
         }
 
-        public static string SignData(string message, string privateKey) {
-
-            byte[] plainText = ASCIIEncoding.Unicode.GetBytes(message);
-
-            var rsaWrite = new RSACryptoServiceProvider();
-            rsaWrite.FromXmlString(privateKey);
-
-            byte[] signature = rsaWrite.SignData(plainText, new SHA1CryptoServiceProvider());
-
-            return Convert.ToBase64String(signature);
-        }
-
         public static void loadSettings() {
 
             Settings.SettingsObject settings = loadFile<Settings.SettingsObject>("settings.set");
@@ -147,6 +135,18 @@ namespace IronChain {
             if (Form1.instance.accountList.ContainsKey(settings.defaultMainAccount))
                 Form1.instance.comboBox1.SelectedItem = Form1.instance.accountList[settings.defaultMainAccount];
 
+        }
+
+        public static string SignData(string message, string privateKey) {
+
+            byte[] plainText = ASCIIEncoding.Unicode.GetBytes(message);
+
+            var rsaWrite = new RSACryptoServiceProvider();
+            rsaWrite.FromXmlString(privateKey);
+
+            byte[] signature = rsaWrite.SignData(plainText, new SHA1CryptoServiceProvider());
+
+            return Convert.ToBase64String(signature);
         }
 
         public static bool VerifyData(string orig, string publicKey, string sign) {
