@@ -135,23 +135,20 @@ namespace IronChain {
             light.hashToBlock = Utility.ComputeHash("" + latestBlock);
             Utility.storeFile(light, lightName + ".blk");
 
-            Console.WriteLine("HEEEREEEEE?");
-
         }
 
         private bool verifyTransactionHash(Transaction trans) {
 
-            string original = trans.id+"";
+            string original = trans.id + "";
             string publ = trans.owner;
             string signedHash = trans.proofOfOwnership;
 
             if (Utility.verifyData(original, publ, signedHash)) {
-                Console.WriteLine("TRUE NICE!");
+                return true;
             } else {
-                Console.WriteLine("FALSE SHIT");
+                return false;
             }
 
-            return true;
 
         }
 
@@ -174,7 +171,7 @@ namespace IronChain {
             Utility.storeFile(nextBlock, (latestBlock + 1) + ".blk");
 
             analyseChain();
-            
+
         }
 
         private void onClickStartMining(object sender, EventArgs e) {
@@ -184,7 +181,6 @@ namespace IronChain {
             int i = 0;
             string hashFromLatestBlock = Utility.ComputeHash(latestBlock + "");
             int difficulty = miningDifficulty;
-            Console.WriteLine(miningDifficulty + " <<< difi");
             while (miningFlag) {
 
                 string hash = Utility.getHashSha256(i + "" + hashFromLatestBlock);
@@ -269,7 +265,7 @@ namespace IronChain {
 
                             // check if each transaction is possible
                             foreach (string owner in listOfAllOwners.Keys) {
-                                if (checkCoinBalance(owner,i-1) < listOfAllOwners[owner]) {
+                                if (checkCoinBalance(owner, i - 1) < listOfAllOwners[owner]) {
                                     errorFlag = true;
                                     break;
                                 }
@@ -295,9 +291,6 @@ namespace IronChain {
                     break;
                 }
 
-               
-
-                Console.WriteLine(i);
                 i++;
             }
 
@@ -323,7 +316,6 @@ namespace IronChain {
         private int checkCoinBalance(string owner, int blockheight) {
 
             int coinbalance = 0;
-            Console.WriteLine("latest block" + blockheight);
             for (int i = 0; i <= blockheight; i++) {
 
                 Block b = Utility.loadFile<Block>(i + ".blk");
@@ -350,11 +342,11 @@ namespace IronChain {
             }
 
             return coinbalance;
-           
+
         }
 
         private void onAccountChanged(object sender, EventArgs e) {
-            label3.Text = ""+checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock);
+            label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock);
         }
 
         private void onClickAddAccount(object sender, EventArgs e) {
