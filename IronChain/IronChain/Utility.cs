@@ -137,7 +137,7 @@ namespace IronChain {
 
         }
 
-        public static string SignData(string message, string privateKey) {
+        public static string signData(string message, string privateKey) {
 
             byte[] plainText = ASCIIEncoding.Unicode.GetBytes(message);
 
@@ -149,7 +149,7 @@ namespace IronChain {
             return Convert.ToBase64String(signature);
         }
 
-        public static bool VerifyData(string orig, string publicKey, string sign) {
+        public static bool verifyData(string orig, string publicKey, string sign) {
 
             byte[] signature = Convert.FromBase64String(sign);
             byte[] original = ASCIIEncoding.Unicode.GetBytes(orig);

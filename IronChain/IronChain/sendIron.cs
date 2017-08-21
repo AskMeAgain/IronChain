@@ -37,7 +37,7 @@ namespace IronChain {
             Account thisAccount = Form1.instance.accountList[comboBox1.Text];
 
             //TODO SIGN IT;
-            t.proofOfOwnership = Utility.SignData(t.id + "", thisAccount.privateKey);
+            t.proofOfOwnership = Utility.signData(t.id + "", thisAccount.privateKey);
             t.owner = thisAccount.publicKey;
             t.receiver = receiver;
             t.amount = amount;

@@ -113,7 +113,7 @@ namespace IronChain {
                 Transaction trans = TransactionPool[0];
                 TransactionPool.RemoveAt(0);
 
-                if (verifyTransaction(trans)) {
+                if (verifyTransactionHash(trans)) {
                     p.addTransaction(trans);
                 }
 
@@ -139,29 +139,21 @@ namespace IronChain {
 
         }
 
-        private bool verifyTransaction(Transaction trans) {
+        private bool verifyTransactionHash(Transaction trans) {
 
-            /*
-            string owner = trans.owner;
+            string original = trans.id+"";
+            string publ = trans.owner;
+            string signedHash = trans.proofOfOwnership;
 
-            int num = calculateCoinNumberOfAddress(owner);
-
-            if (!transHistory.ContainsKey(trans.owner)) {
-                transHistory.Add(trans.owner, 0);
-            }
-
-            if (num - (trans.amount + transHistory[trans.owner]) > 0) {
-                transHistory[owner] += trans.amount;
-                return true;
+            if (Utility.verifyData(original, publ, signedHash)) {
+                Console.WriteLine("TRUE NICE!");
             } else {
-                return false;
-            }*/
+                Console.WriteLine("FALSE SHIT");
+            }
 
             return true;
 
         }
-
-
 
         private void mineNextBlock(string nonce) {
 
@@ -263,11 +255,10 @@ namespace IronChain {
                     }
 
                     Dictionary<string, int> listOfAllOwners = new Dictionary<string, int>();
-
                     foreach (Transaction trans in p.allTransactions) {
 
                         //verify each transaction
-                        if (verifyTransaction(trans)) {
+                        if (verifyTransactionHash(trans)) {
 
                             //add transactions to a list
                             if (listOfAllOwners.ContainsKey(trans.owner)) {
@@ -278,7 +269,7 @@ namespace IronChain {
 
                             // check if each transaction is possible
                             foreach (string owner in listOfAllOwners.Keys) {
-                                if (checkCoinBalance(owner,i) < listOfAllOwners[owner]) {
+                                if (checkCoinBalance(owner,i-1) < listOfAllOwners[owner]) {
                                     errorFlag = true;
                                     break;
                                 }
@@ -402,42 +393,10 @@ namespace IronChain {
             updateAccountList();
         }
 
-        private void button3_Click(object sender, EventArgs e) {
-
-            Transaction t = TransactionPool[0];
-
-            string stringToDecrypt = t.proofOfOwnership;
-
-            Console.WriteLine(t.id + " < id");
-            Console.WriteLine(Utility.decryptString(t.owner, stringToDecrypt));
-
-        }
-
-        private void button4_Click(object sender, EventArgs e) {
-
-            string original = "test";
-
-            string priv = accountList[comboBox1.Text].privateKey;
-            string publ = accountList[comboBox1.Text].publicKey;
-
-            string signedHash = Utility.SignData(original, priv);
-
-            if (Utility.VerifyData(original, publ, signedHash)) {
-                Console.WriteLine("TRUE NICE!");
-            } else {
-                Console.WriteLine("FALSE SHIT");
-            }
-        }
-
         private void onClickOpenSettings(object sender, EventArgs e) {
             Settings s = new Settings();
             s.ShowDialog();
         }
 
-        private void button1_Click(object sender, EventArgs e) {
-
-            
-
-        }
     }
 }
