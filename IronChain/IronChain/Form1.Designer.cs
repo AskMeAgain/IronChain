@@ -47,6 +47,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
+            this.importAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -150,7 +151,8 @@
             // 
             this.actionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.sendIronToolStripMenuItem,
-            this.addAccountToolStripMenuItem});
+            this.addAccountToolStripMenuItem,
+            this.importAccountToolStripMenuItem});
             this.actionToolStripMenuItem.Name = "actionToolStripMenuItem";
             this.actionToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
             this.actionToolStripMenuItem.Text = "Action";
@@ -158,15 +160,15 @@
             // sendIronToolStripMenuItem
             // 
             this.sendIronToolStripMenuItem.Name = "sendIronToolStripMenuItem";
-            this.sendIronToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.sendIronToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.sendIronToolStripMenuItem.Text = "Send Iron";
             this.sendIronToolStripMenuItem.Click += new System.EventHandler(this.onClickSendIron);
             // 
             // addAccountToolStripMenuItem
             // 
             this.addAccountToolStripMenuItem.Name = "addAccountToolStripMenuItem";
-            this.addAccountToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
-            this.addAccountToolStripMenuItem.Text = "Add Account";
+            this.addAccountToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.addAccountToolStripMenuItem.Text = "Create Account";
             this.addAccountToolStripMenuItem.Click += new System.EventHandler(this.onClickAddAccount);
             // 
             // optionsToolStripMenuItem
@@ -259,6 +261,12 @@
             this.button4.Text = "sign Message";
             this.button4.UseVisualStyleBackColor = true;
             // 
+            // importAccountToolStripMenuItem
+            // 
+            this.importAccountToolStripMenuItem.Name = "importAccountToolStripMenuItem";
+            this.importAccountToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.importAccountToolStripMenuItem.Text = "Import Account";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -311,6 +319,7 @@
         public System.Windows.Forms.Label label6;
         private System.Windows.Forms.ToolStripMenuItem deleteAllAccountsToolStripMenuItem;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.ToolStripMenuItem importAccountToolStripMenuItem;
     }
 }
 
