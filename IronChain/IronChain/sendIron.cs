@@ -21,20 +21,26 @@ namespace IronChain {
         }
 
         private void onClickSendIron(object sender, EventArgs e) {
+            string receiver = "";
+            if (Form1.instance.accountList.ContainsKey(textBox2.Text)) {
+                 receiver = Form1.instance.accountList[textBox2.Text].publicKey;
+            }
+            else{
+                receiver = textBox2.Text;
+            }
 
-            string receiver = textBox2.Text;
             int amount = Convert.ToInt32(textBox1.Text);
             Random r = new Random();
             Transaction t = new Transaction(Form1.instance.latestBlock+amount);
 
-            Console.WriteLine(t.id);
 
             Account thisAccount = Form1.instance.accountList[comboBox1.Text];
 
             //TODO SIGN IT;
-            t.proofOfOwnership = Utility.encryptString(thisAccount.privateKey, t.id + "");
+            t.proofOfOwnership = Utility.SignData(t.id + "", thisAccount.privateKey);
             t.owner = thisAccount.publicKey;
             t.receiver = receiver;
+            t.amount = amount;
 
             Form1.instance.TransactionPool.Add(t);
             Form1.instance.updateTransactionPoolWindow();

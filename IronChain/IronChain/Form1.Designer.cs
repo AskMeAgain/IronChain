@@ -138,14 +138,14 @@
             // startMiningToolStripMenuItem
             // 
             this.startMiningToolStripMenuItem.Name = "startMiningToolStripMenuItem";
-            this.startMiningToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.startMiningToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.startMiningToolStripMenuItem.Text = "Start Mining";
             this.startMiningToolStripMenuItem.Click += new System.EventHandler(this.onClickStartMining);
             // 
             // stopMiningToolStripMenuItem
             // 
             this.stopMiningToolStripMenuItem.Name = "stopMiningToolStripMenuItem";
-            this.stopMiningToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.stopMiningToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.stopMiningToolStripMenuItem.Text = "Stop Mining";
             this.stopMiningToolStripMenuItem.Click += new System.EventHandler(this.onClickStopMining);
             // 
@@ -161,14 +161,14 @@
             // sendIronToolStripMenuItem
             // 
             this.sendIronToolStripMenuItem.Name = "sendIronToolStripMenuItem";
-            this.sendIronToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sendIronToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.sendIronToolStripMenuItem.Text = "Send Iron";
             this.sendIronToolStripMenuItem.Click += new System.EventHandler(this.onClickSendIron);
             // 
             // addAccountToolStripMenuItem
             // 
             this.addAccountToolStripMenuItem.Name = "addAccountToolStripMenuItem";
-            this.addAccountToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.addAccountToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.addAccountToolStripMenuItem.Text = "Add Account";
             this.addAccountToolStripMenuItem.Click += new System.EventHandler(this.onClickAddAccount);
             // 
@@ -250,8 +250,9 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(139, 23);
             this.button1.TabIndex = 41;
-            this.button1.Text = "generate Key Pair";
+            this.button1.Text = "calculate money";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // label6
             // 

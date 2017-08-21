@@ -136,6 +136,19 @@ namespace IronChain {
             return Convert.ToBase64String(signature);
         }
 
+        public static void loadSettings() {
+
+            Settings.SettingsObject settings = loadFile<Settings.SettingsObject>("settings.set");
+
+            //load values from settingsobject to everything else;
+            Form1.instance.minerAccountName = settings.defaultMiningAccountName;
+            Form1.instance.miningDifficulty = settings.defaultMiningDifficulty;
+
+            if (Form1.instance.accountList.ContainsKey(settings.defaultMainAccount))
+                Form1.instance.comboBox1.SelectedItem = Form1.instance.accountList[settings.defaultMainAccount];
+
+        }
+
         public static bool VerifyData(string orig, string publicKey, string sign) {
 
             byte[] signature = Convert.FromBase64String(sign);

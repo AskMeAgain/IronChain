@@ -32,16 +32,19 @@ namespace IronChain {
             TransactionPool = new List<Transaction>();
             accountList = new Dictionary<string, Account>();
 
-            //select difficulty WORKAROUND
-            toolStripComboBox1.SelectedIndex = 0;
+
+
+            //update account list
+
+            updateAccountList();
 
             if (!File.Exists("0.blk")) {
                 createGenesisBlock();
             }
 
-            //update account list
-            updateAccountList();
+            Utility.loadSettings();
 
+            analyseChain();
         }
 
         public void updateAccountList() {
@@ -73,7 +76,7 @@ namespace IronChain {
             }
 
             //select later
-            comboBox1.SelectedItem = a;
+            //comboBox1.SelectedItem = a;
 
         }
 
@@ -84,7 +87,7 @@ namespace IronChain {
         private void createGenesisBlock() {
             Block genesis = new Block(0);
             genesis.hashOfParticle = "genesis";
-            genesis.giveSomeCoins("KelvinPetry", 100);
+            genesis.giveSomeCoins(accountList["KelvinPetry"].publicKey, 100);
             Utility.storeFile(genesis, genesis.name + ".blk");
         }
 
@@ -158,7 +161,7 @@ namespace IronChain {
 
         }
 
-        
+
 
         private void mineNextBlock(string nonce) {
 
@@ -168,7 +171,7 @@ namespace IronChain {
             Particle p = Utility.loadFile<Particle>("P" + (latestBlock + 1) + ".blk");
 
             //GET HASHES NOW INTO BLOCK
-            nextBlock.addHash((latestBlock+1));
+            nextBlock.addHash((latestBlock + 1));
             nextBlock.numberOfTransactions += p.allTransactions.Count;
             nextBlock.name = (latestBlock + 1);
             nextBlock.nonce = nonce;
@@ -179,7 +182,7 @@ namespace IronChain {
             Utility.storeFile(nextBlock, (latestBlock + 1) + ".blk");
 
             analyseChain();
-
+            
         }
 
         private void onClickStartMining(object sender, EventArgs e) {
@@ -188,12 +191,11 @@ namespace IronChain {
 
             int i = 0;
             string hashFromLatestBlock = Utility.ComputeHash(latestBlock + "");
-            int difficulty = Convert.ToInt32(toolStripComboBox1.SelectedItem);
-
+            int difficulty = miningDifficulty;
+            Console.WriteLine(miningDifficulty + " <<< difi");
             while (miningFlag) {
 
                 string hash = Utility.getHashSha256(i + "" + hashFromLatestBlock);
-
 
                 if (Utility.verifyHashDifficulty(hash, difficulty)) {
                     Console.WriteLine(latestBlock + " HASH FOUND " + hashFromLatestBlock);
@@ -233,6 +235,7 @@ namespace IronChain {
             }
 
             int i = 1;
+            bool errorFlag = false;
 
             while (File.Exists(i + ".blk")) {
 
@@ -259,25 +262,26 @@ namespace IronChain {
                         break;
                     }
 
-
-                    //after verifying the block, we now count the coins
-                    foreach (Block.Coin coin in b.allCoins) {
-                        foreach (Account acc in accountList.Values) {
-                            if (coin.owner.Equals(acc.publicKey)) {
-                                acc.coinCounter += coin.amount;
-                            }
-                        }
-                    }
+                    Dictionary<string, int> listOfAllOwners = new Dictionary<string, int>();
 
                     foreach (Transaction trans in p.allTransactions) {
-                        foreach (Account acc in accountList.Values) {
 
-                            if (trans.receiver.Equals(acc.publicKey)) {
-                                acc.coinCounter += trans.amount;
+                        //verify each transaction
+                        if (verifyTransaction(trans)) {
+
+                            //add transactions to a list
+                            if (listOfAllOwners.ContainsKey(trans.owner)) {
+                                listOfAllOwners[trans.owner] += trans.amount;
+                            } else {
+                                listOfAllOwners.Add(trans.owner, trans.amount);
                             }
 
-                            if (trans.owner.Equals(acc.publicKey)) {
-                                acc.coinCounter -= trans.amount;
+                            // check if each transaction is possible
+                            foreach (string owner in listOfAllOwners.Keys) {
+                                if (checkCoinBalance(owner,i) < listOfAllOwners[owner]) {
+                                    errorFlag = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -299,22 +303,67 @@ namespace IronChain {
                 } else {
                     break;
                 }
+
+               
+
                 Console.WriteLine(i);
                 i++;
             }
 
             i--;
 
+            if (errorFlag) {
+                Console.WriteLine("ERROR BLOCK");
 
-            label3.Text = accountList[comboBox1.Text].coinCounter + " Iron";
+                File.Delete(i + ".blk");
+                File.Delete("P" + i + ".blk");
+                File.Delete("L" + i + ".blk");
+
+                i--;
+
+            }
 
             latestBlock = i;
             label5.Text = "Block " + latestBlock;
+            label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock);
 
         }
 
+        private int checkCoinBalance(string owner, int blockheight) {
+
+            int coinbalance = 0;
+            Console.WriteLine("latest block" + blockheight);
+            for (int i = 0; i <= blockheight; i++) {
+
+                Block b = Utility.loadFile<Block>(i + ".blk");
+
+                foreach (Block.Coin coin in b.allCoins) {
+                    if (coin.owner.Equals(owner)) {
+                        coinbalance += coin.amount;
+                    }
+                }
+
+                if (i > 0) {
+                    Particle p = Utility.loadFile<Particle>("P" + i + ".blk");
+
+                    foreach (Transaction trans in p.allTransactions) {
+                        if (trans.receiver.Equals(owner)) {
+                            coinbalance += trans.amount;
+                        }
+
+                        if (trans.owner.Equals(owner)) {
+                            coinbalance -= trans.amount;
+                        }
+                    }
+                }
+            }
+
+            return coinbalance;
+           
+        }
+
         private void onAccountChanged(object sender, EventArgs e) {
-            analyseChain();
+            label3.Text = ""+checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock);
         }
 
         private void onClickAddAccount(object sender, EventArgs e) {
@@ -368,7 +417,7 @@ namespace IronChain {
 
             string original = "test";
 
-            string signedHash = Utility.SignData(original ,accountList[comboBox1.Text].privateKey);
+            string signedHash = Utility.SignData(original, accountList[comboBox1.Text].privateKey);
 
             if (Utility.VerifyData(signedHash, accountList[comboBox1.Text].publicKey, original)) {
                 Console.WriteLine("TRUE NICE!");
@@ -380,6 +429,12 @@ namespace IronChain {
         private void onClickOpenSettings(object sender, EventArgs e) {
             Settings s = new Settings();
             s.ShowDialog();
+        }
+
+        private void button1_Click(object sender, EventArgs e) {
+
+            
+
         }
     }
 }

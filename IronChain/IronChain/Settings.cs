@@ -37,10 +37,7 @@ namespace IronChain {
             settings = Utility.loadFile<SettingsObject>("settings.set");
 
             if (settings == null) {
-
                 settings = new SettingsObject();
-
-
             }
 
             //setting account addresse dropdown list
@@ -64,22 +61,11 @@ namespace IronChain {
             comboBox2.SelectedIndex = settings.defaultMiningDifficulty - 4;
             checkBox1.Checked = settings.isLightMode;
 
-            loadValuesAfterSaving();
-        }
-
-        public void loadValuesAfterSaving() {
-
-            //load values from settingsobject to everything else;
-            Form1.instance.minerAccountName = settings.defaultMiningAccountName;
-            Form1.instance.miningDifficulty = settings.defaultMiningDifficulty;
-
-            if (Form1.instance.accountList.ContainsKey(settings.defaultMainAccount))
-                Form1.instance.comboBox1.SelectedItem = Form1.instance.accountList[settings.defaultMainAccount];
-
         }
 
         private void onClickSafeSettings(object sender, EventArgs e) {
             storeValues();
+            Utility.loadSettings();
             this.Close();
         }
 
