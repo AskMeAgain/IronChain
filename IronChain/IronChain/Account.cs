@@ -23,14 +23,13 @@ namespace IronChain {
             name = nam;
             publicKey = nam;
             analysedBlock = num;
-            privateKey = "lul";
+
+            addKeys();
         }
 
-        public void addKeys(string s) {
+        public void addKeys() {
 
-            RSACryptoServiceProvider provider = new RSACryptoServiceProvider(512);
-
-            provider.FromXmlString(s);
+            RSACryptoServiceProvider provider = new RSACryptoServiceProvider(1024);
 
             privateKey = provider.ToXmlString(true);
             publicKey = provider.ToXmlString(false);

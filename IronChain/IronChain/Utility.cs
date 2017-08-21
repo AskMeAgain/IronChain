@@ -94,41 +94,11 @@ namespace IronChain {
             return true;
         }
 
-        public static string generateKeyFiles() {
-
-            // Variables
-            RSACryptoServiceProvider rsaProvider = null;
-            string privateKey = "";
-
-            rsaProvider = new RSACryptoServiceProvider(512);
-
-
-            // Export keys
-            XmlDocument xmlDoc = new XmlDocument();
-
-            privateKey = rsaProvider.ToXmlString(true);
-            xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(privateKey);
-
-            //Console.WriteLine(privateKey);
-
-            //XmlNodeList test2 = xmlDoc.GetElementsByTagName("Modulus");
-
-            //string[] s = new string[] { test2[0].InnerText , "lul" };
-
-            string s = privateKey;
-
-            Form1.instance.label1.Text = "done";
-            Form1.instance.label6.Text = "";
-
-            return s;
-        }
-
-        public static string decryptString(string key , string s) {
+        public static string decryptString(string key, string s) {
 
             RSACryptoServiceProvider provider = new RSACryptoServiceProvider(512);
 
-            var bytesCypherText = Convert.FromBase64String(s);         
+            var bytesCypherText = Convert.FromBase64String(s);
 
             var bytesPlainTextData = provider.Decrypt(bytesCypherText, false);
 
@@ -156,45 +126,29 @@ namespace IronChain {
 
         public static string SignData(string message, string privateKey) {
 
-            ASCIIEncoding ByteConverter = new ASCIIEncoding();
+            byte[] plainText = ASCIIEncoding.Unicode.GetBytes(message);
 
-            // Create some bytes to be signed.
-            byte[] dataBytes = ByteConverter.GetBytes("Here is some data to sign!");
+            var rsaWrite = new RSACryptoServiceProvider();
+            rsaWrite.FromXmlString(privateKey);
 
-            // Create a buffer for the memory stream.
-            byte[] buffer = new byte[dataBytes.Length];
+            byte[] signature = rsaWrite.SignData(plainText, new SHA1CryptoServiceProvider());
 
-            // Create a MemoryStream.
-            MemoryStream mStream = new MemoryStream(buffer);
-
-            // Write the bytes to the stream and flush it.
-            mStream.Write(dataBytes, 0, dataBytes.Length);
-
-            mStream.Flush();
-
-            // Create a new instance of the RSACryptoServiceProvider class 
-            // and automatically create a new key-pair.
-            RSACryptoServiceProvider RSAalg = new RSACryptoServiceProvider();
-
-            // Export the key information to an RSAParameters object.
-            // You must pass true to export the private key for signing.
-            // However, you do not need to export the private key
-            // for verification.
-            RSAParameters Key = RSAalg.ExportParameters(true);
-
-            // Hash and sign the data.
-            byte[] signedData = RSAalg.HashAndSignBytes(mStream, Key);
-
-            mStream.Position = 0;
-
-            // Create a new instance of RSACryptoServiceProvider using the 
-            // key from RSAParameters.  
-
-            // Hash and sign the data. Pass a new instance of SHA1CryptoServiceProvider
-            // to specify the use of SHA1 for hashing.
-            return RSAalg.SignData(mStream, new SHA1CryptoServiceProvider());
-
+            return Convert.ToBase64String(signature);
         }
 
+        public static bool VerifyData(string orig, string publicKey, string sign) {
+
+            byte[] signature = Convert.FromBase64String(sign);
+            byte[] original = ASCIIEncoding.Unicode.GetBytes(orig);
+
+            var rsaRead = new RSACryptoServiceProvider();
+            rsaRead.FromXmlString(publicKey);
+
+            if (rsaRead.VerifyData(original, new SHA1CryptoServiceProvider(), signature)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 }

@@ -9,7 +9,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Security.Cryptography;
 
 
 namespace IronChain {
@@ -19,10 +18,11 @@ namespace IronChain {
 
         public List<Transaction> TransactionPool;
 
-        public string minerAddress;
         bool miningFlag = true;
         Dictionary<string, int> transHistory;
         public int latestBlock = 0;
+
+        public string minerAccountName;
 
         public Dictionary<String, Account> accountList;
 
@@ -65,19 +65,15 @@ namespace IronChain {
             }
 
             comboBox1.Items.Clear();
-            comboBox2.Items.Clear();
 
             foreach (Account acc in accountList.Values) {
 
                 comboBox1.Items.Add(acc);
-                comboBox2.Items.Add(acc);
 
             }
 
             //select later
             comboBox1.SelectedItem = a;
-            comboBox2.SelectedItem = a;
-
 
         }
 
@@ -162,6 +158,8 @@ namespace IronChain {
 
         }
 
+        
+
         private void mineNextBlock(string nonce) {
 
             Block nextBlock = new Block();
@@ -175,7 +173,7 @@ namespace IronChain {
             nextBlock.name = (latestBlock + 1);
             nextBlock.nonce = nonce;
 
-            nextBlock.createCoins(accountList[comboBox2.Text]);
+            nextBlock.createCoins(accountList[minerAccountName]);
 
             //Store Block
             Utility.storeFile(nextBlock, (latestBlock + 1) + ".blk");
@@ -216,9 +214,11 @@ namespace IronChain {
             analyseChain();
         }
 
+        public int miningDifficulty;
+
         public void analyseChain() {
 
-            int difficulty = Convert.ToInt32(toolStripComboBox1.SelectedItem);
+            int difficulty = miningDifficulty;
 
             Block b = Utility.loadFile<Block>("0.blk");
 
@@ -327,14 +327,6 @@ namespace IronChain {
             f2.ShowDialog();
         }
 
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e) {
-            minerAddress = comboBox2.Text.Trim();
-        }
-
-        private void button1_Click(object sender, EventArgs e) {
-            Utility.generateKeyFiles();
-        }
-
         private void onClickDeleteIronChain(object sender, EventArgs e) {
 
             string[] allFiles = Directory.GetFiles(Environment.CurrentDirectory, "*.blk");
@@ -361,12 +353,6 @@ namespace IronChain {
             updateAccountList();
         }
 
-        private void button2_Click(object sender, EventArgs e) {
-
-            
-
-        }
-
         private void button3_Click(object sender, EventArgs e) {
 
             Transaction t = TransactionPool[0];
@@ -380,8 +366,20 @@ namespace IronChain {
 
         private void button4_Click(object sender, EventArgs e) {
 
-            Console.WriteLine(Utility.SignData("ironChain!!",accountList[comboBox1.Text].privateKey));
+            string original = "test";
 
+            string signedHash = Utility.SignData(original ,accountList[comboBox1.Text].privateKey);
+
+            if (Utility.VerifyData(signedHash, accountList[comboBox1.Text].publicKey, original)) {
+                Console.WriteLine("TRUE NICE!");
+            } else {
+                Console.WriteLine("FALSE SHIT");
+            }
+        }
+
+        private void onClickOpenSettings(object sender, EventArgs e) {
+            Settings s = new Settings();
+            s.ShowDialog();
         }
     }
 }

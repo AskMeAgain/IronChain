@@ -24,28 +24,24 @@
         /// </summary>
         private void InitializeComponent() {
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startMiningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopMiningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.difficultyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
             this.actionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sendIronToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ironChainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.analyseFromGenesisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startFromGenesisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteIronChainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteAllAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -66,16 +62,6 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(539, 326);
             this.textBox2.TabIndex = 4;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(28, 508);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(154, 20);
-            this.label2.TabIndex = 16;
-            this.label2.Text = "Your mining address";
             // 
             // label3
             // 
@@ -124,9 +110,9 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.optionsToolStripMenuItem,
             this.miningToolStripMenuItem,
             this.actionToolStripMenuItem,
+            this.optionsToolStripMenuItem,
             this.ironChainToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -140,18 +126,11 @@
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
-            // optionsToolStripMenuItem
-            // 
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.optionsToolStripMenuItem.Text = "Options";
-            // 
             // miningToolStripMenuItem
             // 
             this.miningToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.startMiningToolStripMenuItem,
-            this.stopMiningToolStripMenuItem,
-            this.difficultyToolStripMenuItem});
+            this.stopMiningToolStripMenuItem});
             this.miningToolStripMenuItem.Name = "miningToolStripMenuItem";
             this.miningToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
             this.miningToolStripMenuItem.Text = "Mining";
@@ -159,37 +138,16 @@
             // startMiningToolStripMenuItem
             // 
             this.startMiningToolStripMenuItem.Name = "startMiningToolStripMenuItem";
-            this.startMiningToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.startMiningToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.startMiningToolStripMenuItem.Text = "Start Mining";
             this.startMiningToolStripMenuItem.Click += new System.EventHandler(this.onClickStartMining);
             // 
             // stopMiningToolStripMenuItem
             // 
             this.stopMiningToolStripMenuItem.Name = "stopMiningToolStripMenuItem";
-            this.stopMiningToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.stopMiningToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.stopMiningToolStripMenuItem.Text = "Stop Mining";
             this.stopMiningToolStripMenuItem.Click += new System.EventHandler(this.onClickStopMining);
-            // 
-            // difficultyToolStripMenuItem
-            // 
-            this.difficultyToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripComboBox1});
-            this.difficultyToolStripMenuItem.Name = "difficultyToolStripMenuItem";
-            this.difficultyToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
-            this.difficultyToolStripMenuItem.Text = "Difficulty";
-            // 
-            // toolStripComboBox1
-            // 
-            this.toolStripComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.toolStripComboBox1.Items.AddRange(new object[] {
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8"});
-            this.toolStripComboBox1.Name = "toolStripComboBox1";
-            this.toolStripComboBox1.Size = new System.Drawing.Size(121, 23);
             // 
             // actionToolStripMenuItem
             // 
@@ -203,16 +161,23 @@
             // sendIronToolStripMenuItem
             // 
             this.sendIronToolStripMenuItem.Name = "sendIronToolStripMenuItem";
-            this.sendIronToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.sendIronToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.sendIronToolStripMenuItem.Text = "Send Iron";
             this.sendIronToolStripMenuItem.Click += new System.EventHandler(this.onClickSendIron);
             // 
             // addAccountToolStripMenuItem
             // 
             this.addAccountToolStripMenuItem.Name = "addAccountToolStripMenuItem";
-            this.addAccountToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.addAccountToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.addAccountToolStripMenuItem.Text = "Add Account";
             this.addAccountToolStripMenuItem.Click += new System.EventHandler(this.onClickAddAccount);
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.optionsToolStripMenuItem.Text = "Settings";
+            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.onClickOpenSettings);
             // 
             // ironChainToolStripMenuItem
             // 
@@ -251,16 +216,6 @@
             this.deleteAllAccountsToolStripMenuItem.Text = "Delete all Accounts";
             this.deleteAllAccountsToolStripMenuItem.Click += new System.EventHandler(this.onClickDeleteAllAccounts);
             // 
-            // comboBox2
-            // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(32, 531);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(150, 21);
-            this.comboBox2.TabIndex = 37;
-            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
-            // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -297,7 +252,6 @@
             this.button1.TabIndex = 41;
             this.button1.Text = "generate Key Pair";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // label6
             // 
@@ -316,7 +270,6 @@
             this.button2.TabIndex = 43;
             this.button2.Text = "import rsa key from account";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button3
             // 
@@ -353,8 +306,6 @@
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.comboBox2);
-            this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.panel1);
@@ -372,7 +323,6 @@
 
         #endregion
         private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label7;
@@ -387,12 +337,9 @@
         private System.Windows.Forms.ToolStripMenuItem sendIronToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ironChainToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem analyseFromGenesisToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem difficultyToolStripMenuItem;
-        private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
         private System.Windows.Forms.ToolStripMenuItem addAccountToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem startFromGenesisToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteIronChainToolStripMenuItem;
-        public System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label4;
         public System.Windows.Forms.Label label1;
