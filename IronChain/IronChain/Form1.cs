@@ -9,8 +9,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net.PeerToPeer;
+using System.Net;
 
 namespace IronChain {
+
     public partial class Form1 : Form {
 
         public static Form1 instance;
@@ -181,7 +184,7 @@ namespace IronChain {
             int difficulty = miningDifficulty;
             while (miningFlag) {
 
-                string hashToProof = i + hashFromLatestBlock + accountList[minerAccountName].publicKey;     
+                string hashToProof = i + hashFromLatestBlock + accountList[minerAccountName].publicKey;
 
                 string hash = Utility.getHashSha256(hashToProof);
 
@@ -393,6 +396,93 @@ namespace IronChain {
         private void onClickOpenSettings(object sender, EventArgs e) {
             Settings s = new Settings();
             s.ShowDialog();
+        }
+
+        PeerNameRegistration pnReg;
+
+        private void onClickStartPNRP(object sender, EventArgs e) {
+
+            // Creates a secure (not spoofable) PeerName
+
+            PeerName peerName = new PeerName("MikesWebServer", PeerNameType.Secured);
+            pnReg = new PeerNameRegistration();
+
+            pnReg.PeerName = peerName;
+            pnReg.Port = 80;
+
+            //OPTIONAL
+
+            //The properties set below are optional.  You can register a PeerName without setting these properties
+
+            pnReg.Comment = "up to 39 unicode char comment";
+            pnReg.Data = System.Text.Encoding.UTF8.GetBytes("A data blob associated with the name");
+
+            /*
+             * OPTIONAL
+             *The properties below are also optional, but will not be set (ie. are commented out) for this example
+             *pnReg.IPEndPointCollection = // a list of all {IPv4/v6 address, port} pairs to associate with the peername
+             *pnReg.Cloud = //the scope in which the name should be registered (local subnet, internet, etc)
+            */
+
+
+            //Starting the registration means the name is published for others to resolve
+
+            pnReg.Start();
+            textBox1.Text = peerName.ToString();
+            Console.WriteLine();
+
+        }
+
+        private void onClickEndPNRP(object sender, EventArgs e) {
+            pnReg.Stop();
+            label1.Text = "Stopped Peer to peer";
+        }
+
+        private void onClickDiscoverPNRP(object sender, EventArgs e) {
+
+            // create a resolver object to resolve a peername
+            PeerNameResolver resolver = new PeerNameResolver();
+            // the peername to resolve must be passed as the first command line argument to the application
+
+            PeerName peerName = new PeerName(textBox1.Text.Trim());
+            // resolve the PeerName - this is a network operation and will block until the resolve completes
+
+            PeerNameRecordCollection results = resolver.Resolve(peerName);
+            // Display the data returned by the resolve operation
+
+            Console.WriteLine("Results for PeerName: {0}", peerName);
+            Console.WriteLine();
+            label1.Text = "Result working! Found:" + results.Count;
+
+            int count = 1;
+            foreach (PeerNameRecord record in results) {
+
+                Console.WriteLine("Record #{0} results...", count);
+                Console.Write("Comment:");
+
+                if (record.Comment != null) {
+                    Console.Write(record.Comment);
+                }
+
+                Console.WriteLine();
+                Console.Write("Data:");
+
+                if (record.Data != null) {
+                    Console.Write(System.Text.Encoding.ASCII.GetString(record.Data));
+                }
+
+                Console.WriteLine();
+                Console.WriteLine("Endpoints:");
+
+                foreach (IPEndPoint endpoint in record.EndPointCollection) {
+
+                    Console.WriteLine("\t Endpoint:{0}", endpoint);
+
+                    Console.WriteLine();
+
+                }
+                count++;
+            }
         }
 
     }
