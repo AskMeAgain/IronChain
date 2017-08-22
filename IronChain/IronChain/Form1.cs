@@ -326,7 +326,13 @@ namespace IronChain {
             int coinbalance = 0;
             for (int i = 0; i <= blockheight; i++) {
 
+                if (!File.Exists(i + ".blk")) {
+                    break;
+                }
+
                 Block b = Utility.loadFile<Block>(i + ".blk");
+
+
 
                 foreach (Block.Coin coin in b.allCoins) {
                     if (coin.owner.Equals(owner)) {
@@ -354,6 +360,7 @@ namespace IronChain {
         }
 
         private void onAccountChanged(object sender, EventArgs e) {
+            analyseChain();
             label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock);
         }
 
