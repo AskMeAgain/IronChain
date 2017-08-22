@@ -117,7 +117,7 @@ namespace IronChain {
                     p.addTransaction(trans);
                 }
 
-            } 
+            }
 
             //add hash to block before
             p.hashToBlock = Utility.ComputeHash("" + latestBlock);
@@ -138,7 +138,9 @@ namespace IronChain {
 
         private bool verifyTransactionHash(Transaction trans) {
 
-            string original = trans.id + "";
+            string hashOfEverything = trans.id + "" + trans.amount + "" + trans.receiver + "" + trans.owner;
+            string original = "" + hashOfEverything.GetHashCode();
+
             string publ = trans.owner;
             string signedHash = trans.proofOfOwnership;
 
@@ -147,8 +149,6 @@ namespace IronChain {
             } else {
                 return false;
             }
-
-
         }
 
         private void mineNextBlock(string nonce) {
@@ -182,10 +182,12 @@ namespace IronChain {
             int difficulty = miningDifficulty;
             while (miningFlag) {
 
-                string hash = Utility.getHashSha256(i + "" + hashFromLatestBlock);
+                string hashToProof = i + hashFromLatestBlock + accountList[minerAccountName].publicKey;
+                
+
+                string hash = Utility.getHashSha256(hashToProof);
 
                 if (Utility.verifyHashDifficulty(hash, difficulty)) {
-                    Console.WriteLine(latestBlock + " HASH FOUND " + hashFromLatestBlock);
                     mineNextBlock(i + "");
                     break;
                 }
@@ -228,10 +230,17 @@ namespace IronChain {
 
                 b = Utility.loadFile<Block>(i + ".blk");
                 string hashOfBlock = Utility.ComputeHash(i + "");
-                string proofHash = Utility.getHashSha256(b.nonce + "" + Utility.ComputeHash((i - 1) + ""));
+                string hashOfBlockBefore = Utility.ComputeHash((i - 1) + "");
+
+                string hashToProof = b.nonce + hashOfBlockBefore + b.allCoins[0].owner;
+                string proofHash = Utility.getHashSha256(hashToProof);
+
+                Console.WriteLine("i" + b.nonce + " hashFromlatest" + hashOfBlockBefore + " __");
+                Console.WriteLine(proofHash + " proof? what");
 
                 //checking nonce
                 if (!Utility.verifyHashDifficulty(proofHash, difficulty)) {
+                    Console.WriteLine("WRONG SHIT!");
                     break;
                 }
 
