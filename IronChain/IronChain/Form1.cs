@@ -477,7 +477,6 @@ namespace IronChain {
                 foreach (IPEndPoint endpoint in record.EndPointCollection) {
 
                     Console.WriteLine("\t Endpoint:{0}", endpoint);
-
                     Console.WriteLine();
 
                 }
