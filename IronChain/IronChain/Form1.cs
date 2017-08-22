@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
 namespace IronChain {
     public partial class Form1 : Form {
 
@@ -182,8 +181,7 @@ namespace IronChain {
             int difficulty = miningDifficulty;
             while (miningFlag) {
 
-                string hashToProof = i + hashFromLatestBlock + accountList[minerAccountName].publicKey;
-                
+                string hashToProof = i + hashFromLatestBlock + accountList[minerAccountName].publicKey;     
 
                 string hash = Utility.getHashSha256(hashToProof);
 
