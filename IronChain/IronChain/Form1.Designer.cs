@@ -244,23 +244,23 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(881, 115);
+            this.button1.Location = new System.Drawing.Point(847, 237);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(129, 23);
+            this.button1.Size = new System.Drawing.Size(163, 23);
             this.button1.TabIndex = 40;
-            this.button1.Text = "start Peer to Peer";
+            this.button1.Text = "host Server";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.onClickStartPNRP);
+            this.button1.Click += new System.EventHandler(this.onClickCreateServerListener);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(881, 144);
+            this.button2.Location = new System.Drawing.Point(847, 208);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(129, 23);
+            this.button2.Size = new System.Drawing.Size(163, 23);
             this.button2.TabIndex = 41;
-            this.button2.Text = "end peer to peer";
+            this.button2.Text = "connect as client";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.onClickEndPNRP);
+            this.button2.Click += new System.EventHandler(this.onClickConnectClient);
             // 
             // button3
             // 
@@ -283,9 +283,10 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(505, 313);
+            this.textBox1.Location = new System.Drawing.Point(847, 266);
+            this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(392, 20);
+            this.textBox1.Size = new System.Drawing.Size(163, 162);
             this.textBox1.TabIndex = 44;
             // 
             // Form1

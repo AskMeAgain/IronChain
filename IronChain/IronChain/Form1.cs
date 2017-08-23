@@ -4,11 +4,16 @@ using System.IO;
 using System.Windows.Forms;
 using System.Net.PeerToPeer;
 using System.Net;
-
+using System.ServiceModel;
+using System.ServiceModel.Description;
+using System.Net.Sockets;
+using System.Text;
 
 namespace IronChain {
 
     public partial class Form1 : Form {
+
+
 
         public static Form1 instance;
 
@@ -23,6 +28,7 @@ namespace IronChain {
         public Dictionary<String, Account> accountList;
 
         public Form1() {
+
             InitializeComponent();
             instance = this;
             TransactionPool = new List<Transaction>();
@@ -42,6 +48,8 @@ namespace IronChain {
 
             analyseChain();
         }
+
+
 
         public void updateAccountList() {
 
@@ -230,9 +238,6 @@ namespace IronChain {
                 string hashToProof = b.nonce + hashOfBlockBefore + b.allCoins[0].owner;
                 string proofHash = Utility.getHashSha256(hashToProof);
 
-                Console.WriteLine("i" + b.nonce + " hashFromlatest" + hashOfBlockBefore + " __");
-                Console.WriteLine(proofHash + " proof? what");
-
                 //checking nonce
                 if (!Utility.verifyHashDifficulty(proofHash, difficulty)) {
                     Console.WriteLine("WRONG SHIT!");
@@ -399,90 +404,112 @@ namespace IronChain {
             s.ShowDialog();
         }
 
-        PeerNameRegistration pnReg;
+        public static string data = null;
 
-        private void onClickStartPNRP(object sender, EventArgs e) {
+        private void onClickCreateServerListener(object sender, EventArgs e) {
 
-            // Creates a secure (not spoofable) PeerName
+            byte[] bytes = new Byte[1024];
 
-            PeerName peerName = new PeerName("MikesWebServer", PeerNameType.Secured);
-            pnReg = new PeerNameRegistration();
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
 
-            pnReg.PeerName = peerName;
-            pnReg.Port = 80;
+            // Create a TCP/IP socket.
+            Socket listener = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
 
-            //OPTIONAL
+            try {
+                listener.Bind(localEndPoint);
+                listener.Listen(10);
 
-            //The properties set below are optional.  You can register a PeerName without setting these properties
+                // Start listening for connections.
+                while (true) {
+                    Console.WriteLine("Waiting for a connection...");
+                    // Program is suspended while waiting for an incoming connection.
+                    Socket handler = listener.Accept();
+                    data = null;
 
-            pnReg.Comment = "up to 39 unicode char comment";
-            pnReg.Data = System.Text.Encoding.UTF8.GetBytes("A data blob associated with the name");
+                    // An incoming connection needs to be processed.
+                    while (true) {
+                        bytes = new byte[1024];
+                        int bytesRec = handler.Receive(bytes);
+                        data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                        if (data.IndexOf("<EOF>") > -1) {
+                            break;
+                        }
+                    }
 
-            /*
-             * OPTIONAL
-             *The properties below are also optional, but will not be set (ie. are commented out) for this example
-             *pnReg.IPEndPointCollection = // a list of all {IPv4/v6 address, port} pairs to associate with the peername
-             *pnReg.Cloud = //the scope in which the name should be registered (local subnet, internet, etc)
-            */
+                    // Show the data on the console.
+                    Console.WriteLine("Text received : {0}", data);
 
+                    // Echo the data back to the client.
+                    byte[] msg = Encoding.ASCII.GetBytes(data);
 
-            //Starting the registration means the name is published for others to resolve
+                    handler.Send(msg);
+                    handler.Shutdown(SocketShutdown.Both);
+                    handler.Close();
+                }
 
-            pnReg.Start();
-            textBox1.Text = peerName.ToString();
-            Console.WriteLine();
+            } catch (Exception et) {
+                Console.WriteLine(et.ToString());
+            }
 
         }
 
-        private void onClickEndPNRP(object sender, EventArgs e) {
-            pnReg.Stop();
-            label1.Text = "Stopped Peer to peer";
+        private void onClickConnectClient(object sender, EventArgs e) {
+
+            // Data buffer for incoming data.
+            byte[] bytes = new byte[1024];
+
+            // Connect to a remote device.
+            try {
+                // Establish the remote endpoint for the socket.
+                // This example uses port 11000 on the local computer.
+                IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+                IPAddress ipAddress = ipHostInfo.AddressList[0];
+                IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
+
+                // Create a TCP/IP  socket.
+                Socket socket = new Socket(AddressFamily.InterNetworkV6,
+                    SocketType.Stream, ProtocolType.Tcp);
+
+                // Connect the socket to the remote endpoint. Catch any errors.
+                try {
+                    socket.Connect(remoteEP);
+
+                    Console.WriteLine("Socket connected to {0}",
+                        socket.RemoteEndPoint.ToString());
+
+                    // Encode the data string into a byte array.
+                    byte[] msg = Encoding.ASCII.GetBytes("This is a test<EOF>");
+
+                    // Send the data through the socket.
+                    int bytesSent = socket.Send(msg);
+
+                    // Receive the response from the remote device.
+                    int bytesRec = socket.Receive(bytes);
+
+                    label1.Text = Encoding.ASCII.GetString(bytes, 0, bytesRec) + " << received";
+
+                    // Release the socket.
+                    socket.Shutdown(SocketShutdown.Both);
+                    socket.Close();
+
+                } catch (ArgumentNullException ane) {
+                    Console.WriteLine("ArgumentNullException : {0}", ane.ToString());
+                } catch (SocketException se) {
+                    Console.WriteLine("SocketException : {0}", se.ToString());
+                } catch (Exception et) {
+                    Console.WriteLine("Unexpected exception : {0}", et.ToString());
+                }
+
+            } catch (Exception et) {
+                Console.WriteLine(et.ToString());
+            }
+
         }
 
         private void onClickDiscoverPNRP(object sender, EventArgs e) {
 
-            // create a resolver object to resolve a peername
-            PeerNameResolver resolver = new PeerNameResolver();
-            // the peername to resolve must be passed as the first command line argument to the application
-
-            PeerName peerName = new PeerName(textBox1.Text.Trim());
-            // resolve the PeerName - this is a network operation and will block until the resolve completes
-
-            PeerNameRecordCollection results = resolver.Resolve(peerName);
-            // Display the data returned by the resolve operation
-
-            Console.WriteLine("Results for PeerName: {0}", peerName);
-            Console.WriteLine();
-            label1.Text = "Result working! Found:" + results.Count;
-
-            int count = 1;
-            foreach (PeerNameRecord record in results) {
-
-                Console.WriteLine("Record #{0} results...", count);
-                Console.Write("Comment:");
-
-                if (record.Comment != null) {
-                    Console.Write(record.Comment);
-                }
-
-                Console.WriteLine();
-                Console.Write("Data:");
-
-                if (record.Data != null) {
-                    Console.Write(System.Text.Encoding.ASCII.GetString(record.Data));
-                }
-
-                Console.WriteLine();
-                Console.WriteLine("Endpoints:");
-
-                foreach (IPEndPoint endpoint in record.EndPointCollection) {
-
-                    Console.WriteLine("\t Endpoint:{0}", endpoint);
-                    Console.WriteLine();
-
-                }
-                count++;
-            }
         }
 
     }
