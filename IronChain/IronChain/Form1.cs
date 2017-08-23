@@ -408,103 +408,15 @@ namespace IronChain {
 
         private void onClickCreateServerListener(object sender, EventArgs e) {
 
-            byte[] bytes = new Byte[1024];
+            Networking manager = new Networking();
 
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress ipAddress = ipHostInfo.AddressList[0];
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
-
-            // Create a TCP/IP socket.
-            Socket listener = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
-
-            try {
-                listener.Bind(localEndPoint);
-                listener.Listen(10);
-
-                // Start listening for connections.
-                while (true) {
-                    Console.WriteLine("Waiting for a connection...");
-                    // Program is suspended while waiting for an incoming connection.
-                    Socket handler = listener.Accept();
-                    data = null;
-
-                    // An incoming connection needs to be processed.
-                    while (true) {
-                        bytes = new byte[1024];
-                        int bytesRec = handler.Receive(bytes);
-                        data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                        if (data.IndexOf("<EOF>") > -1) {
-                            break;
-                        }
-                    }
-
-                    // Show the data on the console.
-                    Console.WriteLine("Text received : {0}", data);
-
-                    // Echo the data back to the client.
-                    byte[] msg = Encoding.ASCII.GetBytes(data);
-
-                    handler.Send(msg);
-                    handler.Shutdown(SocketShutdown.Both);
-                    handler.Close();
-                }
-
-            } catch (Exception et) {
-                Console.WriteLine(et.ToString());
-            }
+            manager.StartListening();    
 
         }
 
         private void onClickConnectClient(object sender, EventArgs e) {
 
-            // Data buffer for incoming data.
-            byte[] bytes = new byte[1024];
-
-            // Connect to a remote device.
-            try {
-                // Establish the remote endpoint for the socket.
-                // This example uses port 11000 on the local computer.
-                IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-                IPAddress ipAddress = ipHostInfo.AddressList[0];
-                IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
-
-                // Create a TCP/IP  socket.
-                Socket socket = new Socket(AddressFamily.InterNetworkV6,
-                    SocketType.Stream, ProtocolType.Tcp);
-
-                // Connect the socket to the remote endpoint. Catch any errors.
-                try {
-                    socket.Connect(remoteEP);
-
-                    Console.WriteLine("Socket connected to {0}",
-                        socket.RemoteEndPoint.ToString());
-
-                    // Encode the data string into a byte array.
-                    byte[] msg = Encoding.ASCII.GetBytes("This is a test<EOF>");
-
-                    // Send the data through the socket.
-                    int bytesSent = socket.Send(msg);
-
-                    // Receive the response from the remote device.
-                    int bytesRec = socket.Receive(bytes);
-
-                    label1.Text = Encoding.ASCII.GetString(bytes, 0, bytesRec) + " << received";
-
-                    // Release the socket.
-                    socket.Shutdown(SocketShutdown.Both);
-                    socket.Close();
-
-                } catch (ArgumentNullException ane) {
-                    Console.WriteLine("ArgumentNullException : {0}", ane.ToString());
-                } catch (SocketException se) {
-                    Console.WriteLine("SocketException : {0}", se.ToString());
-                } catch (Exception et) {
-                    Console.WriteLine("Unexpected exception : {0}", et.ToString());
-                }
-
-            } catch (Exception et) {
-                Console.WriteLine(et.ToString());
-            }
+            
 
         }
 
