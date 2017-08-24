@@ -12,50 +12,51 @@ namespace IronChain {
 
     public class Networking {
 
-        public static Socket socket;
+        private Socket socket;
+        private byte[] buffer = new byte[1024];
 
-        private static ManualResetEvent allDone = new ManualResetEvent(false);
 
-        public void StartListening() {
+        public Networking() {
 
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPEndPoint localEP = new IPEndPoint(ipHostInfo.AddressList[0], 11000);
+            socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
 
-            Console.WriteLine("Local address and port : {0}", localEP.ToString());
-
-            Socket listener = new Socket(localEP.Address.AddressFamily,
-                SocketType.Stream, ProtocolType.Tcp);
-
-            try {
-                listener.Bind(localEP);
-                listener.Listen(10);
-
-                while (true) {
-                    allDone.Reset();
-
-                    Console.WriteLine("Waiting for a connection...");
-                    listener.BeginAccept(
-                        new AsyncCallback(acceptCallback),
-                        listener);
-
-                    allDone.WaitOne();
-                }
-            } catch (Exception e) {
-                Console.WriteLine(e.ToString());
-            }
-
-            Console.WriteLine("Closing the listener...");
         }
 
-        public void acceptCallback(IAsyncResult ar) {
-
-            allDone.Set();
-
-            Socket listener = (Socket)ar.AsyncState;
-            Socket handler = listener.EndAccept(ar);
-
-            Console.WriteLine("connect received!!");
+        public void bind(int port) {
+            socket.Bind(new IPEndPoint(IPAddress.Any, port));
         }
+
+        public void listen(int backlog) {
+            socket.Listen(backlog);
+        }
+
+        public void accept() {
+
+            socket.BeginAccept(acceptedCallback, null);
+
+        }
+
+        private void acceptedCallback(IAsyncResult result) {
+
+            Socket clientsocket = socket.EndAccept(result);
+            buffer = new byte[1024];
+            clientsocket.BeginReceive(buffer,0,buffer.Length,SocketFlags.None, receiveCallback, clientsocket);
+            accept();
+
+        }
+
+        private void receiveCallback(IAsyncResult result) {
+
+            Socket clientSocket = result.AsyncState as Socket;
+            int bufferSize = clientSocket.EndReceive(result);
+            byte[] packet = new byte[bufferSize];
+            Array.Copy(buffer, packet, packet.Length);
+
+            //handle packet
+            buffer = new byte[1024];
+            clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, receiveCallback, clientSocket);
+        }
+       
 
 
 

@@ -404,13 +404,15 @@ namespace IronChain {
             s.ShowDialog();
         }
 
-        public static string data = null;
+        public static Networking networkManager = new Networking();
+
 
         private void onClickCreateServerListener(object sender, EventArgs e) {
 
-            Networking manager = new Networking();
+            networkManager.bind(6556);
+            networkManager.listen(500);
+            networkManager.accept();
 
-            manager.StartListening();    
 
         }
 
