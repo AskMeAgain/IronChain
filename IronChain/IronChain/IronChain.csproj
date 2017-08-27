@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="Networking.cs" />
     <Compile Include="Particle.cs" />
+    <Compile Include="PeerNetworking.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="sendIron.cs">

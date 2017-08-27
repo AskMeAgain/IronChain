@@ -12,7 +12,7 @@ namespace IronChain {
 
     public class Networking {
 
-        Stream inOut;
+        Stream serverStream;
 
         public void StartServer() {
             Thread a = new Thread(startListen);
@@ -31,9 +31,6 @@ namespace IronChain {
             a.Start();
         }
 
-
-
-
         private void startListen() {
 
             TcpListener listener = new TcpListener(IPAddress.IPv6Any, 4711);
@@ -46,23 +43,31 @@ namespace IronChain {
             Console.WriteLine("Connected to client");
 
 
-            inOut = c.GetStream();
+            serverStream = c.GetStream();
 
             while (true) {
 
                 //receiving message from client
                 byte[] buffer = new byte[5];
 
-                inOut.Read(buffer, 0, buffer.Length);
+                serverStream.Read(buffer, 0, buffer.Length);
 
                 commandServer(buffer);
             }
         }
 
+        Dictionary<string, NetworkStream> ClientSockets;
+
         private void connectToServer() {
             byte[] buffer = new byte[1024];
             TcpClient c = new TcpClient("localhost", 4711);
-            inOut = c.GetStream();
+            serverStream = c.GetStream();
+        }
+
+        private void tellClientsOfNewFile() {
+
+            //byte[] message = new byte[1] { 0x01 };
+            //inOut.Write(message, 0, 1);
         }
 
         private void commandServer(byte[] command) {
@@ -82,7 +87,7 @@ namespace IronChain {
                 byte[] ack = new byte[32];
                 if (Form1.instance.latestBlock >= height) {
                     ack = createMessage(true, height);
-                    inOut.Write(ack, 0, ack.Length);
+                    serverStream.Write(ack, 0, ack.Length);
 
                     sendFile(height + ".blk");
                     sendFile("P" + height + ".blk");
@@ -90,42 +95,12 @@ namespace IronChain {
 
                 } else {
                     ack[0] = 0x01;
-                    inOut.Write(ack, 0, ack.Length);
+                    serverStream.Write(ack, 0, ack.Length);
                 }
 
                 Console.WriteLine("Stopped sending files!");
 
-            } else {
-                Console.WriteLine("Pushing file!");
             }
-
-        }
-
-        private byte[] createMessage(bool fileExist, long blockheight) {
-
-            byte[] message = Enumerable.Repeat((byte)0x00, 32).ToArray();
-
-            if (!fileExist) {
-                message[0] = 0x01;
-            }
-
-            byte[] fileA = File.ReadAllBytes(Form1.instance.globalChainPath + blockheight + ".blk");
-            byte[] fileB = File.ReadAllBytes(Form1.instance.globalChainPath + "P" + blockheight + ".blk");
-            byte[] fileC = File.ReadAllBytes(Form1.instance.globalChainPath + "L" + blockheight + ".blk");
-
-            byte[] sizeA = BitConverter.GetBytes(fileA.Length);
-            byte[] sizeB = BitConverter.GetBytes(fileB.Length);
-            byte[] sizeC = BitConverter.GetBytes(fileC.Length);
-
-            Array.Copy(sizeA, 0, message, 8, sizeA.Length);
-            Array.Copy(sizeB, 0, message, 16, sizeB.Length);
-            Array.Copy(sizeC, 0, message, 24, sizeC.Length);
-
-            Console.WriteLine(BitConverter.ToInt64(message, 8));
-            Console.WriteLine(BitConverter.ToInt64(message, 16));
-            Console.WriteLine(BitConverter.ToInt64(message, 24));
-
-            return message;
 
         }
 
@@ -151,7 +126,7 @@ namespace IronChain {
                     endPointer = bytesMissing;
                 }
 
-                inOut.Write(fileArray, startIndex, endPointer);
+                serverStream.Write(fileArray, startIndex, endPointer);
                 startIndex += buffer.Length;
             } while (startIndex < fileLength);
 
@@ -167,12 +142,12 @@ namespace IronChain {
             Array.Copy(num, 0, buffer, 1, num.Length);
 
             //sending message
-            inOut.Write(buffer, 0, buffer.Length);
+            serverStream.Write(buffer, 0, buffer.Length);
             Console.WriteLine("Requesting files from block height " + height);
 
             // RECEIVE ACK FIRST;
             byte[] ack = new byte[32];
-            int i = inOut.Read(ack, 0, 32);
+            int i = serverStream.Read(ack, 0, 32);
             if (ack[0] == 1) {
 
                 Console.WriteLine("ERROR!!! FILES DO NOT EXIST");
@@ -212,7 +187,7 @@ namespace IronChain {
                     endpointer = (int)fileSize;
                 }
 
-                int receivedBytes = inOut.Read(receiveBuffer, 0, endpointer);
+                int receivedBytes = serverStream.Read(receiveBuffer, 0, endpointer);
                 fileSize -= receivedBytes;
 
                 fileStream.Write(receiveBuffer, 0, receivedBytes);
@@ -226,6 +201,33 @@ namespace IronChain {
             Console.WriteLine("Received" + counter);
         }
 
+        private byte[] createMessage(bool fileExist, long blockheight) {
+
+            byte[] message = Enumerable.Repeat((byte)0x00, 32).ToArray();
+
+            if (!fileExist) {
+                message[0] = 0x01;
+            }
+
+            byte[] fileA = File.ReadAllBytes(Form1.instance.globalChainPath + blockheight + ".blk");
+            byte[] fileB = File.ReadAllBytes(Form1.instance.globalChainPath + "P" + blockheight + ".blk");
+            byte[] fileC = File.ReadAllBytes(Form1.instance.globalChainPath + "L" + blockheight + ".blk");
+
+            byte[] sizeA = BitConverter.GetBytes(fileA.Length);
+            byte[] sizeB = BitConverter.GetBytes(fileB.Length);
+            byte[] sizeC = BitConverter.GetBytes(fileC.Length);
+
+            Array.Copy(sizeA, 0, message, 8, sizeA.Length);
+            Array.Copy(sizeB, 0, message, 16, sizeB.Length);
+            Array.Copy(sizeC, 0, message, 24, sizeC.Length);
+
+            Console.WriteLine(BitConverter.ToInt64(message, 8));
+            Console.WriteLine(BitConverter.ToInt64(message, 16));
+            Console.WriteLine(BitConverter.ToInt64(message, 24));
+
+            return message;
+
+        }
 
     }
 }
