@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -346,10 +347,21 @@ namespace IronChain {
                 i--;
             }
 
+            Console.WriteLine("latest Block!" + i);
+
             latestBlock = i;
+
+            if (InvokeRequired) {
+                Invoke(new Action(() => updateUI()));
+            } else {
+                label5.Text = "Block " + latestBlock;
+                label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock);
+            }
+        }
+
+        private void updateUI() {
             label5.Text = "Block " + latestBlock;
             label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock);
-
         }
 
         private int checkCoinBalance(string owner, int blockheight) {
@@ -448,8 +460,12 @@ namespace IronChain {
 
         private void onClickRequestFile(object sender, EventArgs e) {
 
-            int requestHeight = Convert.ToInt32(textBox3.Text);
+            int requestHeight = latestBlock+1;
 
+            if (!textBox3.Text.Equals("")){
+                requestHeight = Convert.ToInt32(textBox3.Text);
+            }
+            Console.WriteLine(requestHeight);
             manager.RequestFile(requestHeight);
 
         }
@@ -458,9 +474,9 @@ namespace IronChain {
             Console.WriteLine(globalChainPath);
         }
 
-        private void onClickTestStitching(object sender, EventArgs e) {
 
-
+        private void button6_Click(object sender, EventArgs e) {
+            globalChainPath = @"C:\Users\kelvi\Desktop\IronChain\";
         }
     }
 }

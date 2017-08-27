@@ -77,27 +77,20 @@ namespace IronChain {
 
                 Console.WriteLine("Received FileHeader with height " + height);
 
+
+                //SEND ACKNOWLEDGEMENT
+                byte[] ack = new byte[32];
                 if (Form1.instance.latestBlock >= height) {
-
-                    //write filesize
-                    byte[] message = new byte[] { 0x00 };
-                    long[] fileSizes = allocateFileSize(height);
-
-                    inOut.Write(message, 0, message.Length);
-
+                    ack = createMessage(true, height);
+                    inOut.Write(ack, 0, ack.Length);
 
                     sendFile(height + ".blk");
-
-
                     sendFile("P" + height + ".blk");
-
-
                     sendFile("L" + height + ".blk");
 
                 } else {
-                    byte[] message = new byte[] { 0x01 };
-                    inOut.Write(message, 0, message.Length);
-                    Console.WriteLine("Error file does not exist!");
+                    ack[0] = 0x01;
+                    inOut.Write(ack, 0, ack.Length);
                 }
 
                 Console.WriteLine("Stopped sending files!");
@@ -108,24 +101,36 @@ namespace IronChain {
 
         }
 
-        private long[] allocateFileSize(int height) {
+        private byte[] createMessage(bool fileExist, long blockheight) {
 
-            long[] size = new long[3];
+            byte[] message = Enumerable.Repeat((byte)0x00, 32).ToArray();
 
+            if (!fileExist) {
+                message[0] = 0x01;
+            }
 
-            size[0] = new FileInfo(Form1.instance.globalChainPath + "P"+height+".blk").Length;
-            size[1] = new FileInfo(Form1.instance.globalChainPath + "L" + height + ".blk").Length;
-            size[2] = new FileInfo(Form1.instance.globalChainPath + height + ".blk").Length;
+            byte[] fileA = File.ReadAllBytes(Form1.instance.globalChainPath + blockheight + ".blk");
+            byte[] fileB = File.ReadAllBytes(Form1.instance.globalChainPath + "P" + blockheight + ".blk");
+            byte[] fileC = File.ReadAllBytes(Form1.instance.globalChainPath + "L" + blockheight + ".blk");
 
-            Console.WriteLine(size[0] + " " + size[1] + " " + size[2]);
+            byte[] sizeA = BitConverter.GetBytes(fileA.Length);
+            byte[] sizeB = BitConverter.GetBytes(fileB.Length);
+            byte[] sizeC = BitConverter.GetBytes(fileC.Length);
 
-            return size;
+            Array.Copy(sizeA, 0, message, 8, sizeA.Length);
+            Array.Copy(sizeB, 0, message, 16, sizeB.Length);
+            Array.Copy(sizeC, 0, message, 24, sizeC.Length);
+
+            Console.WriteLine(BitConverter.ToInt64(message, 8));
+            Console.WriteLine(BitConverter.ToInt64(message, 16));
+            Console.WriteLine(BitConverter.ToInt64(message, 24));
+
+            return message;
 
         }
 
         private void sendFile(string name) {
 
-            //TODO SENDING BIG FILES
             byte[] buffer = new byte[1024];
 
             FileStream File = new FileStream(Form1.instance.globalChainPath + name, FileMode.Open, FileAccess.Read);
@@ -165,26 +170,27 @@ namespace IronChain {
             inOut.Write(buffer, 0, buffer.Length);
             Console.WriteLine("Requesting files from block height " + height);
 
-            // RECEIVE ERROR CODE FIRST
-            byte[] error = new byte[1];
-            int i = inOut.Read(error, 0, error.Length);
-            if (error[0] == 1) {
+            // RECEIVE ACK FIRST;
+            byte[] ack = new byte[32];
+            int i = inOut.Read(ack, 0, 32);
+            if (ack[0] == 1) {
+
                 Console.WriteLine("ERROR!!! FILES DO NOT EXIST");
-                return;
+
             } else {
                 //Files exist
                 Console.WriteLine("NO ERROR!");
+
+                receiveFileAndStore(height + ".blk", BitConverter.ToInt64(ack, 8));
+                receiveFileAndStore("P" + height + ".blk", BitConverter.ToInt64(ack, 16));
+                receiveFileAndStore("L" + height + ".blk", BitConverter.ToInt64(ack, 24));
+
+                Form1.instance.analyseChain();
+
             }
-
-            Console.WriteLine("Writing into file now!");
-            receiveFileAndStore(height + ".blk");
-            receiveFileAndStore("P" + height + ".blk");
-            receiveFileAndStore("L" + height + ".blk");
-
-            Form1.instance.analyseChain();
         }
 
-        private void receiveFileAndStore(string filename) {
+        private void receiveFileAndStore(string filename, long fileSize) {
 
             string file = Form1.instance.globalChainPath + filename;
 
@@ -196,19 +202,23 @@ namespace IronChain {
             FileStream fileStream = new FileStream(file, FileMode.Append);
 
             int counter = 0;
+            Console.WriteLine("Storing file with " + fileSize);
 
             while (true) {
 
-                int receivedBytes = inOut.Read(receiveBuffer, 0, receiveBuffer.Length);
-                counter += receivedBytes;
+                int endpointer = receiveBuffer.Length;
 
-                if (receivedBytes == 0)
-                    break;
+                if (fileSize <= receiveBuffer.Length) {
+                    endpointer = (int)fileSize;
+                }
+
+                int receivedBytes = inOut.Read(receiveBuffer, 0, endpointer);
+                fileSize -= receivedBytes;
 
                 fileStream.Write(receiveBuffer, 0, receivedBytes);
                 Console.WriteLine("?" + receivedBytes);
 
-                if (receivedBytes < receiveBuffer.Length)
+                if (fileSize == 0)
                     break;
             }
 
