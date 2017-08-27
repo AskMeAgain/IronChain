@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 
@@ -8,8 +9,9 @@ namespace IronChain {
 
     public partial class Form1 : Form {
 
+        private static ManualResetEvent waitForAccountCreation = new ManualResetEvent(false);
 
-
+        public string globalChainPath;
         public static Form1 instance;
 
         public List<Transaction> TransactionPool;
@@ -21,25 +23,26 @@ namespace IronChain {
         public string minerAccountName;
 
         public Dictionary<String, Account> accountList;
+        bool dontAnalyseYetFlag = true;
+
 
         public Form1() {
+
+            //waitForAccountCreation.Reset();
 
             InitializeComponent();
             instance = this;
             TransactionPool = new List<Transaction>();
             accountList = new Dictionary<string, Account>();
 
-
-
-            //update account list
+            Utility.loadSettings();
 
             updateAccountList();
 
-            if (!File.Exists("C:\\IronChain\\" + "0.blk")) {
-                createGenesisBlock();
-            }
 
-            Utility.loadSettings();
+            if (!File.Exists(globalChainPath + "0.blk")) {
+               createGenesisBlock();
+            }
 
             analyseChain();
         }
@@ -48,7 +51,7 @@ namespace IronChain {
 
             Account a = new Account("Add a new Account", 0);
 
-            string[] allAccountNames = Directory.GetFiles("C:\\IronChain", "*.acc");
+            string[] allAccountNames = Directory.GetFiles("C:\\IronChain\\", "*.acc");
 
             accountList = new Dictionary<string, Account>();
 
@@ -56,12 +59,20 @@ namespace IronChain {
 
                 string[] splitted = s.Split('\\');
                 string nameOfFile = splitted[splitted.Length - 1];
-                a = Utility.loadFile<Account>(nameOfFile);
+                a = Utility.loadFile<Account>("C:\\IronChain\\" + nameOfFile);
 
                 string[] onlyName = nameOfFile.Split('.');
 
                 accountList.Add(onlyName[0], a);
 
+            }
+
+            if (accountList.Count == 0) {
+
+                addAccount accWindow = new addAccount();
+                accWindow.Show(this);
+
+                return;
             }
 
             comboBox1.Items.Clear();
@@ -73,7 +84,9 @@ namespace IronChain {
             }
 
             //select later
-            //comboBox1.SelectedItem = a;
+            comboBox1.SelectedItem = a;
+
+            dontAnalyseYetFlag = false;
 
         }
 
@@ -84,8 +97,8 @@ namespace IronChain {
         private void createGenesisBlock() {
             Block genesis = new Block(0);
             genesis.hashOfParticle = "genesis";
-            genesis.giveSomeCoins(accountList["KelvinPetry"].publicKey, 100);
-            Utility.storeFile(genesis, genesis.name + ".blk");
+            //genesis.giveSomeCoins(accountList["KelvinPetry"].publicKey, 100);
+            Utility.storeFile(genesis, globalChainPath + genesis.name + ".blk");
         }
 
         public void updateTransactionPoolWindow() {
@@ -117,19 +130,19 @@ namespace IronChain {
             }
 
             //add hash to block before
-            p.hashToBlock = Utility.ComputeHash("" + latestBlock);
+            p.hashToBlock = Utility.ComputeHash(globalChainPath + latestBlock);
 
             particleName = "P" + (latestBlock + 1);
 
-            Utility.storeFile(p, particleName + ".blk");
+            Utility.storeFile(p,globalChainPath + particleName + ".blk");
 
             updateTransactionPoolWindow();
 
             //create light particle
             Particle light = new Particle();
-            string lightName = "L" + (latestBlock + 1);
-            light.hashToBlock = Utility.ComputeHash("" + latestBlock);
-            Utility.storeFile(light, lightName + ".blk");
+            string lightName =globalChainPath + "L" + (latestBlock + 1);
+            light.hashToBlock = Utility.ComputeHash(globalChainPath + "" + latestBlock);
+            Utility.storeFile(light,lightName + ".blk");
 
         }
 
@@ -153,7 +166,7 @@ namespace IronChain {
             Block nextBlock = new Block();
             createParticles();
 
-            Particle p = Utility.loadFile<Particle>("P" + (latestBlock + 1) + ".blk");
+            Particle p = Utility.loadFile<Particle>(globalChainPath + "P" + (latestBlock + 1) + ".blk");
 
             //GET HASHES NOW INTO BLOCK
             nextBlock.addHash((latestBlock + 1));
@@ -164,7 +177,7 @@ namespace IronChain {
             nextBlock.createCoins(accountList[minerAccountName]);
 
             //Store Block
-            Utility.storeFile(nextBlock, (latestBlock + 1) + ".blk");
+            Utility.storeFile(nextBlock,globalChainPath + (latestBlock + 1) + ".blk");
 
             analyseChain();
 
@@ -172,10 +185,29 @@ namespace IronChain {
 
         private void onClickStartMining(object sender, EventArgs e) {
 
+            if (minerAccountName.Equals("")) {
+
+                if (accountList.Count == 1) {
+                    minerAccountName = accountList[comboBox1.Text].name;
+                } else {
+
+                    string message = "You did not select a Miner Account, go to Settings and select it";
+                    string caption = "Error";
+                    MessageBoxButtons buttons = MessageBoxButtons.OK;
+                    DialogResult result;
+
+                    // Displays the MessageBox.
+
+                    result = MessageBox.Show(message, caption, buttons);
+
+                    return;
+                }
+            }
+
             miningFlag = true;
 
             int i = 0;
-            string hashFromLatestBlock = Utility.ComputeHash(latestBlock + "");
+            string hashFromLatestBlock = Utility.ComputeHash(globalChainPath + latestBlock + "");
             int difficulty = miningDifficulty;
             while (miningFlag) {
 
@@ -205,9 +237,16 @@ namespace IronChain {
 
         public void analyseChain() {
 
+            if (dontAnalyseYetFlag)
+                return;
+
             int difficulty = miningDifficulty;
 
-            Block b = Utility.loadFile<Block>("0.blk");
+            if (!File.Exists(globalChainPath + "0.blk")) {
+                createGenesisBlock();
+            }
+
+            Block b = Utility.loadFile<Block>(globalChainPath + "0.blk");
 
             //get genesis block too
             foreach (Account acc in accountList.Values) {
@@ -222,11 +261,11 @@ namespace IronChain {
             int i = 1;
             bool errorFlag = false;
 
-            while (File.Exists("C:\\IronChain\\" + i + ".blk")) {
+            while (File.Exists(globalChainPath + i + ".blk")) {
 
-                b = Utility.loadFile<Block>(i + ".blk");
-                string hashOfBlock = Utility.ComputeHash(i + "");
-                string hashOfBlockBefore = Utility.ComputeHash((i - 1) + "");
+                b = Utility.loadFile<Block>(globalChainPath + i + ".blk");
+                string hashOfBlock = Utility.ComputeHash(globalChainPath + i + "");
+                string hashOfBlockBefore = Utility.ComputeHash(globalChainPath + (i - 1) + "");
 
                 string hashToProof = b.nonce + hashOfBlockBefore + b.allCoins[0].owner;
                 string proofHash = Utility.getHashSha256(hashToProof);
@@ -237,17 +276,17 @@ namespace IronChain {
                     break;
                 }
 
-                if (File.Exists("C:\\IronChain\\" + "P" + i + ".blk")) {
+                if (File.Exists(globalChainPath + "P" + i + ".blk")) {
                     //particle exists
-                    Particle p = Utility.loadFile<Particle>("P" + i + ".blk");
+                    Particle p = Utility.loadFile<Particle>(globalChainPath + "P" + i + ".blk");
 
                     //block points to particle
-                    if (!Utility.ComputeHash("P" + i).Equals(b.hashOfParticle)) {
+                    if (!Utility.ComputeHash(globalChainPath + "P" + i).Equals(b.hashOfParticle)) {
                         break;
                     }
 
                     //particle points to block before
-                    if (!Utility.ComputeHash("" + (i - 1)).Equals(p.hashToBlock)) {
+                    if (!Utility.ComputeHash(globalChainPath + (i - 1)).Equals(p.hashToBlock)) {
                         break;
                     }
 
@@ -274,9 +313,9 @@ namespace IronChain {
                         }
                     }
 
-                } else if (File.Exists("C:\\IronChain\\" + "L" + i + ".blk")) {
+                } else if (File.Exists(globalChainPath + "L" + i + ".blk")) {
 
-                    Particle p = Utility.loadFile<Particle>("L" + i + ".blk");
+                    Particle p = Utility.loadFile<Particle>(globalChainPath + "L" + i + ".blk");
 
                     //block points to particle
                     if (!Utility.ComputeHash("L" + i).Equals(b.hashOfLightParticle)) {
@@ -300,9 +339,9 @@ namespace IronChain {
             if (errorFlag) {
                 Console.WriteLine("ERROR BLOCK");
 
-                File.Delete("C:\\IronChain\\" + i + ".blk");
-                File.Delete("C:\\IronChain\\" + "P" + i + ".blk");
-                File.Delete("C:\\IronChain\\" + "L" + i + ".blk");
+                File.Delete(globalChainPath + i + ".blk");
+                File.Delete(globalChainPath + "P" + i + ".blk");
+                File.Delete(globalChainPath + "L" + i + ".blk");
 
                 i--;
             }
@@ -318,11 +357,11 @@ namespace IronChain {
             int coinbalance = 0;
             for (int i = 0; i <= blockheight; i++) {
 
-                if (!File.Exists("C:\\IronChain\\" + i + ".blk")) {
+                if (!File.Exists(globalChainPath + i + ".blk")) {
                     break;
                 }
 
-                Block b = Utility.loadFile<Block>(i + ".blk");
+                Block b = Utility.loadFile<Block>(globalChainPath + i + ".blk");
 
 
 
@@ -333,7 +372,7 @@ namespace IronChain {
                 }
 
                 if (i > 0) {
-                    Particle p = Utility.loadFile<Particle>("P" + i + ".blk");
+                    Particle p = Utility.loadFile<Particle>(globalChainPath + "P" + i + ".blk");
 
                     foreach (Transaction trans in p.allTransactions) {
                         if (trans.receiver.Equals(owner)) {
@@ -368,13 +407,13 @@ namespace IronChain {
 
         private void onClickDeleteIronChain(object sender, EventArgs e) {
 
-            string[] allFiles = Directory.GetFiles(Environment.CurrentDirectory, "*.blk");
+            string[] allFiles = Directory.GetFiles(globalChainPath, "*.blk");
             foreach (string s in allFiles) {
                 string[] splitted = s.Split('\\');
                 string nameOfFile = splitted[splitted.Length - 1];
 
                 if (!nameOfFile.Equals("0.blk"))
-                    File.Delete("C:\\IronChain\\" + nameOfFile);
+                    File.Delete(globalChainPath + nameOfFile);
             }
 
             analyseChain();
@@ -417,16 +456,8 @@ namespace IronChain {
 
         }
 
-        public string globalFilePath;
-
-        private void onClickSelectChainPath(object sender, EventArgs e) {
-            var fbd = new FolderBrowserDialog();
-
-            DialogResult result = fbd.ShowDialog();
-
-            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath)) {
-                globalFilePath = fbd.SelectedPath;
-            }
+        private void button4_Click(object sender, EventArgs e) {
+            Console.WriteLine(globalChainPath);
         }
     }
 }

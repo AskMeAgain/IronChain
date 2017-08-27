@@ -17,7 +17,7 @@ namespace IronChain {
         private void button1_Click(object sender, EventArgs e) {
             Account a = new Account(textBox1.Text.Trim(), 0);
 
-            Utility.storeFile(a, a.name + ".acc");
+            Utility.storeFile(a, Form1.instance.globalChainPath + a.name + ".acc");
 
             Form1.instance.updateAccountList();
 

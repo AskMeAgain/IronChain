@@ -42,8 +42,8 @@ namespace IronChain {
         }
 
         public void addHash(int i) {
-            hashOfParticle = Utility.ComputeHash("P" + i);
-            hashOfLightParticle = Utility.ComputeHash("L" + i);
+            hashOfParticle = Utility.ComputeHash(Form1.instance.globalChainPath + "P" + i);
+            hashOfLightParticle = Utility.ComputeHash(Form1.instance.globalChainPath + "L" + i);
         }
 
         public void giveSomeCoins(string minerAddress, int num) {

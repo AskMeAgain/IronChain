@@ -20,7 +20,7 @@ namespace IronChain {
 
             try {
                 XmlDocument xmlDocument = new XmlDocument();
-                xmlDocument.Load("C:\\IronChain\\" + fileName);
+                xmlDocument.Load(fileName);
 
                 string xmlString = xmlDocument.OuterXml;
 
@@ -43,6 +43,7 @@ namespace IronChain {
         }
 
         public static void storeFile<T>(T serializableObject, string fileName) {
+            Console.WriteLine("storing file at: " + fileName);
             if (serializableObject == null) { return; }
 
             try {
@@ -52,7 +53,7 @@ namespace IronChain {
                     serializer.Serialize(stream, serializableObject);
                     stream.Position = 0;
                     xmlDocument.Load(stream);
-                    xmlDocument.Save("C:\\IronChain\\" + fileName);
+                    xmlDocument.Save(fileName);
                     stream.Close();
                     Console.WriteLine("storing successfull");
                 }
@@ -63,7 +64,7 @@ namespace IronChain {
 
         public static string ComputeHash(string filename) {
             using (var md5 = MD5.Create()) {
-                using (var stream = File.OpenRead("C:\\IronChain\\" + filename + ".blk")) {
+                using (var stream = File.OpenRead(filename + ".blk")) {
                     return Convert.ToBase64String(md5.ComputeHash(stream));
                 }
             }
@@ -126,11 +127,17 @@ namespace IronChain {
 
         public static void loadSettings() {
 
-            Settings.SettingsObject settings = loadFile<Settings.SettingsObject>("settings.set");
+            Settings.SettingsObject settings = loadFile<Settings.SettingsObject>("C:\\IronChain\\settings.set");
+
+            if (settings == null) {
+                settings = new Settings.SettingsObject();
+                storeFile(settings,settings.globalChainPath+ "settings.set");
+            }
 
             //load values from settingsobject to everything else;
             Form1.instance.minerAccountName = settings.defaultMiningAccountName;
             Form1.instance.miningDifficulty = settings.defaultMiningDifficulty;
+            Form1.instance.globalChainPath = settings.globalChainPath;
 
             if (Form1.instance.accountList.ContainsKey(settings.defaultMainAccount))
                 Form1.instance.comboBox1.SelectedItem = Form1.instance.accountList[settings.defaultMainAccount];
