@@ -2,12 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using System.Net.PeerToPeer;
-using System.Net;
-using System.ServiceModel;
-using System.ServiceModel.Description;
-using System.Net.Sockets;
-using System.Text;
+
 
 namespace IronChain {
 
@@ -48,8 +43,6 @@ namespace IronChain {
 
             analyseChain();
         }
-
-
 
         public void updateAccountList() {
 
@@ -404,27 +397,36 @@ namespace IronChain {
             s.ShowDialog();
         }
 
-        public static Networking networkManager = new Networking();
-
-
         private void onClickCreateServerListener(object sender, EventArgs e) {
-
-            networkManager.bind(6556);
-            networkManager.listen(500);
-            networkManager.accept();
-
-
+            manager = new Networking();
+            manager.StartServer();
         }
+
+        Networking manager;
 
         private void onClickConnectClient(object sender, EventArgs e) {
+            manager = new Networking();
+            manager.StartClient();
+        }
 
-            
+        private void onClickRequestFile(object sender, EventArgs e) {
+
+            int requestHeight = Convert.ToInt32(textBox3.Text);
+
+            manager.requestFile(requestHeight);
 
         }
 
-        private void onClickDiscoverPNRP(object sender, EventArgs e) {
+        public string globalFilePath;
 
+        private void onClickSelectChainPath(object sender, EventArgs e) {
+            var fbd = new FolderBrowserDialog();
+
+            DialogResult result = fbd.ShowDialog();
+
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath)) {
+                globalFilePath = fbd.SelectedPath;
+            }
         }
-
     }
 }

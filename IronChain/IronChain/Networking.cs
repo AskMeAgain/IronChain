@@ -6,61 +6,154 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-
+using System.IO;
 
 namespace IronChain {
 
     public class Networking {
 
-        private Socket socket;
-        private byte[] buffer = new byte[1024];
+        Stream inOut;
 
+        public void StartServer() {
+            Thread a = new Thread(startListen);
+            a.Start();
+        }
 
-        public Networking() {
+        public void StartClient() {
 
-            socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+            Thread a = new Thread(connectToServer);
+            a.Start();
 
         }
 
-        public void bind(int port) {
-            socket.Bind(new IPEndPoint(IPAddress.Any, port));
+        public void startListen() {
+
+            TcpListener listener = new TcpListener(IPAddress.IPv6Any, 4711);
+            // Listener starten
+            listener.Start();
+
+            // Warten bis ein Client die Verbindung wünscht
+            Console.WriteLine("Waiting for Client to connect");
+            TcpClient c = listener.AcceptTcpClient();
+            Console.WriteLine("Connected to client");
+
+
+            inOut = c.GetStream();
+
+            while (true) {
+                //receiving message from client
+                byte[] buffer = new byte[5];
+                inOut.Read(buffer, 0, buffer.Length);
+
+                commandServer(buffer);
+            }
         }
 
-        public void listen(int backlog) {
-            socket.Listen(backlog);
+        public void connectToServer() {
+            byte[] buffer = new byte[1024];
+            TcpClient c = new TcpClient("localhost", 4711);
+            inOut = c.GetStream();
         }
 
-        public void accept() {
+        private void commandServer(byte[] command) {
 
-            socket.BeginAccept(acceptedCallback, null);
+            //1 means request
+            //0 means push file
+
+            if (command[0] == 1) {
+                Console.WriteLine("Requesting File:");
+                int height = BitConverter.ToInt32(command, 1);
+                Console.WriteLine("Received FileHeader with height " + height);
+
+                sendFile(height + ".blk");
+                sendFile("P" + height + ".blk");
+                sendFile("L" + height + ".blk");
+
+                Console.WriteLine("Stopped sending files!");
+
+
+            } else {
+                Console.WriteLine("Pushing file!");
+            }
 
         }
 
-        private void acceptedCallback(IAsyncResult result) {
+        private void sendFile(string name) {
 
-            Socket clientsocket = socket.EndAccept(result);
-            buffer = new byte[1024];
-            clientsocket.BeginReceive(buffer,0,buffer.Length,SocketFlags.None, receiveCallback, clientsocket);
-            accept();
+            //Console.WriteLine("Sending files from " + height + " to XXX");
+
+            //TODO SENDING BIG FILES
+
+            byte[] buffer = new byte[1024];
+
+            FileStream File = new FileStream(@"C:\IronChain\" + name, FileMode.Open, FileAccess.Read);
+            byte[] fileArray = System.IO.File.ReadAllBytes(@"C:\IronChain\" + name);
+            File.Close();
+
+            int startIndex = 0;
+            int fileLength = fileArray.Length;
+            int bytesMissing;
+
+            do {
+
+                bytesMissing = fileLength - startIndex;
+                int endPointer = buffer.Length;
+
+                if (bytesMissing < buffer.Length) {
+                    endPointer = bytesMissing;
+                }
+
+                inOut.Write(fileArray, startIndex, endPointer);
+                startIndex += buffer.Length;
+            } while (startIndex < fileLength);
+            Console.WriteLine("Finished sending file!");
 
         }
 
-        private void receiveCallback(IAsyncResult result) {
+        public void requestFile(int height) {
 
-            Socket clientSocket = result.AsyncState as Socket;
-            int bufferSize = clientSocket.EndReceive(result);
-            byte[] packet = new byte[bufferSize];
-            Array.Copy(buffer, packet, packet.Length);
+            //writing the message byte, 1 means request, 0 means push
+            byte[] buffer = Enumerable.Repeat((byte)0x01, 5).ToArray();
+            byte[] num = BitConverter.GetBytes(height);
+            Array.Copy(num, 0, buffer, 1, num.Length);
 
-            //handle packet
-            buffer = new byte[1024];
-            clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, receiveCallback, clientSocket);
+            //sending message
+            inOut.Write(buffer, 0, buffer.Length);
+            Console.WriteLine("Requesting files from block height " + height);
+
+            // RECEIVE
+            Console.WriteLine("Writing into file now!");
+            receiveBlocksAndStore(height + ".blk");
+            receiveBlocksAndStore("P" + height + ".blk");
+            receiveBlocksAndStore("L" + height + ".blk");
+
+            Form1.instance.analyseChain();
         }
-       
+
+        private void receiveBlocksAndStore(string filename) {
+            byte[] receiveBuffer = new byte[1024];
+
+            string file = "C:\\IronChain\\" + filename;
+            if (File.Exists(file)) {
+                File.Delete(file);
+            }
+
+            FileStream fileStream = new FileStream(file, FileMode.Append);
+
+            while (true) {
+
+                int receivedBytes = inOut.Read(receiveBuffer, 0, receiveBuffer.Length);
+                fileStream.Write(receiveBuffer, 0, receivedBytes);
+                Console.WriteLine("?" + receivedBytes);
+
+                if (receivedBytes < receiveBuffer.Length)
+                    break;
+            }
+
+            fileStream.Close();
+            Console.WriteLine("Received ");
+        }
 
 
-
-
-
-}
+    }
 }
