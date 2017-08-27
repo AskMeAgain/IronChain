@@ -20,7 +20,7 @@ namespace IronChain {
 
             try {
                 XmlDocument xmlDocument = new XmlDocument();
-                xmlDocument.Load(fileName);
+                xmlDocument.Load("C:\\IronChain\\" + fileName);
 
                 string xmlString = xmlDocument.OuterXml;
 
@@ -52,7 +52,7 @@ namespace IronChain {
                     serializer.Serialize(stream, serializableObject);
                     stream.Position = 0;
                     xmlDocument.Load(stream);
-                    xmlDocument.Save(fileName);
+                    xmlDocument.Save("C:\\IronChain\\" + fileName);
                     stream.Close();
                     Console.WriteLine("storing successfull");
                 }
@@ -63,7 +63,7 @@ namespace IronChain {
 
         public static string ComputeHash(string filename) {
             using (var md5 = MD5.Create()) {
-                using (var stream = File.OpenRead(filename + ".blk")) {
+                using (var stream = File.OpenRead("C:\\IronChain\\" + filename + ".blk")) {
                     return Convert.ToBase64String(md5.ComputeHash(stream));
                 }
             }

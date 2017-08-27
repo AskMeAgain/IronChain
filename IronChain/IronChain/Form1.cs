@@ -35,7 +35,7 @@ namespace IronChain {
 
             updateAccountList();
 
-            if (!File.Exists("0.blk")) {
+            if (!File.Exists("C:\\IronChain\\" + "0.blk")) {
                 createGenesisBlock();
             }
 
@@ -48,7 +48,7 @@ namespace IronChain {
 
             Account a = new Account("Add a new Account", 0);
 
-            string[] allAccountNames = Directory.GetFiles(Environment.CurrentDirectory, "*.acc");
+            string[] allAccountNames = Directory.GetFiles("C:\\IronChain", "*.acc");
 
             accountList = new Dictionary<string, Account>();
 
@@ -222,7 +222,7 @@ namespace IronChain {
             int i = 1;
             bool errorFlag = false;
 
-            while (File.Exists(i + ".blk")) {
+            while (File.Exists("C:\\IronChain\\" + i + ".blk")) {
 
                 b = Utility.loadFile<Block>(i + ".blk");
                 string hashOfBlock = Utility.ComputeHash(i + "");
@@ -237,7 +237,7 @@ namespace IronChain {
                     break;
                 }
 
-                if (File.Exists("P" + i + ".blk")) {
+                if (File.Exists("C:\\IronChain\\" + "P" + i + ".blk")) {
                     //particle exists
                     Particle p = Utility.loadFile<Particle>("P" + i + ".blk");
 
@@ -274,7 +274,7 @@ namespace IronChain {
                         }
                     }
 
-                } else if (File.Exists("L" + i + ".blk")) {
+                } else if (File.Exists("C:\\IronChain\\" + "L" + i + ".blk")) {
 
                     Particle p = Utility.loadFile<Particle>("L" + i + ".blk");
 
@@ -300,9 +300,9 @@ namespace IronChain {
             if (errorFlag) {
                 Console.WriteLine("ERROR BLOCK");
 
-                File.Delete(i + ".blk");
-                File.Delete("P" + i + ".blk");
-                File.Delete("L" + i + ".blk");
+                File.Delete("C:\\IronChain\\" + i + ".blk");
+                File.Delete("C:\\IronChain\\" + "P" + i + ".blk");
+                File.Delete("C:\\IronChain\\" + "L" + i + ".blk");
 
                 i--;
             }
@@ -318,7 +318,7 @@ namespace IronChain {
             int coinbalance = 0;
             for (int i = 0; i <= blockheight; i++) {
 
-                if (!File.Exists(i + ".blk")) {
+                if (!File.Exists("C:\\IronChain\\" + i + ".blk")) {
                     break;
                 }
 
@@ -374,7 +374,7 @@ namespace IronChain {
                 string nameOfFile = splitted[splitted.Length - 1];
 
                 if (!nameOfFile.Equals("0.blk"))
-                    File.Delete(nameOfFile);
+                    File.Delete("C:\\IronChain\\" + nameOfFile);
             }
 
             analyseChain();
@@ -386,7 +386,7 @@ namespace IronChain {
             foreach (string s in allFiles) {
                 string[] splitted = s.Split('\\');
                 string nameOfFile = splitted[splitted.Length - 1];
-                File.Delete(nameOfFile);
+                File.Delete("C:\\IronChain\\" + nameOfFile);
             }
 
             updateAccountList();

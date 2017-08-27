@@ -133,7 +133,7 @@ namespace IronChain {
         private void receiveBlocksAndStore(string filename) {
             byte[] receiveBuffer = new byte[1024];
 
-            string file = "C:\\IronChain\\" + filename;
+            string file = "C:\\IronChain\\COPY_" + filename;
             if (File.Exists(file)) {
                 File.Delete(file);
             }
