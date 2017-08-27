@@ -363,8 +363,6 @@ namespace IronChain {
 
                 Block b = Utility.loadFile<Block>(globalChainPath + i + ".blk");
 
-
-
                 foreach (Block.Coin coin in b.allCoins) {
                     if (coin.owner.Equals(owner)) {
                         coinbalance += coin.amount;
@@ -452,12 +450,17 @@ namespace IronChain {
 
             int requestHeight = Convert.ToInt32(textBox3.Text);
 
-            manager.requestFile(requestHeight);
+            manager.RequestFile(requestHeight);
 
         }
 
         private void button4_Click(object sender, EventArgs e) {
             Console.WriteLine(globalChainPath);
+        }
+
+        private void onClickTestStitching(object sender, EventArgs e) {
+
+
         }
     }
 }

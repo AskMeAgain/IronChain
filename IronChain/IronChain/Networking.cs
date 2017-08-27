@@ -26,7 +26,15 @@ namespace IronChain {
 
         }
 
-        public void startListen() {
+        public void RequestFile(int height) {
+            Thread a = new Thread(() => rqstFile(height));
+            a.Start();
+        }
+
+
+
+
+        private void startListen() {
 
             TcpListener listener = new TcpListener(IPAddress.IPv6Any, 4711);
             // Listener starten
@@ -41,15 +49,17 @@ namespace IronChain {
             inOut = c.GetStream();
 
             while (true) {
+
                 //receiving message from client
                 byte[] buffer = new byte[5];
+
                 inOut.Read(buffer, 0, buffer.Length);
 
                 commandServer(buffer);
             }
         }
 
-        public void connectToServer() {
+        private void connectToServer() {
             byte[] buffer = new byte[1024];
             TcpClient c = new TcpClient("localhost", 4711);
             inOut = c.GetStream();
@@ -61,16 +71,36 @@ namespace IronChain {
             //0 means push file
 
             if (command[0] == 1) {
+
                 Console.WriteLine("Requesting File:");
                 int height = BitConverter.ToInt32(command, 1);
+
                 Console.WriteLine("Received FileHeader with height " + height);
 
-                sendFile(height + ".blk");
-                sendFile("P" + height + ".blk");
-                sendFile("L" + height + ".blk");
+                if (Form1.instance.latestBlock >= height) {
+
+                    //write filesize
+                    byte[] message = new byte[] { 0x00 };
+                    long[] fileSizes = allocateFileSize(height);
+
+                    inOut.Write(message, 0, message.Length);
+
+
+                    sendFile(height + ".blk");
+
+
+                    sendFile("P" + height + ".blk");
+
+
+                    sendFile("L" + height + ".blk");
+
+                } else {
+                    byte[] message = new byte[] { 0x01 };
+                    inOut.Write(message, 0, message.Length);
+                    Console.WriteLine("Error file does not exist!");
+                }
 
                 Console.WriteLine("Stopped sending files!");
-
 
             } else {
                 Console.WriteLine("Pushing file!");
@@ -78,20 +108,33 @@ namespace IronChain {
 
         }
 
+        private long[] allocateFileSize(int height) {
+
+            long[] size = new long[3];
+
+
+            size[0] = new FileInfo(Form1.instance.globalChainPath + "P"+height+".blk").Length;
+            size[1] = new FileInfo(Form1.instance.globalChainPath + "L" + height + ".blk").Length;
+            size[2] = new FileInfo(Form1.instance.globalChainPath + height + ".blk").Length;
+
+            Console.WriteLine(size[0] + " " + size[1] + " " + size[2]);
+
+            return size;
+
+        }
+
         private void sendFile(string name) {
 
-            //Console.WriteLine("Sending files from " + height + " to XXX");
-
             //TODO SENDING BIG FILES
-
             byte[] buffer = new byte[1024];
 
-            FileStream File = new FileStream(@"C:\IronChain\" + name, FileMode.Open, FileAccess.Read);
-            byte[] fileArray = System.IO.File.ReadAllBytes(@"C:\IronChain\" + name);
+            FileStream File = new FileStream(Form1.instance.globalChainPath + name, FileMode.Open, FileAccess.Read);
+            byte[] fileArray = System.IO.File.ReadAllBytes(Form1.instance.globalChainPath + name);
             File.Close();
 
-            int startIndex = 0;
             int fileLength = fileArray.Length;
+
+            int startIndex = 0;
             int bytesMissing;
 
             do {
@@ -106,11 +149,12 @@ namespace IronChain {
                 inOut.Write(fileArray, startIndex, endPointer);
                 startIndex += buffer.Length;
             } while (startIndex < fileLength);
-            Console.WriteLine("Finished sending file!");
+
+            Console.WriteLine("Finished sending file!" + name + " " + startIndex);
 
         }
 
-        public void requestFile(int height) {
+        private void rqstFile(int height) {
 
             //writing the message byte, 1 means request, 0 means push
             byte[] buffer = Enumerable.Repeat((byte)0x01, 5).ToArray();
@@ -121,28 +165,46 @@ namespace IronChain {
             inOut.Write(buffer, 0, buffer.Length);
             Console.WriteLine("Requesting files from block height " + height);
 
-            // RECEIVE
+            // RECEIVE ERROR CODE FIRST
+            byte[] error = new byte[1];
+            int i = inOut.Read(error, 0, error.Length);
+            if (error[0] == 1) {
+                Console.WriteLine("ERROR!!! FILES DO NOT EXIST");
+                return;
+            } else {
+                //Files exist
+                Console.WriteLine("NO ERROR!");
+            }
+
             Console.WriteLine("Writing into file now!");
-            receiveBlocksAndStore(height + ".blk");
-            receiveBlocksAndStore("P" + height + ".blk");
-            receiveBlocksAndStore("L" + height + ".blk");
+            receiveFileAndStore(height + ".blk");
+            receiveFileAndStore("P" + height + ".blk");
+            receiveFileAndStore("L" + height + ".blk");
 
             Form1.instance.analyseChain();
         }
 
-        private void receiveBlocksAndStore(string filename) {
-            byte[] receiveBuffer = new byte[1024];
+        private void receiveFileAndStore(string filename) {
 
-            string file = "C:\\IronChain\\COPY_" + filename;
+            string file = Form1.instance.globalChainPath + filename;
+
             if (File.Exists(file)) {
                 File.Delete(file);
             }
 
+            byte[] receiveBuffer = new byte[1024];
             FileStream fileStream = new FileStream(file, FileMode.Append);
+
+            int counter = 0;
 
             while (true) {
 
                 int receivedBytes = inOut.Read(receiveBuffer, 0, receiveBuffer.Length);
+                counter += receivedBytes;
+
+                if (receivedBytes == 0)
+                    break;
+
                 fileStream.Write(receiveBuffer, 0, receivedBytes);
                 Console.WriteLine("?" + receivedBytes);
 
@@ -151,7 +213,7 @@ namespace IronChain {
             }
 
             fileStream.Close();
-            Console.WriteLine("Received ");
+            Console.WriteLine("Received" + counter);
         }
 
 
