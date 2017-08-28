@@ -11,19 +11,19 @@ using System.Threading;
 namespace IronChain {
     class PeerNetworking {
 
-        Dictionary<TcpClient, Stream> executerList;
+        Dictionary< string, int> executerList;
 
         public PeerNetworking() {
-            executerList = new Dictionary<TcpClient, Stream>();
+            executerList = new Dictionary<string,int>();
         }
 
         public void ConnectToListener(string ip, int port) {
 
             try {
 
-                TcpClient client = new TcpClient(ip, port);
-                Console.WriteLine("added executer!");
-                executerList.Add(client, client.GetStream());
+                //TcpClient client = new TcpClient(ip, port);
+                Console.WriteLine("added executer! (ip and port)");
+                executerList.Add(ip,port);
             } catch (SocketException e) {
                 if (e.ErrorCode.Equals(10048)) {
                     Console.WriteLine("Key exists already!");
@@ -38,9 +38,15 @@ namespace IronChain {
             //0 request file || 0, 8 block# = 9 bytes
             //1 new file mined || 1, 8 block# = 9 bytes
 
-            foreach (Stream inOut in executerList.Values) {
+            foreach (string s in executerList.Keys) {
 
+                TcpClient c = new TcpClient(s, executerList[s]);
+                Stream inOut = c.GetStream();
                 Console.WriteLine("Sending command!");
+
+                if (!inOut.CanWrite) {
+                    Console.WriteLine("this should not appear :(");
+                }
 
                 //test sending
                 byte[] message = Enumerable.Repeat((byte)0x01, 8).ToArray();
@@ -86,6 +92,7 @@ namespace IronChain {
 
             });
 
+            thread.IsBackground = true;
             thread.Start();
         }
 
