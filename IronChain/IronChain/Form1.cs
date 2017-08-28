@@ -364,6 +364,14 @@ namespace IronChain {
             label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock);
         }
 
+        public void isServerUI() {
+            if (InvokeRequired) {
+                Invoke(new Action(() => label1.Text = "Listening for Connections"));
+            } else {
+                label1.Text = "Listening for Connections";
+            }
+        }
+
         private int checkCoinBalance(string owner, int blockheight) {
 
             int coinbalance = 0;
@@ -447,26 +455,21 @@ namespace IronChain {
         }
 
         private void onClickCreateServerListener(object sender, EventArgs e) {
-            manager = new Networking();
-            manager.StartServer();
+            manager2 = new PeerNetworking();
+            manager2.ListenForConnections(Convert.ToInt32(textBox5.Text));
         }
 
-        Networking manager;
+        PeerNetworking manager2;
 
         private void onClickConnectClient(object sender, EventArgs e) {
-            manager = new Networking();
-            manager.StartClient();
+
+            manager2 = new PeerNetworking();
+            manager2.ConnectToListener(textBox4.Text,Convert.ToInt32(textBox5.Text));
         }
 
         private void onClickRequestFile(object sender, EventArgs e) {
 
-            int requestHeight = latestBlock+1;
-
-            if (!textBox3.Text.Equals("")){
-                requestHeight = Convert.ToInt32(textBox3.Text);
-            }
-            Console.WriteLine(requestHeight);
-            manager.RequestFile(requestHeight);
+            manager2.sendCommandToServers(0);
 
         }
 
@@ -478,5 +481,6 @@ namespace IronChain {
         private void button6_Click(object sender, EventArgs e) {
             globalChainPath = @"C:\Users\kelvi\Desktop\IronChain\";
         }
+
     }
 }

@@ -6,21 +6,31 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
+using System.Threading;
 
 namespace IronChain {
     class PeerNetworking {
 
-        List<TcpClient> executerList;
+        Dictionary<TcpClient, Stream> executerList;
+
+        public PeerNetworking() {
+            executerList = new Dictionary<TcpClient, Stream>();
+        }
 
         public void ConnectToListener(string ip, int port) {
 
-            TcpClient client = new TcpClient(new IPEndPoint(IPAddress.IPv6Any, 4711));
-            client.Connect(ip, 4712);
+            try {
 
-            if (!executerList.Contains(client)) {
-                executerList.Add(client);
+                TcpClient client = new TcpClient(ip, port);
+                Console.WriteLine("added executer!");
+                executerList.Add(client, client.GetStream());
+            } catch (SocketException e) {
+                if (e.ErrorCode.Equals(10048)) {
+                    Console.WriteLine("Key exists already!");
+                }
+            } catch (Exception e) {
+                Console.WriteLine(e.ToString());
             }
-
         }
 
         public void sendCommandToServers(int com) {
@@ -28,9 +38,13 @@ namespace IronChain {
             //0 request file || 0, 8 block# = 9 bytes
             //1 new file mined || 1, 8 block# = 9 bytes
 
-            foreach (TcpClient client in executerList) {
+            foreach (Stream inOut in executerList.Values) {
 
-                Stream inOut = client.GetStream();
+                Console.WriteLine("Sending command!");
+
+                //test sending
+                byte[] message = Enumerable.Repeat((byte)0x01, 8).ToArray();
+                inOut.Write(message, 0, message.Length);
 
                 //SEND COMMAND TO EACH CLIENT;
 
@@ -42,26 +56,38 @@ namespace IronChain {
 
         }
 
-        public void ListenForConnections() {
+        public void ListenForConnections(int port) {
 
-            TcpListener listener = new TcpListener(IPAddress.IPv6Any, 4712);
+            Form1.instance.button1.Enabled = false;
+            Form1.instance.button1.Text = "Listening on Port " + port;
 
-            listener.Start();
+            Thread thread = new Thread(() => {
 
-            Console.WriteLine("Waiting for Client to connect");
-            TcpClient c = listener.AcceptTcpClient();
-            Console.WriteLine("Connected to client");
+                TcpListener listener = new TcpListener(IPAddress.IPv6Any, port);
 
-            Stream serverStream = c.GetStream();
+                listener.Start();
 
-            while (true) {
-                //receiving message from client
-                byte[] buffer = new byte[9];
-                serverStream.Read(buffer, 0, buffer.Length);
-                commandReceived(buffer, serverStream);
-            }
+                while (true) {
+
+                    TcpClient c = listener.AcceptTcpClient();
+                    Console.WriteLine("accepted connection!");
+                    Stream serverStream = c.GetStream();
+
+                    //receiving message from client
+                    byte[] buffer = new byte[9];
+                    serverStream.Read(buffer, 0, buffer.Length);
+                    //commandReceived(buffer, serverStream);
+
+                    Console.WriteLine(buffer[0] + " << received message");
+
+                    serverStream.Close();
+                    c.Close();
+                }
+
+            });
+
+            thread.Start();
         }
-
 
         private void commandReceived(byte[] command, Stream serverStream) {
 
@@ -98,34 +124,6 @@ namespace IronChain {
             }
         }
 
-        private byte[] createMessage(bool fileExist, long blockheight) {
-
-            byte[] message = Enumerable.Repeat((byte)0x00, 32).ToArray();
-
-            if (!fileExist) {
-                message[0] = 0x01;
-            }
-
-            byte[] fileA = File.ReadAllBytes(Form1.instance.globalChainPath + blockheight + ".blk");
-            byte[] fileB = File.ReadAllBytes(Form1.instance.globalChainPath + "P" + blockheight + ".blk");
-            byte[] fileC = File.ReadAllBytes(Form1.instance.globalChainPath + "L" + blockheight + ".blk");
-
-            byte[] sizeA = BitConverter.GetBytes(fileA.Length);
-            byte[] sizeB = BitConverter.GetBytes(fileB.Length);
-            byte[] sizeC = BitConverter.GetBytes(fileC.Length);
-
-            Array.Copy(sizeA, 0, message, 8, sizeA.Length);
-            Array.Copy(sizeB, 0, message, 16, sizeB.Length);
-            Array.Copy(sizeC, 0, message, 24, sizeC.Length);
-
-            Console.WriteLine(BitConverter.ToInt64(message, 8));
-            Console.WriteLine(BitConverter.ToInt64(message, 16));
-            Console.WriteLine(BitConverter.ToInt64(message, 24));
-
-            return message;
-
-        }
-
         private void sendFile(string name, Stream serverStream) {
 
             byte[] buffer = new byte[1024];
@@ -153,6 +151,34 @@ namespace IronChain {
             } while (startIndex < fileLength);
 
             Console.WriteLine("Finished sending file!" + name + " " + startIndex);
+
+        }
+
+        private byte[] createMessage(bool fileExist, long blockheight) {
+
+            byte[] message = Enumerable.Repeat((byte)0x00, 32).ToArray();
+
+            if (!fileExist) {
+                message[0] = 0x01;
+            }
+
+            byte[] fileA = File.ReadAllBytes(Form1.instance.globalChainPath + blockheight + ".blk");
+            byte[] fileB = File.ReadAllBytes(Form1.instance.globalChainPath + "P" + blockheight + ".blk");
+            byte[] fileC = File.ReadAllBytes(Form1.instance.globalChainPath + "L" + blockheight + ".blk");
+
+            byte[] sizeA = BitConverter.GetBytes(fileA.Length);
+            byte[] sizeB = BitConverter.GetBytes(fileB.Length);
+            byte[] sizeC = BitConverter.GetBytes(fileC.Length);
+
+            Array.Copy(sizeA, 0, message, 8, sizeA.Length);
+            Array.Copy(sizeB, 0, message, 16, sizeB.Length);
+            Array.Copy(sizeC, 0, message, 24, sizeC.Length);
+
+            Console.WriteLine(BitConverter.ToInt64(message, 8));
+            Console.WriteLine(BitConverter.ToInt64(message, 16));
+            Console.WriteLine(BitConverter.ToInt64(message, 24));
+
+            return message;
 
         }
 
