@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using System.Threading;
+using System.Reflection;
 
 namespace IronChain {
     class PeerNetworking {
@@ -32,7 +33,15 @@ namespace IronChain {
             }
         }
 
-        public void sendCommandToServers(byte commandIndex) {
+        public void requestFile() {
+            sendCommandToServers(0x00);
+        }
+
+        public void pushFile() {
+            sendCommandToServers(0x01);
+        }
+
+        private void sendCommandToServers(byte commandIndex) {
 
             //0 request file || 0, 8 block# = 9 bytes
             //1 new file mined || 1, 8 block# = 9 bytes
@@ -41,10 +50,6 @@ namespace IronChain {
 
                 TcpClient c = new TcpClient(s, executerList[s]);
                 Stream inOut = c.GetStream();
-
-                if (!inOut.CanWrite) {
-                    Console.WriteLine("this should not appear :(");
-                }
 
                 byte[] message = new byte[9];
 
@@ -57,23 +62,25 @@ namespace IronChain {
 
                 Console.WriteLine(BitConverter.ToInt64(ack, 8) + " << received ACK");
 
-                if (ack[0] == 0x00) {
-                    Console.WriteLine("Receiving Block now!");
-                    //now getting the files
-                    receiveBlock(inOut, Form1.instance.latestBlock+1, ack);
+                if (commandIndex == 0x00) {
+                    if (ack[0] == 0x00) {
+                        Console.WriteLine("Receiving Block now!");
+                        //now getting the files
+                        receiveBlock(inOut, Form1.instance.latestBlock + 1, ack);
+                    } else {
+                        Console.WriteLine("THERE ARE NO FILES HERE");
+                    }
                 } else {
-                    Console.WriteLine("Sending to server, nothing here right now");
-                    //requesting files here
+                    Console.WriteLine("REQUESTING FILES WORKED!");
+                    //request files now from everyone
                 }
-
-
 
                 inOut.Close();
             }
 
         }
 
-        private void receiveBlock(Stream inOut, int height,byte[] ack) {
+        private void receiveBlock(Stream inOut, int height, byte[] ack) {
 
             Console.WriteLine("receiving blockheight" + height);
 
@@ -141,6 +148,11 @@ namespace IronChain {
                     Console.WriteLine("accepted connection!");
                     Stream serverStream = c.GetStream();
 
+                    //storing them as executer
+                    string ip = ((IPEndPoint)c.Client.RemoteEndPoint).Address.ToString();
+                    int s = ((IPEndPoint)c.Client.RemoteEndPoint).Port;
+
+
                     //receiving message from client
                     byte[] buffer = new byte[9];
                     serverStream.Read(buffer, 0, buffer.Length);
@@ -179,21 +191,19 @@ namespace IronChain {
                     Console.WriteLine("Send ack then all files");
                     ack = createMessage(true, height);
                     serverStream.Write(ack, 0, ack.Length);
-                    
+
                     sendFile(height + ".blk", serverStream);
                     sendFile("P" + height + ".blk", serverStream);
                     sendFile("L" + height + ".blk", serverStream);
-                    
-                } else {
-                    Console.WriteLine("here<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<?");
-                    ack[0] = 0x01;
-                    serverStream.Write(ack, 0, ack.Length);
+
                 }
 
                 Console.WriteLine("Stopped sending files!");
             } else {
 
                 //TODO REQUEST FILE FROM CLIENT!!
+                Console.WriteLine("YOU HAVE A NEW FILE? ILL CHECK THAT OUT!");
+                requestFile();
 
             }
         }

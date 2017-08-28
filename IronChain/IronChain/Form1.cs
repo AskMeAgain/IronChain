@@ -476,7 +476,7 @@ namespace IronChain {
 
         private void onClickRequestFile(object sender, EventArgs e) {
             Console.WriteLine("Requesting File with 0x00");
-            manager2.sendCommandToServers(0x00);
+            manager2.requestFile();
         }
 
         private void button4_Click(object sender, EventArgs e) {
@@ -489,7 +489,7 @@ namespace IronChain {
         }
 
         private void onClickPushBlock(object sender, EventArgs e) {
-            manager2.sendCommandToServers(1);
+            manager2.pushFile();
         }
     }
 }
