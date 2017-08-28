@@ -56,6 +56,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
+            this.button7 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -250,7 +251,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(290, 247);
+            this.button1.Location = new System.Drawing.Point(290, 237);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(163, 23);
             this.button1.TabIndex = 40;
@@ -270,9 +271,9 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(459, 290);
+            this.button3.Location = new System.Drawing.Point(290, 346);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(90, 23);
+            this.button3.Size = new System.Drawing.Size(76, 23);
             this.button3.TabIndex = 42;
             this.button3.Text = "RequestFile";
             this.button3.UseVisualStyleBackColor = true;
@@ -350,11 +351,22 @@
             this.textBox5.Text = "4712";
             this.textBox5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(372, 346);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(81, 23);
+            this.button7.TabIndex = 52;
+            this.button7.Text = "Push Block";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.onClickPushBlock);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1022, 578);
+            this.Controls.Add(this.button7);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.label1);
@@ -419,6 +431,7 @@
         public System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.Button button7;
     }
 }
 

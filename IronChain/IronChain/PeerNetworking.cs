@@ -11,19 +11,18 @@ using System.Threading;
 namespace IronChain {
     class PeerNetworking {
 
-        Dictionary< string, int> executerList;
+        Dictionary<string, int> executerList;
 
         public PeerNetworking() {
-            executerList = new Dictionary<string,int>();
+            executerList = new Dictionary<string, int>();
         }
 
         public void ConnectToListener(string ip, int port) {
 
             try {
-
                 //TcpClient client = new TcpClient(ip, port);
                 Console.WriteLine("added executer! (ip and port)");
-                executerList.Add(ip,port);
+                executerList.Add(ip, port);
             } catch (SocketException e) {
                 if (e.ErrorCode.Equals(10048)) {
                     Console.WriteLine("Key exists already!");
@@ -33,7 +32,7 @@ namespace IronChain {
             }
         }
 
-        public void sendCommandToServers(int com) {
+        public void sendCommandToServers(byte commandIndex) {
 
             //0 request file || 0, 8 block# = 9 bytes
             //1 new file mined || 1, 8 block# = 9 bytes
@@ -42,23 +41,45 @@ namespace IronChain {
 
                 TcpClient c = new TcpClient(s, executerList[s]);
                 Stream inOut = c.GetStream();
-                Console.WriteLine("Sending command!");
 
                 if (!inOut.CanWrite) {
                     Console.WriteLine("this should not appear :(");
                 }
 
-                //test sending
-                byte[] message = Enumerable.Repeat((byte)0x01, 8).ToArray();
+                byte[] message = new byte[9];
+
+                message = createHeaderMessage(Form1.instance.latestBlock, commandIndex);
+
                 inOut.Write(message, 0, message.Length);
 
-                //SEND COMMAND TO EACH CLIENT;
+                if (commandIndex == 0x00) {
+                    Console.WriteLine("Receiving Block now!");
+                    //now getting the files
+                    receiveBlock(inOut);
+                } else {
+                    Console.WriteLine("Sending to server, nothing here right now");
+                    //requesting files here
+                }
 
-                //request file
-                //NEW MINED FILE
+
 
                 inOut.Close();
             }
+
+        }
+
+        private void receiveBlock(Stream inOut) {
+
+            //receive acknowledgement:
+            byte[] ack = new byte[32];
+            inOut.Read(ack, 0, 32);
+
+            Console.WriteLine(BitConverter.ToInt64(ack,8) + " << received ACK");
+
+            //receiving 3 files
+            TODO
+            Console.WriteLine("Reading 3 files now!");
+
 
         }
 
@@ -82,9 +103,9 @@ namespace IronChain {
                     //receiving message from client
                     byte[] buffer = new byte[9];
                     serverStream.Read(buffer, 0, buffer.Length);
-                    //commandReceived(buffer, serverStream);
 
-                    Console.WriteLine(buffer[0] + " << received message");
+                    //sending acknowledgement back
+                    commandReceived(buffer, serverStream);
 
                     serverStream.Close();
                     c.Close();
@@ -98,27 +119,34 @@ namespace IronChain {
 
         private void commandReceived(byte[] command, Stream serverStream) {
 
-            //1 means request
-            //0 means a new file is up
-            if (command[0] == 1) {
+            //0 means request
+            //1 means a new file is up
+
+            Console.WriteLine("Command received, height " + BitConverter.ToInt64(command, 1));
+
+            if (command[0] == 0x00) {
 
                 Console.WriteLine("Requesting File:");
                 int height = BitConverter.ToInt32(command, 1);
 
                 Console.WriteLine("Received FileHeader with height " + height);
 
-
                 //SEND ACKNOWLEDGEMENT
                 byte[] ack = new byte[32];
                 if (Form1.instance.latestBlock >= height) {
+
+                    Console.WriteLine("Send ack then all files");
                     ack = createMessage(true, height);
                     serverStream.Write(ack, 0, ack.Length);
-
+                    
+                    TODO
+                    /*
                     sendFile(height + ".blk", serverStream);
                     sendFile("P" + height + ".blk", serverStream);
                     sendFile("L" + height + ".blk", serverStream);
-
+                    */
                 } else {
+                    Console.WriteLine("here?");
                     ack[0] = 0x01;
                     serverStream.Write(ack, 0, ack.Length);
                 }
@@ -188,6 +216,23 @@ namespace IronChain {
             return message;
 
         }
+
+        private byte[] createHeaderMessage(long num, byte by) {
+
+            if (by == 0x00)
+                num++;
+
+            byte[] message = new byte[9];
+
+            message[0] = by;
+            byte[] height = BitConverter.GetBytes(num);
+
+            Array.Copy(height, 0, message, 1, height.Length);
+
+            return message;
+
+        }
+
 
 
     }

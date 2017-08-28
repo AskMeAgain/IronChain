@@ -468,9 +468,8 @@ namespace IronChain {
         }
 
         private void onClickRequestFile(object sender, EventArgs e) {
-
-            manager2.sendCommandToServers(0);
-
+            Console.WriteLine("Requesting File with 0x00");
+            manager2.sendCommandToServers(0x00);
         }
 
         private void button4_Click(object sender, EventArgs e) {
@@ -482,5 +481,8 @@ namespace IronChain {
             globalChainPath = @"C:\Users\kelvi\Desktop\IronChain\";
         }
 
+        private void onClickPushBlock(object sender, EventArgs e) {
+            manager2.sendCommandToServers(1);
+        }
     }
 }
