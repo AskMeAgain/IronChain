@@ -24,6 +24,9 @@ namespace IronChain {
                 //TcpClient client = new TcpClient(ip, port);
                 Console.WriteLine("added executer! (ip and port)");
                 executerList.Add(ip, port);
+
+                ping(ip, port);
+
             } catch (SocketException e) {
                 if (e.ErrorCode.Equals(10048)) {
                     Console.WriteLine("Key exists already!");
