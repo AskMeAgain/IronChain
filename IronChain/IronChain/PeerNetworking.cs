@@ -49,13 +49,18 @@ namespace IronChain {
                 byte[] message = new byte[9];
 
                 message = createHeaderMessage(Form1.instance.latestBlock, commandIndex);
-
                 inOut.Write(message, 0, message.Length);
 
-                if (commandIndex == 0x00) {
+                //receive acknowledgement:
+                byte[] ack = new byte[32];
+                inOut.Read(ack, 0, 32);
+
+                Console.WriteLine(BitConverter.ToInt64(ack, 8) + " << received ACK");
+
+                if (ack[0] == 0x00) {
                     Console.WriteLine("Receiving Block now!");
                     //now getting the files
-                    receiveBlock(inOut);
+                    receiveBlock(inOut, Form1.instance.latestBlock+1, ack);
                 } else {
                     Console.WriteLine("Sending to server, nothing here right now");
                     //requesting files here
@@ -68,19 +73,55 @@ namespace IronChain {
 
         }
 
-        private void receiveBlock(Stream inOut) {
+        private void receiveBlock(Stream inOut, int height,byte[] ack) {
 
-            //receive acknowledgement:
-            byte[] ack = new byte[32];
-            inOut.Read(ack, 0, 32);
-
-            Console.WriteLine(BitConverter.ToInt64(ack,8) + " << received ACK");
+            Console.WriteLine("receiving blockheight" + height);
 
             //receiving 3 files
-            TODO
+            receiveFileAndStore(inOut, height + ".blk", BitConverter.ToInt64(ack, 8));
+            receiveFileAndStore(inOut, "P" + height + ".blk", BitConverter.ToInt64(ack, 16));
+            receiveFileAndStore(inOut, "L" + height + ".blk", BitConverter.ToInt64(ack, 24));
+
             Console.WriteLine("Reading 3 files now!");
 
+            Form1.instance.analyseChain();
 
+        }
+
+        private void receiveFileAndStore(Stream serverStream, string filename, long fileSize) {
+
+            string file = Form1.instance.globalChainPath + filename;
+
+            if (File.Exists(file)) {
+                File.Delete(file);
+            }
+
+            byte[] receiveBuffer = new byte[1024];
+            FileStream fileStream = new FileStream(file, FileMode.Append);
+
+            int counter = 0;
+            Console.WriteLine("Storing file with " + fileSize);
+
+            while (true) {
+
+                int endpointer = receiveBuffer.Length;
+
+                if (fileSize <= receiveBuffer.Length) {
+                    endpointer = (int)fileSize;
+                }
+
+                int receivedBytes = serverStream.Read(receiveBuffer, 0, endpointer);
+                fileSize -= receivedBytes;
+
+                fileStream.Write(receiveBuffer, 0, receivedBytes);
+                Console.WriteLine("?" + receivedBytes);
+
+                if (fileSize == 0)
+                    break;
+            }
+
+            fileStream.Close();
+            Console.WriteLine("Received" + counter);
         }
 
         public void ListenForConnections(int port) {
@@ -139,14 +180,12 @@ namespace IronChain {
                     ack = createMessage(true, height);
                     serverStream.Write(ack, 0, ack.Length);
                     
-                    TODO
-                    /*
                     sendFile(height + ".blk", serverStream);
                     sendFile("P" + height + ".blk", serverStream);
                     sendFile("L" + height + ".blk", serverStream);
-                    */
+                    
                 } else {
-                    Console.WriteLine("here?");
+                    Console.WriteLine("here<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<?");
                     ack[0] = 0x01;
                     serverStream.Write(ack, 0, ack.Length);
                 }

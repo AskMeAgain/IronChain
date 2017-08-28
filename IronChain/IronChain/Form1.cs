@@ -265,6 +265,13 @@ namespace IronChain {
             while (File.Exists(globalChainPath + i + ".blk")) {
 
                 b = Utility.loadFile<Block>(globalChainPath + i + ".blk");
+
+                if (b == null) {
+                    errorFlag = true;
+                    i++;
+                    break;
+                }
+
                 string hashOfBlock = Utility.ComputeHash(globalChainPath + i + "");
                 string hashOfBlockBefore = Utility.ComputeHash(globalChainPath + (i - 1) + "");
 
