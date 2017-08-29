@@ -12,20 +12,27 @@ using System.Reflection;
 namespace IronChain {
     class PeerNetworking {
 
-        Dictionary<string, int> executerList;
+        List<Socket> executerList;
+        List<Socket> incomingSockets;
 
         public PeerNetworking() {
-            executerList = new Dictionary<string, int>();
+            executerList = new List<Socket>();
+            incomingSockets = new List<Socket>();
+
         }
 
         public void ConnectToListener(string ip, int port) {
 
             try {
-                //TcpClient client = new TcpClient(ip, port);
-                Console.WriteLine("added executer! (ip and port)");
-                executerList.Add(ip, port);
 
-                ping(ip, port);
+                //get local for test
+                IPAddress[] addr = Dns.GetHostAddresses(Dns.GetHostName());
+
+                Socket socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+                socket.Connect(new IPEndPoint(addr[0], port));
+
+                Console.WriteLine("added executer! (Socket)");
+                executerList.Add(socket);
 
             } catch (SocketException e) {
                 if (e.ErrorCode.Equals(10048)) {
@@ -48,20 +55,19 @@ namespace IronChain {
 
             //0 request file || 0, 8 block# = 9 bytes
             //1 new file mined || 1, 8 block# = 9 bytes
+            Console.WriteLine("Sending?");
 
-            foreach (string s in executerList.Keys) {
-
-                TcpClient c = new TcpClient(s, executerList[s]);
-                Stream inOut = c.GetStream();
+            foreach (Socket inOut in executerList) {
 
                 byte[] message = new byte[9];
 
                 message = createHeaderMessage(Form1.instance.latestBlock, commandIndex);
-                inOut.Write(message, 0, message.Length);
+                inOut.Send(message, message.Length, SocketFlags.None);
+                Console.WriteLine("Sending header");
 
                 //receive acknowledgement:
                 byte[] ack = new byte[32];
-                inOut.Read(ack, 0, 32);
+                inOut.Receive(ack, 32, SocketFlags.None);
 
                 Console.WriteLine(BitConverter.ToInt64(ack, 8) + " << received ACK");
 
@@ -70,12 +76,15 @@ namespace IronChain {
                         Console.WriteLine("Receiving Block now!");
                         //now getting the files
                         receiveBlock(inOut, Form1.instance.latestBlock + 1, ack);
+                        break;
                     } else {
-                        Console.WriteLine("THERE ARE NO FILES HERE");
+                        Console.WriteLine("SERVER DOESNT HAVE THE FILES");
+                        break;
                     }
                 } else {
-                    Console.WriteLine("REQUESTING FILES WORKED!");
-                    //request files now from everyone
+
+                    Console.WriteLine("SENDING NEW BLOCK HEIGHT WORKED!");
+
                 }
 
                 inOut.Close();
@@ -83,7 +92,7 @@ namespace IronChain {
 
         }
 
-        private void receiveBlock(Stream inOut, int height, byte[] ack) {
+        private void receiveBlock(Socket inOut, int height, byte[] ack) {
 
             Console.WriteLine("receiving blockheight" + height);
 
@@ -98,7 +107,7 @@ namespace IronChain {
 
         }
 
-        private void receiveFileAndStore(Stream serverStream, string filename, long fileSize) {
+        private void receiveFileAndStore(Socket serverStream, string filename, long fileSize) {
 
             string file = Form1.instance.globalChainPath + filename;
 
@@ -120,7 +129,7 @@ namespace IronChain {
                     endpointer = (int)fileSize;
                 }
 
-                int receivedBytes = serverStream.Read(receiveBuffer, 0, endpointer);
+                int receivedBytes = serverStream.Receive(receiveBuffer, endpointer, SocketFlags.None);
                 fileSize -= receivedBytes;
 
                 fileStream.Write(receiveBuffer, 0, receivedBytes);
@@ -136,56 +145,63 @@ namespace IronChain {
 
         public void ListenForConnections(int port) {
 
-            Form1.instance.button1.Enabled = false;
-            Form1.instance.button1.Text = "Listening on Port " + port;
+            //Form1.instance.button1.Enabled = false;
+            //Form1.instance.button1.Text = "Listening on Port " + port;
 
             Thread thread = new Thread(() => {
+                try {
+                    Socket listener = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
 
-                TcpListener listener = new TcpListener(IPAddress.IPv6Any, port);
+                    listener.Bind(new IPEndPoint(IPAddress.IPv6Any, port));
+                    listener.Listen(500);
+                    while (true) {
 
-                listener.Start();
+                        Socket socket = listener.Accept();
+                        Console.WriteLine("accepted connection!");
 
-                while (true) {
+                        Console.WriteLine("add to executer list");
+                        /*
+                        Socket newSocket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
 
-                    TcpClient c = listener.AcceptTcpClient();
-                    Console.WriteLine("accepted connection!");
-                    Stream serverStream = c.GetStream();
+                        IPEndPoint remote =(IPEndPoint)socket.RemoteEndPoint;
 
-                    //storing them as executer
-                    string ip = ((IPEndPoint)c.Client.RemoteEndPoint).Address.ToString();
-                    int s = ((IPEndPoint)c.Client.RemoteEndPoint).Port;
+                        //NEEDS TO GET REMOVED WHEN SHIPPING
+                        remote.Port++;
+                        newSocket.Connect(remote);
 
+                        if (newSocket.Connected) {
+                            Console.WriteLine("Added reverse Socket to !" + remote.Port);
+                            executerList.Add(newSocket);
+                        }*/
 
-                    //receiving message from client
-                    byte[] buffer = new byte[9];
-                    serverStream.Read(buffer, 0, buffer.Length);
+                        //receiving message from client
+                        byte[] buffer = new byte[9];
+                        socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
+                        //sending acknowledgement back
+                        commandReceived(buffer, socket);
 
-                    //sending acknowledgement back
-                    commandReceived(buffer, serverStream);
+                        socket.Close();
 
-                    serverStream.Close();
-                    c.Close();
+                    }
+                } catch (Exception ex) {
+                    Console.WriteLine(ex.ToString());
                 }
-
             });
 
             thread.IsBackground = true;
             thread.Start();
         }
 
-        private void commandReceived(byte[] command, Stream serverStream) {
+        private void commandReceived(byte[] command, Socket socket) {
 
             //0 means request
             //1 means a new file is up
 
-            Console.WriteLine("Command received, height " + BitConverter.ToInt64(command, 1));
-
             if (command[0] == 0x00) {
 
-                Console.WriteLine("Requesting File:");
                 int height = BitConverter.ToInt32(command, 1);
 
-                Console.WriteLine("Received FileHeader with height " + height);
+                Console.WriteLine("Received request of block" + height);
 
                 //SEND ACKNOWLEDGEMENT
                 byte[] ack = new byte[32];
@@ -193,15 +209,20 @@ namespace IronChain {
 
                     Console.WriteLine("Send ack then all files");
                     ack = createMessage(true, height);
-                    serverStream.Write(ack, 0, ack.Length);
+                    socket.Send(ack, ack.Length, SocketFlags.None);
 
-                    sendFile(height + ".blk", serverStream);
-                    sendFile("P" + height + ".blk", serverStream);
-                    sendFile("L" + height + ".blk", serverStream);
+                    sendFile(height + ".blk", socket);
+                    sendFile("P" + height + ".blk", socket);
+                    sendFile("L" + height + ".blk", socket);
 
+                } else {
+
+                    Console.WriteLine("Stopped sending files!");
+                    ack = createMessage(false, height);
+                    socket.Send(ack, ack.Length, SocketFlags.None);
+                    Console.WriteLine("Done Sending error ack");
                 }
 
-                Console.WriteLine("Stopped sending files!");
             } else {
 
                 //TODO REQUEST FILE FROM CLIENT!!
@@ -211,7 +232,7 @@ namespace IronChain {
             }
         }
 
-        private void sendFile(string name, Stream serverStream) {
+        private void sendFile(string name, Socket serverStream) {
 
             byte[] buffer = new byte[1024];
 
@@ -233,7 +254,7 @@ namespace IronChain {
                     endPointer = bytesMissing;
                 }
 
-                serverStream.Write(fileArray, startIndex, endPointer);
+                serverStream.Send(fileArray, startIndex, endPointer, SocketFlags.None);
                 startIndex += buffer.Length;
             } while (startIndex < fileLength);
 
@@ -247,23 +268,25 @@ namespace IronChain {
 
             if (!fileExist) {
                 message[0] = 0x01;
+            } else {
+
+                byte[] fileA = File.ReadAllBytes(Form1.instance.globalChainPath + blockheight + ".blk");
+                byte[] fileB = File.ReadAllBytes(Form1.instance.globalChainPath + "P" + blockheight + ".blk");
+                byte[] fileC = File.ReadAllBytes(Form1.instance.globalChainPath + "L" + blockheight + ".blk");
+
+                byte[] sizeA = BitConverter.GetBytes(fileA.Length);
+                byte[] sizeB = BitConverter.GetBytes(fileB.Length);
+                byte[] sizeC = BitConverter.GetBytes(fileC.Length);
+
+                Array.Copy(sizeA, 0, message, 8, sizeA.Length);
+                Array.Copy(sizeB, 0, message, 16, sizeB.Length);
+                Array.Copy(sizeC, 0, message, 24, sizeC.Length);
+
+                Console.WriteLine(BitConverter.ToInt64(message, 8));
+                Console.WriteLine(BitConverter.ToInt64(message, 16));
+                Console.WriteLine(BitConverter.ToInt64(message, 24));
+
             }
-
-            byte[] fileA = File.ReadAllBytes(Form1.instance.globalChainPath + blockheight + ".blk");
-            byte[] fileB = File.ReadAllBytes(Form1.instance.globalChainPath + "P" + blockheight + ".blk");
-            byte[] fileC = File.ReadAllBytes(Form1.instance.globalChainPath + "L" + blockheight + ".blk");
-
-            byte[] sizeA = BitConverter.GetBytes(fileA.Length);
-            byte[] sizeB = BitConverter.GetBytes(fileB.Length);
-            byte[] sizeC = BitConverter.GetBytes(fileC.Length);
-
-            Array.Copy(sizeA, 0, message, 8, sizeA.Length);
-            Array.Copy(sizeB, 0, message, 16, sizeB.Length);
-            Array.Copy(sizeC, 0, message, 24, sizeC.Length);
-
-            Console.WriteLine(BitConverter.ToInt64(message, 8));
-            Console.WriteLine(BitConverter.ToInt64(message, 16));
-            Console.WriteLine(BitConverter.ToInt64(message, 24));
 
             return message;
 

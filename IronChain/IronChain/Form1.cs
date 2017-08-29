@@ -463,7 +463,7 @@ namespace IronChain {
 
         private void onClickCreateServerListener(object sender, EventArgs e) {
             manager2 = new PeerNetworking();
-            manager2.ListenForConnections(Convert.ToInt32(textBox5.Text));
+            manager2.ListenForConnections(4712);
         }
 
         PeerNetworking manager2;
@@ -471,7 +471,7 @@ namespace IronChain {
         private void onClickConnectClient(object sender, EventArgs e) {
 
             manager2 = new PeerNetworking();
-            manager2.ConnectToListener(textBox4.Text,Convert.ToInt32(textBox5.Text));
+            manager2.ConnectToListener("whatever",4712);
         }
 
         private void onClickRequestFile(object sender, EventArgs e) {
@@ -490,6 +490,16 @@ namespace IronChain {
 
         private void onClickPushBlock(object sender, EventArgs e) {
             manager2.pushFile();
+        }
+
+        private void hostServer413(object sender, EventArgs e) {
+            manager2 = new PeerNetworking();
+            manager2.ListenForConnections(4713);
+        }
+
+        private void button9_Click(object sender, EventArgs e) {
+            manager2 = new PeerNetworking();
+            manager2.ConnectToListener("whatever", 4713);
         }
     }
 }

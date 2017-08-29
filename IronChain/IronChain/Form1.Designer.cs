@@ -54,10 +54,10 @@
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
             this.button7 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
+            this.button8 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -254,9 +254,9 @@
             // 
             this.button1.Location = new System.Drawing.Point(290, 237);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(163, 23);
+            this.button1.Size = new System.Drawing.Size(126, 23);
             this.button1.TabIndex = 40;
-            this.button1.Text = "Start Listening ";
+            this.button1.Text = "Start Listening 4712";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.onClickCreateServerListener);
             // 
@@ -264,15 +264,15 @@
             // 
             this.button2.Location = new System.Drawing.Point(290, 290);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(163, 23);
+            this.button2.Size = new System.Drawing.Size(126, 23);
             this.button2.TabIndex = 41;
-            this.button2.Text = "Connect as client";
+            this.button2.Text = "Connect to 4712";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.onClickConnectClient);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(290, 346);
+            this.button3.Location = new System.Drawing.Point(319, 362);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(76, 23);
             this.button3.TabIndex = 42;
@@ -334,27 +334,9 @@
             this.label1.TabIndex = 49;
             this.label1.Text = "Not listening for connections";
             // 
-            // textBox4
-            // 
-            this.textBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox4.Location = new System.Drawing.Point(290, 320);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(126, 20);
-            this.textBox4.TabIndex = 50;
-            this.textBox4.Text = "localhost";
-            // 
-            // textBox5
-            // 
-            this.textBox5.Location = new System.Drawing.Point(422, 319);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(31, 20);
-            this.textBox5.TabIndex = 51;
-            this.textBox5.Text = "4712";
-            this.textBox5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(561, 237);
+            this.button7.Location = new System.Drawing.Point(687, 141);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(81, 23);
             this.button7.TabIndex = 52;
@@ -365,21 +347,41 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(558, 218);
+            this.label2.Location = new System.Drawing.Point(684, 122);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(67, 13);
             this.label2.TabIndex = 53;
             this.label2.Text = "Not working ";
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(422, 237);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(124, 23);
+            this.button8.TabIndex = 54;
+            this.button8.Text = "Start Listening 4713";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.hostServer413);
+            // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(420, 290);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(126, 23);
+            this.button9.TabIndex = 55;
+            this.button9.Text = "Connect to 4713";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1022, 578);
+            this.Controls.Add(this.button9);
+            this.Controls.Add(this.button8);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.button7);
-            this.Controls.Add(this.textBox5);
-            this.Controls.Add(this.textBox4);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button5);
@@ -440,10 +442,10 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
         public System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button9;
     }
 }
 
