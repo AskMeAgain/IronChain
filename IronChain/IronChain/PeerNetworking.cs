@@ -16,23 +16,13 @@ namespace IronChain {
 
         public PeerNetworking() {
             executerList = new Dictionary<IPAddress, int>();
-
         }
 
-        public void ConnectToListener(string ip, int port) {
+        public void ConnectToListener(IPAddress ip, int port) {
 
-            try {
-
-                //get local for test
-                IPAddress[] addr = Dns.GetHostAddresses(Dns.GetHostName());
-
-                //Socket socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
-                //socket.Connect(new IPEndPoint(addr[0], port));
-
-                Console.WriteLine("added executer! (Socket)");
-                executerList.Add(addr[0], port);
-
-                //socket.Close();
+            try {  
+                
+                executerList.Add(ip, port);
 
             } catch (SocketException e) {
                 if (e.ErrorCode.Equals(10048)) {
@@ -53,52 +43,59 @@ namespace IronChain {
 
         private void sendCommandToServers(byte commandIndex) {
 
-            //0 request file || 0, 8 block# = 9 bytes
-            //1 new file mined || 1, 8 block# = 9 bytes
-            Console.WriteLine("Sending?" + executerList.Count);
+            Thread a = new Thread(() => {
 
-            foreach (IPAddress ip in executerList.Keys) {
+                //0 request file || 0, 8 block# = 9 bytes
+                //1 new file mined || 1, 8 block# = 9 bytes
+                Console.WriteLine("Sending?" + executerList.Count);
 
-                Socket inOut = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
-                inOut.Connect(new IPEndPoint(ip, executerList[ip]));
+                foreach (IPAddress ip in executerList.Keys) {
 
-                if (inOut.Connected) {
-                    Console.WriteLine("Connecting to this socket worked");
-                } else {
-                    Console.WriteLine("Connecting DID NOT WORK");
-                    executerList.Remove(ip);
-                }
+                    Socket inOut = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+                    inOut.Connect(new IPEndPoint(ip, executerList[ip]));
 
-                byte[] message = new byte[9];
-
-                message = createHeaderMessage(Form1.instance.latestBlock, commandIndex);
-                inOut.Send(message, 0, message.Length, SocketFlags.None);
-                Console.WriteLine("Sending header");
-
-                //receive acknowledgement:
-                byte[] ack = new byte[32];
-                inOut.Receive(ack, 32, SocketFlags.None);
-
-                Console.WriteLine(BitConverter.ToInt64(ack, 8) + " << received ACK");
-
-                if (commandIndex == 0x00) {
-                    if (ack[0] == 0x00) {
-                        Console.WriteLine("Receiving Block now!");
-                        //now getting the files
-                        receiveBlock(inOut, Form1.instance.latestBlock + 1, ack);
-                        break;
+                    if (inOut.Connected) {
+                        Console.WriteLine("Connecting to this socket worked");
                     } else {
-                        Console.WriteLine("SERVER DOESNT HAVE THE FILES");
-                        break;
+                        Console.WriteLine("Connecting DID NOT WORK");
+                        executerList.Remove(ip);
                     }
-                } else {
 
-                    Console.WriteLine("SENDING NEW BLOCK HEIGHT WORKED!");
+                    byte[] message = new byte[9];
 
+                    message = createHeaderMessage(Form1.instance.latestBlock, commandIndex);
+                    inOut.Send(message, 0, message.Length, SocketFlags.None);
+                    Console.WriteLine("Sending header");
+
+                    //receive acknowledgement:
+                    byte[] ack = new byte[32];
+                    inOut.Receive(ack, 32, SocketFlags.None);
+
+                    Console.WriteLine(BitConverter.ToInt64(ack, 8) + " << received ACK");
+
+                    if (commandIndex == 0x00) {
+                        if (ack[0] == 0x00) {
+                            Console.WriteLine("Receiving Block now!");
+                            //now getting the files
+                            receiveBlock(inOut, Form1.instance.latestBlock + 1, ack);
+                            break;
+                        } else {
+                            Console.WriteLine("SERVER DOESNT HAVE THE FILES");
+                            break;
+                        }
+                    } else {
+
+                        Console.WriteLine("SENDING NEW BLOCK HEIGHT WORKED!");
+
+                    }
+
+                    inOut.Close();
                 }
 
-                inOut.Close();
-            }
+
+            });
+
+            a.Start();
 
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -26,6 +27,7 @@ namespace IronChain {
         public Dictionary<String, Account> accountList;
         bool dontAnalyseYetFlag = true;
 
+        string ip;
 
         public Form1() {
 
@@ -37,6 +39,9 @@ namespace IronChain {
             accountList = new Dictionary<string, Account>();
 
             Utility.loadSettings();
+
+            ip = new WebClient().DownloadString("http://icanhazip.com");
+            textBox1.Text = ip + ":::4712";
 
             updateAccountList();
 
@@ -182,6 +187,8 @@ namespace IronChain {
 
             analyseChain();
 
+            manager2.pushFile();
+
         }
 
         private void onClickStartMining(object sender, EventArgs e) {
@@ -196,8 +203,6 @@ namespace IronChain {
                     string caption = "Error";
                     MessageBoxButtons buttons = MessageBoxButtons.OK;
                     DialogResult result;
-
-                    // Displays the MessageBox.
 
                     result = MessageBox.Show(message, caption, buttons);
 
@@ -362,7 +367,7 @@ namespace IronChain {
                 Invoke(new Action(() => updateUI()));
             } else {
                 label5.Text = "Block " + latestBlock;
-                label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock);
+                label3.Text = checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
             }
         }
 
@@ -471,36 +476,10 @@ namespace IronChain {
         private void onClickConnectClient(object sender, EventArgs e) {
 
             manager2 = new PeerNetworking();
-            manager2.ConnectToListener("whatever",4712);
-        }
 
-        private void onClickRequestFile(object sender, EventArgs e) {
-            Console.WriteLine("Requesting File with 0x00");
-            manager2.requestFile();
-        }
+            string remoteIP = textBox5.Text;
 
-        private void button4_Click(object sender, EventArgs e) {
-            Console.WriteLine(globalChainPath);
-        }
-
-
-        private void button6_Click(object sender, EventArgs e) {
-            globalChainPath = @"C:\Users\kelvi\Desktop\IronChain\";
-        }
-
-        private void onClickPushBlock(object sender, EventArgs e) {
-            Console.WriteLine(PeerNetworking.executerList.Count + " << count in button");
-            manager2.pushFile();
-        }
-
-        private void hostServer413(object sender, EventArgs e) {
-            manager2 = new PeerNetworking();
-            manager2.ListenForConnections(4713);
-        }
-
-        private void button9_Click(object sender, EventArgs e) {
-            manager2 = new PeerNetworking();
-            manager2.ConnectToListener("whatever", 4713);
+            manager2.ConnectToListener(IPAddress.Parse(remoteIP),Convert.ToInt32(textBox5.Text));
         }
     }
 }
