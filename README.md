@@ -12,7 +12,7 @@ RSA verification (done)
 Account system  (done)  
 
 Light mode  (90%)  
-Peer to Peer system (90%)
-All-in-One Client/Miner/Wallet software (50%) 
+Peer to Peer system (90%)  
+All-in-One Client/Miner/Wallet software (50%)  
 
 
