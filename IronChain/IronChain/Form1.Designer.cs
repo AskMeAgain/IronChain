@@ -57,11 +57,13 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.label10 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.label12 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
+            this.label12 = new System.Windows.Forms.Label();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -258,7 +260,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(218, 104);
+            this.button2.Location = new System.Drawing.Point(218, 131);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(126, 23);
             this.button2.TabIndex = 41;
@@ -269,7 +271,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(218, 62);
+            this.label6.Location = new System.Drawing.Point(218, 89);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(58, 13);
             this.label6.TabIndex = 56;
@@ -278,7 +280,7 @@
             // textBox4
             // 
             this.textBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox4.Location = new System.Drawing.Point(219, 78);
+            this.textBox4.Location = new System.Drawing.Point(219, 105);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(83, 21);
             this.textBox4.TabIndex = 57;
@@ -286,7 +288,7 @@
             // textBox5
             // 
             this.textBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox5.Location = new System.Drawing.Point(309, 78);
+            this.textBox5.Location = new System.Drawing.Point(309, 105);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(35, 21);
             this.textBox5.TabIndex = 58;
@@ -294,7 +296,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(306, 62);
+            this.label8.Location = new System.Drawing.Point(306, 89);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(26, 13);
             this.label8.TabIndex = 59;
@@ -303,6 +305,8 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panel2.Controls.Add(this.button4);
+            this.panel2.Controls.Add(this.label13);
             this.panel2.Controls.Add(this.label11);
             this.panel2.Controls.Add(this.label9);
             this.panel2.Controls.Add(this.textBox1);
@@ -315,7 +319,7 @@
             this.panel2.Controls.Add(this.textBox4);
             this.panel2.Location = new System.Drawing.Point(465, 115);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(403, 147);
+            this.panel2.Size = new System.Drawing.Size(403, 173);
             this.panel2.TabIndex = 60;
             // 
             // label11
@@ -360,7 +364,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(203, 27);
+            this.label1.Location = new System.Drawing.Point(203, 54);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(161, 24);
             this.label1.TabIndex = 60;
@@ -374,10 +378,48 @@
             this.panel3.Controls.Add(this.comboBox2);
             this.panel3.Controls.Add(this.button1);
             this.panel3.Controls.Add(this.label10);
-            this.panel3.Location = new System.Drawing.Point(465, 277);
+            this.panel3.Location = new System.Drawing.Point(465, 307);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(403, 141);
+            this.panel3.Size = new System.Drawing.Size(403, 111);
             this.panel3.TabIndex = 61;
+            // 
+            // button3
+            // 
+            this.button3.Enabled = false;
+            this.button3.Location = new System.Drawing.Point(10, 67);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(139, 28);
+            this.button3.TabIndex = 4;
+            this.button3.Text = "Stop Mining";
+            this.button3.UseVisualStyleBackColor = true;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(210, 41);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(74, 13);
+            this.label12.TabIndex = 3;
+            this.label12.Text = "Miner Address";
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(207, 60);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(137, 28);
+            this.comboBox2.TabIndex = 2;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(10, 33);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(139, 28);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "Start Mining";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // label10
             // 
@@ -390,43 +432,23 @@
             this.label10.TabIndex = 0;
             this.label10.Text = "Miner Panel";
             // 
-            // button1
+            // label13
             // 
-            this.button1.Location = new System.Drawing.Point(35, 60);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(139, 28);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Start Mining";
-            this.button1.UseVisualStyleBackColor = true;
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(163, 9);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(162, 13);
+            this.label13.TabIndex = 65;
+            this.label13.Text = "0 Servers in your Connection List\r\n";
             // 
-            // comboBox2
+            // button4
             // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(207, 60);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(137, 28);
-            this.comboBox2.TabIndex = 2;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(210, 41);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(74, 13);
-            this.label12.TabIndex = 3;
-            this.label12.Text = "Miner Address";
-            // 
-            // button3
-            // 
-            this.button3.Enabled = false;
-            this.button3.Location = new System.Drawing.Point(35, 94);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(139, 28);
-            this.button3.TabIndex = 4;
-            this.button3.Text = "Stop Mining";
-            this.button3.UseVisualStyleBackColor = true;
+            this.button4.Location = new System.Drawing.Point(23, 130);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(139, 24);
+            this.button4.TabIndex = 66;
+            this.button4.Text = "Host Server";
+            this.button4.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -498,6 +520,8 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Button button4;
     }
 }
 
