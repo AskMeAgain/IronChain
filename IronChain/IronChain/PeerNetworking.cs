@@ -12,12 +12,10 @@ using System.Reflection;
 namespace IronChain {
     class PeerNetworking {
 
-        List<Socket> executerList;
-        List<Socket> incomingSockets;
+        public static Dictionary<IPAddress, int> executerList;
 
         public PeerNetworking() {
-            executerList = new List<Socket>();
-            incomingSockets = new List<Socket>();
+            executerList = new Dictionary<IPAddress, int>();
 
         }
 
@@ -28,11 +26,13 @@ namespace IronChain {
                 //get local for test
                 IPAddress[] addr = Dns.GetHostAddresses(Dns.GetHostName());
 
-                Socket socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
-                socket.Connect(new IPEndPoint(addr[0], port));
+                //Socket socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+                //socket.Connect(new IPEndPoint(addr[0], port));
 
                 Console.WriteLine("added executer! (Socket)");
-                executerList.Add(socket);
+                executerList.Add(addr[0], port);
+
+                //socket.Close();
 
             } catch (SocketException e) {
                 if (e.ErrorCode.Equals(10048)) {
@@ -55,14 +55,24 @@ namespace IronChain {
 
             //0 request file || 0, 8 block# = 9 bytes
             //1 new file mined || 1, 8 block# = 9 bytes
-            Console.WriteLine("Sending?");
+            Console.WriteLine("Sending?" + executerList.Count);
 
-            foreach (Socket inOut in executerList) {
+            foreach (IPAddress ip in executerList.Keys) {
+
+                Socket inOut = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+                inOut.Connect(new IPEndPoint(ip, executerList[ip]));
+
+                if (inOut.Connected) {
+                    Console.WriteLine("Connecting to this socket worked");
+                } else {
+                    Console.WriteLine("Connecting DID NOT WORK");
+                    executerList.Remove(ip);
+                }
 
                 byte[] message = new byte[9];
 
                 message = createHeaderMessage(Form1.instance.latestBlock, commandIndex);
-                inOut.Send(message, message.Length, SocketFlags.None);
+                inOut.Send(message, 0, message.Length, SocketFlags.None);
                 Console.WriteLine("Sending header");
 
                 //receive acknowledgement:
@@ -145,9 +155,6 @@ namespace IronChain {
 
         public void ListenForConnections(int port) {
 
-            //Form1.instance.button1.Enabled = false;
-            //Form1.instance.button1.Text = "Listening on Port " + port;
-
             Thread thread = new Thread(() => {
                 try {
                     Socket listener = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
@@ -159,24 +166,10 @@ namespace IronChain {
                         Socket socket = listener.Accept();
                         Console.WriteLine("accepted connection!");
 
-                        Console.WriteLine("add to executer list");
-                        /*
-                        Socket newSocket = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
-
-                        IPEndPoint remote =(IPEndPoint)socket.RemoteEndPoint;
-
-                        //NEEDS TO GET REMOVED WHEN SHIPPING
-                        remote.Port++;
-                        newSocket.Connect(remote);
-
-                        if (newSocket.Connected) {
-                            Console.WriteLine("Added reverse Socket to !" + remote.Port);
-                            executerList.Add(newSocket);
-                        }*/
-
                         //receiving message from client
                         byte[] buffer = new byte[9];
                         socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
+                        Console.WriteLine("received command");
                         //sending acknowledgement back
                         commandReceived(buffer, socket);
 
@@ -219,7 +212,7 @@ namespace IronChain {
 
                     Console.WriteLine("Stopped sending files!");
                     ack = createMessage(false, height);
-                    socket.Send(ack, ack.Length, SocketFlags.None);
+                    socket.Send(ack, 0, ack.Length, SocketFlags.None);
                     Console.WriteLine("Done Sending error ack");
                 }
 
@@ -227,6 +220,7 @@ namespace IronChain {
 
                 //TODO REQUEST FILE FROM CLIENT!!
                 Console.WriteLine("YOU HAVE A NEW FILE? ILL CHECK THAT OUT!");
+                Console.WriteLine(executerList.Count + " << xount");
                 requestFile();
 
             }

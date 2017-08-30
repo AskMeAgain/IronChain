@@ -489,6 +489,7 @@ namespace IronChain {
         }
 
         private void onClickPushBlock(object sender, EventArgs e) {
+            Console.WriteLine(PeerNetworking.executerList.Count + " << count in button");
             manager2.pushFile();
         }
 
