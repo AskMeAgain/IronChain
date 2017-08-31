@@ -36,7 +36,7 @@ namespace IronChain {
                     read.Close();
                 }
             } catch (Exception ex) {
-                //Log exception here
+                Console.WriteLine(ex.ToString());
             }
 
             return objectOut;
@@ -127,20 +127,7 @@ namespace IronChain {
 
         public static void loadSettings() {
 
-            Settings.SettingsObject settings = loadFile<Settings.SettingsObject>("C:\\IronChain\\settings.set");
-
-            if (settings == null) {
-                settings = new Settings.SettingsObject();
-                storeFile(settings,settings.globalChainPath+ "settings.set");
-            }
-
-            //load values from settingsobject to everything else;
-            Form1.instance.minerAccountName = settings.defaultMiningAccountName;
-            Form1.instance.miningDifficulty = settings.defaultMiningDifficulty;
-            Form1.instance.globalChainPath = settings.globalChainPath;
-
-            if (Form1.instance.accountList.ContainsKey(settings.defaultMainAccount))
-                Form1.instance.comboBox1.SelectedItem = Form1.instance.accountList[settings.defaultMainAccount];
+            TODO
 
         }
 

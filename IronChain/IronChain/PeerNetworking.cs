@@ -51,7 +51,7 @@ namespace IronChain {
 
                 foreach (IPAddress ip in executerList.Keys) {
                     try {
-                        Socket inOut = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+                        Socket inOut = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                         inOut.Connect(new IPEndPoint(ip, executerList[ip]));
 
 
@@ -159,9 +159,9 @@ namespace IronChain {
 
             Thread thread = new Thread(() => {
                 try {
-                    Socket listener = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+                    Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-                    listener.Bind(new IPEndPoint(IPAddress.IPv6Any, port));
+                    listener.Bind(new IPEndPoint(IPAddress.Any, port));
                     Console.WriteLine("Binding Socket");
                     listener.Listen(500);
                     while (true) {

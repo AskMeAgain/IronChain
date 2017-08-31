@@ -56,8 +56,6 @@ namespace IronChain {
             }
         }
 
-        Dictionary<string, NetworkStream> ClientSockets;
-
         private void connectToServer() {
             byte[] buffer = new byte[1024];
             TcpClient c = new TcpClient("localhost", 4711);

@@ -82,15 +82,19 @@ namespace IronChain {
             }
 
             comboBox1.Items.Clear();
+            comboBox2.Items.Clear();
 
             foreach (Account acc in accountList.Values) {
 
                 comboBox1.Items.Add(acc);
+                comboBox2.Items.Add(acc);
 
             }
 
+
             //select later
             comboBox1.SelectedItem = a;
+
 
             dontAnalyseYetFlag = false;
 
@@ -477,11 +481,6 @@ namespace IronChain {
             updateAccountList();
         }
 
-        private void onClickOpenSettings(object sender, EventArgs e) {
-            Settings s = new Settings();
-            s.ShowDialog();
-        }
-
         private void onClickCreateServerListener(object sender, EventArgs e) {
             manager2 = new PeerNetworking();
             manager2.ListenForConnections(4712);
@@ -503,7 +502,6 @@ namespace IronChain {
         }
 
         private void onClickMineBlock(object sender, EventArgs e) {
-
             Thread a = new Thread(mine);
             a.Name = "Mining";
             a.Start();

@@ -36,7 +36,6 @@
             this.sendIronToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ironChainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteIronChainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -58,6 +57,7 @@
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -113,7 +113,6 @@
             this.fileToolStripMenuItem,
             this.miningToolStripMenuItem,
             this.actionToolStripMenuItem,
-            this.optionsToolStripMenuItem,
             this.ironChainToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -179,13 +178,6 @@
             this.importAccountToolStripMenuItem.Name = "importAccountToolStripMenuItem";
             this.importAccountToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.importAccountToolStripMenuItem.Text = "Import Account";
-            // 
-            // optionsToolStripMenuItem
-            // 
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.optionsToolStripMenuItem.Text = "Settings";
-            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.onClickOpenSettings);
             // 
             // ironChainToolStripMenuItem
             // 
@@ -258,6 +250,7 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panel2.Controls.Add(this.checkBox1);
             this.panel2.Controls.Add(this.button4);
             this.panel2.Controls.Add(this.label11);
             this.panel2.Controls.Add(this.label9);
@@ -396,6 +389,16 @@
             this.label10.TabIndex = 0;
             this.label10.Text = "Miner Panel";
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(173, 8);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(76, 17);
+            this.checkBox1.TabIndex = 66;
+            this.checkBox1.Text = "LightMode";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -431,7 +434,6 @@
         public System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem miningToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem startMiningToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stopMiningToolStripMenuItem;
@@ -460,6 +462,7 @@
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 
