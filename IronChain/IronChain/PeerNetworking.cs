@@ -20,10 +20,10 @@ namespace IronChain {
 
         public void ConnectToListener(IPAddress ip, int port) {
 
-            try {  
-                
-                executerList.Add(ip, port);
+            try {
 
+                executerList.Add(ip, port);
+                Console.WriteLine("worked?");
             } catch (SocketException e) {
                 if (e.ErrorCode.Equals(10048)) {
                     Console.WriteLine("Key exists already!");
@@ -50,46 +50,51 @@ namespace IronChain {
                 Console.WriteLine("Sending?" + executerList.Count);
 
                 foreach (IPAddress ip in executerList.Keys) {
+                    try {
+                        Socket inOut = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+                        inOut.Connect(new IPEndPoint(ip, executerList[ip]));
 
-                    Socket inOut = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
-                    inOut.Connect(new IPEndPoint(ip, executerList[ip]));
 
-                    if (inOut.Connected) {
-                        Console.WriteLine("Connecting to this socket worked");
-                    } else {
-                        Console.WriteLine("Connecting DID NOT WORK");
-                        executerList.Remove(ip);
-                    }
-
-                    byte[] message = new byte[9];
-
-                    message = createHeaderMessage(Form1.instance.latestBlock, commandIndex);
-                    inOut.Send(message, 0, message.Length, SocketFlags.None);
-                    Console.WriteLine("Sending header");
-
-                    //receive acknowledgement:
-                    byte[] ack = new byte[32];
-                    inOut.Receive(ack, 32, SocketFlags.None);
-
-                    Console.WriteLine(BitConverter.ToInt64(ack, 8) + " << received ACK");
-
-                    if (commandIndex == 0x00) {
-                        if (ack[0] == 0x00) {
-                            Console.WriteLine("Receiving Block now!");
-                            //now getting the files
-                            receiveBlock(inOut, Form1.instance.latestBlock + 1, ack);
-                            break;
+                        if (inOut.Connected) {
+                            Console.WriteLine("Connecting to this socket worked");
                         } else {
-                            Console.WriteLine("SERVER DOESNT HAVE THE FILES");
-                            break;
+                            Console.WriteLine("Connecting DID NOT WORK");
+                            executerList.Remove(ip);
                         }
-                    } else {
 
-                        Console.WriteLine("SENDING NEW BLOCK HEIGHT WORKED!");
+                        byte[] message = new byte[9];
 
+                        message = createHeaderMessage(Form1.instance.latestBlock, commandIndex);
+                        inOut.Send(message, 0, message.Length, SocketFlags.None);
+                        Console.WriteLine("Sending header");
+
+                        //receive acknowledgement:
+                        byte[] ack = new byte[32];
+                        inOut.Receive(ack, 32, SocketFlags.None);
+
+                        Console.WriteLine(BitConverter.ToInt64(ack, 8) + " << received ACK");
+
+                        if (commandIndex == 0x00) {
+                            if (ack[0] == 0x00) {
+                                Console.WriteLine("Receiving Block now!");
+                                //now getting the files
+                                receiveBlock(inOut, Form1.instance.latestBlock + 1, ack);
+                                break;
+                            } else {
+                                Console.WriteLine("SERVER DOESNT HAVE THE FILES");
+                                break;
+                            }
+                        } else {
+
+                            Console.WriteLine("SENDING NEW BLOCK HEIGHT WORKED!");
+
+                        }
+
+
+                        inOut.Close();
+                    } catch (Exception e) {
+                        Console.WriteLine(e.ToString());
                     }
-
-                    inOut.Close();
                 }
 
 
@@ -157,6 +162,7 @@ namespace IronChain {
                     Socket listener = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
 
                     listener.Bind(new IPEndPoint(IPAddress.IPv6Any, port));
+                    Console.WriteLine("Binding Socket");
                     listener.Listen(500);
                     while (true) {
 

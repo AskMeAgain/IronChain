@@ -23,7 +23,6 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.textBox2 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -39,18 +38,15 @@
             this.importAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ironChainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.analyseFromGenesisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.startFromGenesisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteIronChainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteAllAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.button4 = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -67,15 +63,6 @@
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // textBox2
-            // 
-            this.textBox2.BackColor = System.Drawing.SystemColors.InactiveBorder;
-            this.textBox2.Location = new System.Drawing.Point(12, 158);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(359, 260);
-            this.textBox2.TabIndex = 4;
             // 
             // label3
             // 
@@ -154,7 +141,7 @@
             this.startMiningToolStripMenuItem.Name = "startMiningToolStripMenuItem";
             this.startMiningToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.startMiningToolStripMenuItem.Text = "Start Mining";
-            this.startMiningToolStripMenuItem.Click += new System.EventHandler(this.onClickStartMining);
+            this.startMiningToolStripMenuItem.Click += new System.EventHandler(this.onBarMineBlock);
             // 
             // stopMiningToolStripMenuItem
             // 
@@ -203,39 +190,17 @@
             // ironChainToolStripMenuItem
             // 
             this.ironChainToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.analyseFromGenesisToolStripMenuItem,
-            this.startFromGenesisToolStripMenuItem,
-            this.deleteIronChainToolStripMenuItem,
-            this.deleteAllAccountsToolStripMenuItem});
+            this.deleteIronChainToolStripMenuItem});
             this.ironChainToolStripMenuItem.Name = "ironChainToolStripMenuItem";
             this.ironChainToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
             this.ironChainToolStripMenuItem.Text = "IronChain";
             // 
-            // analyseFromGenesisToolStripMenuItem
-            // 
-            this.analyseFromGenesisToolStripMenuItem.Name = "analyseFromGenesisToolStripMenuItem";
-            this.analyseFromGenesisToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.analyseFromGenesisToolStripMenuItem.Text = "Analyse from Genesis";
-            // 
-            // startFromGenesisToolStripMenuItem
-            // 
-            this.startFromGenesisToolStripMenuItem.Name = "startFromGenesisToolStripMenuItem";
-            this.startFromGenesisToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.startFromGenesisToolStripMenuItem.Text = "Start From Genesis";
-            // 
             // deleteIronChainToolStripMenuItem
             // 
             this.deleteIronChainToolStripMenuItem.Name = "deleteIronChainToolStripMenuItem";
-            this.deleteIronChainToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.deleteIronChainToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.deleteIronChainToolStripMenuItem.Text = "Delete IronChain";
             this.deleteIronChainToolStripMenuItem.Click += new System.EventHandler(this.onClickDeleteIronChain);
-            // 
-            // deleteAllAccountsToolStripMenuItem
-            // 
-            this.deleteAllAccountsToolStripMenuItem.Name = "deleteAllAccountsToolStripMenuItem";
-            this.deleteAllAccountsToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.deleteAllAccountsToolStripMenuItem.Text = "Delete all Accounts";
-            this.deleteAllAccountsToolStripMenuItem.Click += new System.EventHandler(this.onClickDeleteAllAccounts);
             // 
             // panel1
             // 
@@ -245,16 +210,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1125, 72);
             this.panel1.TabIndex = 38;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(14, 115);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(235, 31);
-            this.label4.TabIndex = 39;
-            this.label4.Text = "Your Transactions";
             // 
             // button2
             // 
@@ -303,6 +258,7 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panel2.Controls.Add(this.button4);
             this.panel2.Controls.Add(this.label11);
             this.panel2.Controls.Add(this.label9);
             this.panel2.Controls.Add(this.textBox1);
@@ -318,6 +274,16 @@
             this.panel2.Size = new System.Drawing.Size(403, 147);
             this.panel2.TabIndex = 60;
             // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(23, 106);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(126, 23);
+            this.button4.TabIndex = 65;
+            this.button4.Text = "Start Server";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.onClickStartServer);
+            // 
             // label11
             // 
             this.label11.AutoSize = true;
@@ -332,7 +298,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(20, 88);
+            this.label9.Location = new System.Drawing.Point(20, 62);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(104, 13);
             this.label9.TabIndex = 63;
@@ -341,16 +307,16 @@
             // textBox1
             // 
             this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(23, 104);
+            this.textBox1.Location = new System.Drawing.Point(23, 78);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(139, 21);
+            this.textBox1.Size = new System.Drawing.Size(126, 21);
             this.textBox1.TabIndex = 62;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(39, 54);
+            this.label2.Location = new System.Drawing.Point(39, 37);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(110, 24);
             this.label2.TabIndex = 61;
@@ -360,7 +326,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(203, 27);
+            this.label1.Location = new System.Drawing.Point(203, 37);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(161, 24);
             this.label1.TabIndex = 60;
@@ -388,6 +354,7 @@
             this.button3.TabIndex = 4;
             this.button3.Text = "Stop Mining";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.onClickStopMineBlock);
             // 
             // label12
             // 
@@ -416,6 +383,7 @@
             this.button1.TabIndex = 1;
             this.button1.Text = "Start Mining";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.onClickMineBlock);
             // 
             // label10
             // 
@@ -434,11 +402,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(880, 430);
             this.Controls.Add(this.panel3);
-            this.Controls.Add(this.label4);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
@@ -459,7 +425,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label7;
@@ -473,13 +438,9 @@
         private System.Windows.Forms.ToolStripMenuItem actionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sendIronToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ironChainToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem analyseFromGenesisToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addAccountToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem startFromGenesisToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteIronChainToolStripMenuItem;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ToolStripMenuItem deleteAllAccountsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importAccountToolStripMenuItem;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label6;
@@ -498,6 +459,7 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button4;
     }
 }
 

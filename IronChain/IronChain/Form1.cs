@@ -47,7 +47,7 @@ namespace IronChain {
 
 
             if (!File.Exists(globalChainPath + "0.blk")) {
-               createGenesisBlock();
+                createGenesisBlock();
             }
 
             analyseChain();
@@ -109,10 +109,10 @@ namespace IronChain {
 
         public void updateTransactionPoolWindow() {
 
-            textBox2.Text = "";
+            // textBox2.Text = "";
 
             foreach (Transaction t in TransactionPool) {
-                textBox2.AppendText(t.toString() + Environment.NewLine);
+                //         textBox2.AppendText(t.toString() + Environment.NewLine);
             }
         }
 
@@ -140,15 +140,15 @@ namespace IronChain {
 
             particleName = "P" + (latestBlock + 1);
 
-            Utility.storeFile(p,globalChainPath + particleName + ".blk");
+            Utility.storeFile(p, globalChainPath + particleName + ".blk");
 
             updateTransactionPoolWindow();
 
             //create light particle
             Particle light = new Particle();
-            string lightName =globalChainPath + "L" + (latestBlock + 1);
+            string lightName = globalChainPath + "L" + (latestBlock + 1);
             light.hashToBlock = Utility.ComputeHash(globalChainPath + "" + latestBlock);
-            Utility.storeFile(light,lightName + ".blk");
+            Utility.storeFile(light, lightName + ".blk");
 
         }
 
@@ -183,15 +183,32 @@ namespace IronChain {
             nextBlock.createCoins(accountList[minerAccountName]);
 
             //Store Block
-            Utility.storeFile(nextBlock,globalChainPath + (latestBlock + 1) + ".blk");
+            Utility.storeFile(nextBlock, globalChainPath + (latestBlock + 1) + ".blk");
 
             analyseChain();
 
-            manager2.pushFile();
+            if (manager2 != null)
+                manager2.pushFile();
+
+            if (miningFlag) {
+                mine();
+            }
 
         }
 
-        private void onClickStartMining(object sender, EventArgs e) {
+        private void onBarMineBlock(object sender, EventArgs e) {
+            mine();
+        }
+
+        private void mine() {
+            if (InvokeRequired) {
+                Invoke(new Action(() => {
+                    button1.Enabled = false;
+                    button1.Text = "Mining!";
+                    button3.Enabled = true;
+                }));
+            }
+            
 
             if (minerAccountName.Equals("")) {
 
@@ -228,7 +245,6 @@ namespace IronChain {
 
                 i++;
             }
-
         }
 
         private void onClickStopMining(object sender, EventArgs e) {
@@ -422,7 +438,7 @@ namespace IronChain {
 
         private void onAccountChanged(object sender, EventArgs e) {
             analyseChain();
-            label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock);
+            label3.Text = checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
         }
 
         private void onClickAddAccount(object sender, EventArgs e) {
@@ -475,12 +491,28 @@ namespace IronChain {
 
         private void onClickConnectClient(object sender, EventArgs e) {
 
-            manager2 = new PeerNetworking();
 
-            string remoteIP = textBox5.Text;
-
-            manager2.ConnectToListener(IPAddress.Parse(remoteIP),Convert.ToInt32(textBox5.Text));
+            manager2.ConnectToListener(IPAddress.Parse(textBox5.Text), Convert.ToInt32(textBox5.Text));
         }
 
+        private void onClickStartServer(object sender, EventArgs e) {
+            button4.Enabled = false;
+            button4.Text = "Hosting Server";
+            manager2 = new PeerNetworking();
+            manager2.ListenForConnections(30000);
+        }
+
+        private void onClickMineBlock(object sender, EventArgs e) {
+
+            Thread a = new Thread(mine);
+            a.Name = "Mining";
+            a.Start();
+        }
+
+        private void onClickStopMineBlock(object sender, EventArgs e) {
+            miningFlag = false;
+            button1.Enabled = true;
+            button1.Text = "Start Mining";
+        }
     }
 }
