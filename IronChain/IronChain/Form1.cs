@@ -23,6 +23,7 @@ namespace IronChain {
         public int latestBlock = 0;
 
         public string minerAccountName;
+        public string mainAccount;
 
         public Dictionary<String, Account> accountList;
         bool dontAnalyseYetFlag = true;
@@ -30,8 +31,6 @@ namespace IronChain {
         string ip;
 
         public Form1() {
-
-            //waitForAccountCreation.Reset();
 
             InitializeComponent();
             instance = this;
@@ -56,6 +55,7 @@ namespace IronChain {
         public void updateAccountList() {
 
             Account a = new Account("Add a new Account", 0);
+            Account addAccount = a;
 
             string[] allAccountNames = Directory.GetFiles("C:\\IronChain\\", "*.acc");
 
@@ -74,10 +74,8 @@ namespace IronChain {
             }
 
             if (accountList.Count == 0) {
-
                 addAccount accWindow = new addAccount();
                 accWindow.Show(this);
-
                 return;
             }
 
@@ -89,12 +87,20 @@ namespace IronChain {
                 comboBox1.Items.Add(acc);
                 comboBox2.Items.Add(acc);
 
+                if (acc.name.Equals(minerAccountName)) {
+                    Console.WriteLine("not working=?");
+                    comboBox2.SelectedItem = acc;
+                }
+
+                if (acc.name.Equals(mainAccount)) {
+                    Console.WriteLine("not working=?");
+
+                    comboBox1.SelectedItem = acc;
+                }
+
             }
 
-
-            //select later
-            comboBox1.SelectedItem = a;
-
+            comboBox1.Items.Add(addAccount);
 
             dontAnalyseYetFlag = false;
 
@@ -107,7 +113,6 @@ namespace IronChain {
         private void createGenesisBlock() {
             Block genesis = new Block(0);
             genesis.hashOfParticle = "genesis";
-            //genesis.giveSomeCoins(accountList["KelvinPetry"].publicKey, 100);
             Utility.storeFile(genesis, globalChainPath + genesis.name + ".blk");
         }
 
@@ -200,10 +205,6 @@ namespace IronChain {
 
         }
 
-        private void onBarMineBlock(object sender, EventArgs e) {
-            mine();
-        }
-
         private void mine() {
             if (InvokeRequired) {
                 Invoke(new Action(() => {
@@ -212,7 +213,7 @@ namespace IronChain {
                     button3.Enabled = true;
                 }));
             }
-            
+
 
             if (minerAccountName.Equals("")) {
 
@@ -253,10 +254,6 @@ namespace IronChain {
 
         private void onClickStopMining(object sender, EventArgs e) {
             miningFlag = false;
-        }
-
-        private void onClickAnalyseChain(object sender, EventArgs e) {
-            analyseChain();
         }
 
         public int miningDifficulty;
@@ -384,16 +381,14 @@ namespace IronChain {
             latestBlock = i;
 
             if (InvokeRequired) {
-                Invoke(new Action(() => updateUI()));
+                Invoke(new Action(() => {
+                    label5.Text = "Block " + latestBlock;
+                    label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock);
+                }));
             } else {
                 label5.Text = "Block " + latestBlock;
                 label3.Text = checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
             }
-        }
-
-        private void updateUI() {
-            label5.Text = "Block " + latestBlock;
-            label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock);
         }
 
         public void isServerUI() {
@@ -441,8 +436,25 @@ namespace IronChain {
         }
 
         private void onAccountChanged(object sender, EventArgs e) {
-            analyseChain();
-            label3.Text = checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
+
+            if (comboBox1.Text.Equals("Add a new Account")) {
+
+                addAccount a = new addAccount();
+                a.Show();
+
+            } else {
+
+
+                mainAccount = comboBox1.Text;
+                Utility.Settings set = Utility.loadFile<Utility.Settings>("C:\\IronChain\\settings.set");
+                set.mainAccount = mainAccount;
+                Utility.storeFile(set, "C:\\IronChain\\settings.set");
+
+
+                analyseChain();
+                label3.Text = checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
+
+            }
         }
 
         private void onClickAddAccount(object sender, EventArgs e) {
@@ -510,7 +522,16 @@ namespace IronChain {
         private void onClickStopMineBlock(object sender, EventArgs e) {
             miningFlag = false;
             button1.Enabled = true;
+            button3.Enabled = false;
             button1.Text = "Start Mining";
+        }
+
+        private void onMinerAddressChanged(object sender, EventArgs e) {
+            minerAccountName = comboBox2.Text;
+            Utility.Settings set = Utility.loadFile<Utility.Settings>("C:\\IronChain\\settings.set");
+            Console.WriteLine("mineracocunt" + minerAccountName);
+            set.minerAccount = minerAccountName;
+            Utility.storeFile(set, "C:\\IronChain\\settings.set");
         }
     }
 }

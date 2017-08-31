@@ -125,10 +125,40 @@ namespace IronChain {
             return cypherText;
         }
 
+        [Serializable]
+        public class Settings{
+            public string mainAccount;
+            public string minerAccount;
+            public string globalChainPath;
+
+            public Settings() {
+                globalChainPath = "C:\\IronChain\\";
+            }
+        }
+
         public static void loadSettings() {
 
-            TODO
+            Settings sett = loadFile<Settings>("C:\\IronChain\\settings.set");
 
+            if (sett == null) {
+                sett = new Settings();
+                sett.globalChainPath = "C:\\IronChain\\";
+                sett.minerAccount = findRandomAcc();
+                sett.mainAccount = findRandomAcc();
+
+                storeFile(sett, "C:\\IronChain\\settings.set");
+                Console.WriteLine("here??");
+            }
+
+            Form1.instance.minerAccountName = sett.minerAccount;
+            Form1.instance.mainAccount = sett.mainAccount;
+            Form1.instance.globalChainPath = sett.globalChainPath;
+        }
+
+        private static string findRandomAcc() {
+            string[] allAccountNames = Directory.GetFiles("C:\\IronChain\\", "*.acc");
+            Account a = loadFile<Account>(allAccountNames[0]);
+            return a.name;
         }
 
         public static string signData(string message, string privateKey) {

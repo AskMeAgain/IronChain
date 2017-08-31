@@ -29,9 +29,6 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.miningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.startMiningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.stopMiningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.actionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sendIronToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,6 +42,7 @@
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.button4 = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
@@ -57,7 +55,6 @@
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -69,7 +66,7 @@
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(155, 41);
+            this.label3.Location = new System.Drawing.Point(164, 17);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(83, 31);
             this.label3.TabIndex = 18;
@@ -90,7 +87,7 @@
             this.label7.AutoSize = true;
             this.label7.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(28, 41);
+            this.label7.Location = new System.Drawing.Point(12, 14);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(106, 20);
             this.label7.TabIndex = 30;
@@ -101,7 +98,7 @@
             this.comboBox1.BackColor = System.Drawing.SystemColors.Control;
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(20, 64);
+            this.comboBox1.Location = new System.Drawing.Point(16, 37);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 21);
             this.comboBox1.TabIndex = 32;
@@ -111,7 +108,6 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.miningToolStripMenuItem,
             this.actionToolStripMenuItem,
             this.ironChainToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -125,29 +121,6 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
-            // 
-            // miningToolStripMenuItem
-            // 
-            this.miningToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.startMiningToolStripMenuItem,
-            this.stopMiningToolStripMenuItem});
-            this.miningToolStripMenuItem.Name = "miningToolStripMenuItem";
-            this.miningToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.miningToolStripMenuItem.Text = "Mining";
-            // 
-            // startMiningToolStripMenuItem
-            // 
-            this.startMiningToolStripMenuItem.Name = "startMiningToolStripMenuItem";
-            this.startMiningToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
-            this.startMiningToolStripMenuItem.Text = "Start Mining";
-            this.startMiningToolStripMenuItem.Click += new System.EventHandler(this.onBarMineBlock);
-            // 
-            // stopMiningToolStripMenuItem
-            // 
-            this.stopMiningToolStripMenuItem.Name = "stopMiningToolStripMenuItem";
-            this.stopMiningToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
-            this.stopMiningToolStripMenuItem.Text = "Stop Mining";
-            this.stopMiningToolStripMenuItem.Click += new System.EventHandler(this.onClickStopMining);
             // 
             // actionToolStripMenuItem
             // 
@@ -198,9 +171,12 @@
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.panel1.Controls.Add(this.label5);
+            this.panel1.Controls.Add(this.label7);
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.comboBox1);
             this.panel1.Location = new System.Drawing.Point(0, 27);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1125, 72);
+            this.panel1.Size = new System.Drawing.Size(880, 72);
             this.panel1.TabIndex = 38;
             // 
             // button2
@@ -266,6 +242,16 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(403, 147);
             this.panel2.TabIndex = 60;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(173, 8);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(76, 17);
+            this.checkBox1.TabIndex = 66;
+            this.checkBox1.Text = "LightMode";
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // button4
             // 
@@ -367,6 +353,7 @@
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(137, 28);
             this.comboBox2.TabIndex = 2;
+            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.onMinerAddressChanged);
             // 
             // button1
             // 
@@ -389,25 +376,12 @@
             this.label10.TabIndex = 0;
             this.label10.Text = "Miner Panel";
             // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(173, 8);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(76, 17);
-            this.checkBox1.TabIndex = 66;
-            this.checkBox1.Text = "LightMode";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(880, 430);
             this.Controls.Add(this.panel3);
-            this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label3);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
@@ -434,9 +408,6 @@
         public System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem miningToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem startMiningToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem stopMiningToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem actionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sendIronToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ironChainToolStripMenuItem;
