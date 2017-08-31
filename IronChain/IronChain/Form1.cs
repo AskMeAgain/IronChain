@@ -444,12 +444,10 @@ namespace IronChain {
 
             } else {
 
-
                 mainAccount = comboBox1.Text;
                 Utility.Settings set = Utility.loadFile<Utility.Settings>("C:\\IronChain\\settings.set");
                 set.mainAccount = mainAccount;
                 Utility.storeFile(set, "C:\\IronChain\\settings.set");
-
 
                 analyseChain();
                 label3.Text = checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
