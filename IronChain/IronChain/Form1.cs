@@ -41,6 +41,7 @@ namespace IronChain {
 
             ip = new WebClient().DownloadString("http://icanhazip.com");
             textBox1.Text = ip + ":::4712";
+            comboBox4.SelectedIndex = 0;
 
             updateAccountList();
 
@@ -81,21 +82,21 @@ namespace IronChain {
 
             comboBox1.Items.Clear();
             comboBox2.Items.Clear();
+            comboBox3.Items.Clear();
 
             foreach (Account acc in accountList.Values) {
 
                 comboBox1.Items.Add(acc);
                 comboBox2.Items.Add(acc);
+                comboBox3.Items.Add(acc);
 
                 if (acc.name.Equals(minerAccountName)) {
-                    Console.WriteLine("not working=?");
                     comboBox2.SelectedItem = acc;
                 }
 
                 if (acc.name.Equals(mainAccount)) {
-                    Console.WriteLine("not working=?");
-
                     comboBox1.SelectedItem = acc;
+                    comboBox3.SelectedItem = acc;
                 }
 
             }
@@ -460,11 +461,6 @@ namespace IronChain {
             f2.ShowDialog();
         }
 
-        private void onClickSendIron(object sender, EventArgs e) {
-            Form f2 = new sendIron();
-            f2.ShowDialog();
-        }
-
         private void onClickDeleteIronChain(object sender, EventArgs e) {
 
             string[] allFiles = Directory.GetFiles(globalChainPath, "*.blk");
@@ -530,6 +526,41 @@ namespace IronChain {
             Console.WriteLine("mineracocunt" + minerAccountName);
             set.minerAccount = minerAccountName;
             Utility.storeFile(set, "C:\\IronChain\\settings.set");
+        }
+
+        private void onClickSendIron(object sender, EventArgs e) {
+
+            int amount = Convert.ToInt32(textBox6.Text);
+            Transaction t = new Transaction(latestBlock + amount);
+            string receiver = textBox2.Text;
+
+            Account thisAccount = accountList[comboBox3.Text];
+
+
+            //SIGN TRANSACTION
+            t.owner = thisAccount.publicKey;
+            t.receiver = receiver;
+            t.amount = amount;
+
+            string hashOfEverything = t.id + "" + t.amount + "" + t.receiver + "" + t.owner;
+            string hash = "" + hashOfEverything.GetHashCode();
+
+            t.proofOfOwnership = Utility.signData(hash, thisAccount.privateKey);
+
+            TransactionPool.Add(t);
+            Console.WriteLine(t.toString());
+
+            textBox6.Clear();
+            textBox2.Clear();
+
+        }
+
+        private void onAmountChanged(object sender, EventArgs e) {
+            label17.Text = textBox6.Text;
+        }
+
+        private void onDifficultyChanged(object sender, EventArgs e) {
+            miningDifficulty = comboBox4.SelectedIndex + 4;
         }
     }
 }
