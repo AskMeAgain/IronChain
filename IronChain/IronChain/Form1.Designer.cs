@@ -73,6 +73,7 @@
             this.button9 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
             this.button11 = new System.Windows.Forms.Button();
+            this.deleteAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -175,7 +176,8 @@
             // ironChainToolStripMenuItem
             // 
             this.ironChainToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteIronChainToolStripMenuItem});
+            this.deleteIronChainToolStripMenuItem,
+            this.deleteAccountsToolStripMenuItem});
             this.ironChainToolStripMenuItem.Name = "ironChainToolStripMenuItem";
             this.ironChainToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
             this.ironChainToolStripMenuItem.Text = "IronChain";
@@ -587,6 +589,13 @@
             this.button11.UseVisualStyleBackColor = true;
             this.button11.Click += new System.EventHandler(this.button11_Click);
             // 
+            // deleteAccountsToolStripMenuItem
+            // 
+            this.deleteAccountsToolStripMenuItem.Name = "deleteAccountsToolStripMenuItem";
+            this.deleteAccountsToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.deleteAccountsToolStripMenuItem.Text = "Delete Accounts";
+            this.deleteAccountsToolStripMenuItem.Click += new System.EventHandler(this.onBarDeleteAccounts);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -672,6 +681,7 @@
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.ToolStripMenuItem deleteAccountsToolStripMenuItem;
     }
 }
 

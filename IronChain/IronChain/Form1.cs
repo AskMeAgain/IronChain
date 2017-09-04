@@ -473,18 +473,6 @@ namespace IronChain {
             analyseChain();
         }
 
-        private void onClickDeleteAllAccounts(object sender, EventArgs e) {
-
-            string[] allFiles = Directory.GetFiles("C:\\IronChain\\", "*.acc");
-            foreach (string s in allFiles) {
-                string[] splitted = s.Split('\\');
-                string nameOfFile = splitted[splitted.Length - 1];
-                File.Delete("C:\\IronChain\\" + nameOfFile);
-            }
-
-            updateAccountList();
-        }
-
         private void onClickCreateServerListener(object sender, EventArgs e) {
             manager2 = new PeerNetworking();
             manager2.ListenForConnections(4712);
@@ -600,6 +588,18 @@ namespace IronChain {
             foreach (Transaction t in TransactionPool) {
                 Console.WriteLine("transaction" + t.amount + " " + t.owner);
             }
+        }
+
+        private void onBarDeleteAccounts(object sender, EventArgs e) {
+
+            string[] allFiles = Directory.GetFiles("C:\\IronChain\\", "*.acc");
+            foreach (string s in allFiles) {
+                string[] splitted = s.Split('\\');
+                string nameOfFile = splitted[splitted.Length - 1];
+                File.Delete("C:\\IronChain\\" + nameOfFile);
+            }
+
+            updateAccountList();
         }
     }
 }
