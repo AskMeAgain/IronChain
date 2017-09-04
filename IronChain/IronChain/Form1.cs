@@ -513,8 +513,6 @@ namespace IronChain {
             Utility.storeFile(set, "C:\\IronChain\\settings.set");
         }
 
-        public bool isServer = false;
-
         private void onClickSendIron(object sender, EventArgs e) {
 
             int amount = Convert.ToInt32(textBox6.Text);
@@ -536,12 +534,10 @@ namespace IronChain {
 
             TransactionPool.Add(t);
 
-            if (!isServer) {
-                //push transaction because we arent server
+            if (!PeerNetworking.isServer) {
+                //push transaction because we are not hosting a server
                 manager2.pushTransactionToServer();
             }
-
-            Console.WriteLine(t.toString());
 
             textBox6.Clear();
             textBox2.Clear();

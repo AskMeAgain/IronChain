@@ -12,6 +12,8 @@ using System.Reflection;
 namespace IronChain {
     class PeerNetworking {
 
+        public static bool isServer = false;
+
         public static Dictionary<IPAddress, int> executerList;
 
         public PeerNetworking() {
@@ -199,6 +201,9 @@ namespace IronChain {
                     listener.Bind(new IPEndPoint(IPAddress.IPv6Any, port));
                     Console.WriteLine("Binding Socket");
                     listener.Listen(500);
+
+                    isServer = true;
+
                     while (true) {
 
                         Socket socket = listener.Accept();
