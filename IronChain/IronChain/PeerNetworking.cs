@@ -21,7 +21,6 @@ namespace IronChain {
         public void ConnectToListener(IPAddress ip, int port) {
 
             try {
-
                 executerList.Add(ip, port);
                 Console.WriteLine("worked?");
             } catch (SocketException e) {
@@ -41,17 +40,27 @@ namespace IronChain {
             sendCommandToServers(0x01);
         }
 
+        public void pushTransactionToServer() {
+
+            sendCommandToServers(0x02);
+
+        }
+
+        Transaction selectedTransforTransmitting;
+
         private void sendCommandToServers(byte commandIndex) {
 
             Thread a = new Thread(() => {
 
                 //0 request file || 0, 8 block# = 9 bytes
                 //1 new file mined || 1, 8 block# = 9 bytes
+                //2 push transaction || 2, transaction hash = 9 bytes
+
                 Console.WriteLine("Sending?" + executerList.Count);
 
                 foreach (IPAddress ip in executerList.Keys) {
                     try {
-                        Socket inOut = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        Socket inOut = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
                         inOut.Connect(new IPEndPoint(ip, executerList[ip]));
 
 
@@ -62,11 +71,20 @@ namespace IronChain {
                             executerList.Remove(ip);
                         }
 
+                        if (commandIndex == 0x02 && Form1.instance.TransactionPool.Count == 0) {
+                            Console.WriteLine("meme pool is empty!!");
+                            inOut.Close();
+                            break;
+                        }
+
                         byte[] message = new byte[9];
 
                         message = createHeaderMessage(Form1.instance.latestBlock, commandIndex);
+
+
+
                         inOut.Send(message, 0, message.Length, SocketFlags.None);
-                        Console.WriteLine("Sending header");
+                        Console.WriteLine("Sending header with command" + commandIndex);
 
                         //receive acknowledgement:
                         byte[] ack = new byte[32];
@@ -84,9 +102,26 @@ namespace IronChain {
                                 Console.WriteLine("SERVER DOESNT HAVE THE FILES");
                                 break;
                             }
-                        } else {
+                        } else if (commandIndex == 0x01) {
 
                             Console.WriteLine("SENDING NEW BLOCK HEIGHT WORKED!");
+
+                        } else if (commandIndex == 0x02) {
+                            if (ack[0] == 0x02) {
+                                Console.WriteLine("server is listening all ok go!");
+                            }
+
+                            Console.WriteLine("correct ack! now sending transaction size!!");
+
+                            byte[] transObj = Utility.ObjectToByteArray(selectedTransforTransmitting);
+
+                            byte[] msg = new byte[4];
+                            msg = BitConverter.GetBytes(transObj.Length);
+
+                            Console.WriteLine("filesize" + transObj.Length);
+                            inOut.Send(msg, 0, msg.Length, SocketFlags.None);
+
+                            inOut.Send(transObj, 0, transObj.Length, SocketFlags.None);
 
                         }
 
@@ -159,9 +194,9 @@ namespace IronChain {
 
             Thread thread = new Thread(() => {
                 try {
-                    Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    Socket listener = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
 
-                    listener.Bind(new IPEndPoint(IPAddress.Any, port));
+                    listener.Bind(new IPEndPoint(IPAddress.IPv6Any, port));
                     Console.WriteLine("Binding Socket");
                     listener.Listen(500);
                     while (true) {
@@ -219,12 +254,31 @@ namespace IronChain {
                     Console.WriteLine("Done Sending error ack");
                 }
 
-            } else {
+            } else if (command[0] == 0x01) {
 
                 //TODO REQUEST FILE FROM CLIENT!!
                 Console.WriteLine("YOU HAVE A NEW FILE? ILL CHECK THAT OUT!");
                 Console.WriteLine(executerList.Count + " << xount");
                 requestFile();
+
+            } else if (command[0] == 0x02) {
+
+                Console.WriteLine("you have a transaction? ok sending confirmation ");
+                byte[] msg = new byte[32];
+                msg[0] = 0x02;
+                socket.Send(msg, 0, msg.Length, SocketFlags.None);
+
+                byte[] filesize = new byte[4];
+                socket.Receive(filesize, 0, filesize.Length, SocketFlags.None);
+                Console.WriteLine("received answer!" + BitConverter.ToInt32(filesize,0));
+
+
+                int bytesNeeded = BitConverter.ToInt32(filesize, 0);
+                byte[] transaction = new byte[bytesNeeded];
+                socket.Receive(transaction, 0, bytesNeeded, SocketFlags.None);
+                Transaction t = Utility.ByteArrayToTransaction(transaction);
+
+                Form1.instance.TransactionPool.Add(t);
 
             }
         }
@@ -293,6 +347,14 @@ namespace IronChain {
 
             if (by == 0x00)
                 num++;
+
+            if (by == 0x02) {
+                Transaction t = Form1.instance.TransactionPool[0];
+                selectedTransforTransmitting = t;
+                Form1.instance.TransactionPool.RemoveAt(0);
+                num = t.GetHashCode();
+                Console.WriteLine(num + " << hashcode");
+            }
 
             byte[] message = new byte[9];
 

@@ -50,6 +50,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.label15 = new System.Windows.Forms.Label();
+            this.comboBox4 = new System.Windows.Forms.ComboBox();
             this.button3 = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
@@ -65,8 +67,12 @@
             this.label13 = new System.Windows.Forms.Label();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.comboBox4 = new System.Windows.Forms.ComboBox();
-            this.label15 = new System.Windows.Forms.Label();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.button8 = new System.Windows.Forms.Button();
+            this.button9 = new System.Windows.Forms.Button();
+            this.button10 = new System.Windows.Forms.Button();
+            this.button11 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -340,6 +346,33 @@
             this.panel3.Size = new System.Drawing.Size(403, 141);
             this.panel3.TabIndex = 61;
             // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(204, 83);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(47, 13);
+            this.label15.TabIndex = 6;
+            this.label15.Text = "Difficulty";
+            // 
+            // comboBox4
+            // 
+            this.comboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox4.FormattingEnabled = true;
+            this.comboBox4.Items.AddRange(new object[] {
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"});
+            this.comboBox4.Location = new System.Drawing.Point(207, 99);
+            this.comboBox4.Name = "comboBox4";
+            this.comboBox4.Size = new System.Drawing.Size(77, 21);
+            this.comboBox4.TabIndex = 5;
+            this.comboBox4.SelectedIndexChanged += new System.EventHandler(this.onDifficultyChanged);
+            // 
             // button3
             // 
             this.button3.Enabled = false;
@@ -495,38 +528,76 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Transaction Panel";
             // 
-            // comboBox4
+            // button6
             // 
-            this.comboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox4.FormattingEnabled = true;
-            this.comboBox4.Items.AddRange(new object[] {
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10"});
-            this.comboBox4.Location = new System.Drawing.Point(207, 99);
-            this.comboBox4.Name = "comboBox4";
-            this.comboBox4.Size = new System.Drawing.Size(77, 21);
-            this.comboBox4.TabIndex = 5;
-            this.comboBox4.SelectedIndexChanged += new System.EventHandler(this.onDifficultyChanged);
+            this.button6.Location = new System.Drawing.Point(12, 115);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.TabIndex = 63;
+            this.button6.Text = "Server 3000";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
-            // label15
+            // button7
             // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(204, 83);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(47, 13);
-            this.label15.TabIndex = 6;
-            this.label15.Text = "Difficulty";
+            this.button7.Location = new System.Drawing.Point(94, 115);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(75, 23);
+            this.button7.TabIndex = 64;
+            this.button7.Text = "Server 3001";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(3, 144);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(84, 23);
+            this.button8.TabIndex = 65;
+            this.button8.Text = "Connect 3000";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
+            // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(94, 145);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(85, 23);
+            this.button9.TabIndex = 66;
+            this.button9.Text = "Connect 3001";
+            this.button9.UseVisualStyleBackColor = true;
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(265, 115);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(176, 23);
+            this.button10.TabIndex = 67;
+            this.button10.Text = "Push all Transactions to Server";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(292, 221);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(149, 23);
+            this.button11.TabIndex = 12;
+            this.button11.Text = "Show Transactions";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(880, 430);
+            this.Controls.Add(this.button11);
+            this.Controls.Add(this.button10);
+            this.Controls.Add(this.button9);
+            this.Controls.Add(this.button8);
+            this.Controls.Add(this.button7);
+            this.Controls.Add(this.button6);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.menuStrip1);
@@ -595,6 +666,12 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.ComboBox comboBox4;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button button11;
     }
 }
 

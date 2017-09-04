@@ -11,8 +11,6 @@ namespace IronChain {
 
     public partial class Form1 : Form {
 
-        private static ManualResetEvent waitForAccountCreation = new ManualResetEvent(false);
-
         public string globalChainPath;
         public static Form1 instance;
 
@@ -477,7 +475,7 @@ namespace IronChain {
 
         private void onClickDeleteAllAccounts(object sender, EventArgs e) {
 
-            string[] allFiles = Directory.GetFiles(Environment.CurrentDirectory, "*.acc");
+            string[] allFiles = Directory.GetFiles("C:\\IronChain\\", "*.acc");
             foreach (string s in allFiles) {
                 string[] splitted = s.Split('\\');
                 string nameOfFile = splitted[splitted.Length - 1];
@@ -495,7 +493,6 @@ namespace IronChain {
         PeerNetworking manager2;
 
         private void onClickConnectClient(object sender, EventArgs e) {
-
 
             manager2.ConnectToListener(IPAddress.Parse(textBox5.Text), Convert.ToInt32(textBox5.Text));
         }
@@ -528,6 +525,8 @@ namespace IronChain {
             Utility.storeFile(set, "C:\\IronChain\\settings.set");
         }
 
+        public bool isServer = false;
+
         private void onClickSendIron(object sender, EventArgs e) {
 
             int amount = Convert.ToInt32(textBox6.Text);
@@ -548,6 +547,12 @@ namespace IronChain {
             t.proofOfOwnership = Utility.signData(hash, thisAccount.privateKey);
 
             TransactionPool.Add(t);
+
+            if (!isServer) {
+                //push transaction because we arent server
+                manager2.pushTransactionToServer();
+            }
+
             Console.WriteLine(t.toString());
 
             textBox6.Clear();
@@ -556,11 +561,45 @@ namespace IronChain {
         }
 
         private void onAmountChanged(object sender, EventArgs e) {
-            label17.Text = textBox6.Text;
+
+            label17.Text = textBox6.Text + " Iron";
+
+            if (textBox6.Text.Equals("")) {
+                label17.Text = "0 Iron";
+            }
         }
 
         private void onDifficultyChanged(object sender, EventArgs e) {
             miningDifficulty = comboBox4.SelectedIndex + 4;
+        }
+
+        private void button6_Click(object sender, EventArgs e) {
+            manager2 = new PeerNetworking();
+            manager2.ListenForConnections(3000);
+        }
+
+        private void button7_Click(object sender, EventArgs e) {
+            manager2 = new PeerNetworking();
+            manager2.ListenForConnections(3001);
+        }
+
+        private void button8_Click(object sender, EventArgs e) {
+
+            IPHostEntry entry = Dns.GetHostEntry(Dns.GetHostName());
+            IPAddress[] t = entry.AddressList;
+
+            manager2 = new PeerNetworking();
+            manager2.ConnectToListener(t[0], 3000);
+        }
+
+        private void button10_Click(object sender, EventArgs e) {
+            manager2.pushTransactionToServer();
+        }
+
+        private void button11_Click(object sender, EventArgs e) {
+            foreach (Transaction t in TransactionPool) {
+                Console.WriteLine("transaction" + t.amount + " " + t.owner);
+            }
         }
     }
 }
