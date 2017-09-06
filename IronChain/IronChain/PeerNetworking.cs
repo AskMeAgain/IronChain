@@ -46,11 +46,13 @@ namespace IronChain {
             sendCommandToServers(0x02);
         }
 
-        public void downloadChain() {
-            sendCommandToServers(0x03);
-        }
-
         Transaction selectedTransforTransmitting;
+
+        long highestHeight;
+        IPAddress ipOfHighest;
+        int portOfHighest;
+        bool flagForFileInfo;
+
 
         private void sendCommandToServers(byte commandIndex) {
 
@@ -65,6 +67,9 @@ namespace IronChain {
                     Console.WriteLine("meme pool is empty!!");
                     return;
                 }
+
+                highestHeight = 0;
+                flagForFileInfo = false;
 
                 foreach (IPAddress ip in executerList.Keys) {
                     try {
@@ -83,20 +88,31 @@ namespace IronChain {
 
                         //receive answer
                         byte[] answer = new byte[32];
+                        Console.WriteLine("waiting answer!");
+
                         inOut.Receive(answer, 32, SocketFlags.None);
+
+                        Console.WriteLine("received answer!");
 
                         //do stuff with specific answer
                         if (commandIndex == 0x00) {
                             //store information here for further progressing
+                            Console.WriteLine("storing information for each server");
 
                             if (answer[0] == 0x00) {
-                                Console.WriteLine("You have height {0} and the hash existed before!", BitConverter.ToInt64(answer,1));
+                                Console.WriteLine("You have height {0} and the hash existed before!", BitConverter.ToInt64(answer, 1));
+
+                                if (highestHeight < BitConverter.ToInt64(answer, 1)) {
+                                    highestHeight = BitConverter.ToInt64(answer, 1);
+                                    ipOfHighest = ip;
+                                    portOfHighest = executerList[ip];
+                                    flagForFileInfo = true;
+                                }
+
                             } else if (answer[0] == 0x01) {
                                 Console.WriteLine("You have height XX, but the hash doesnt exist");
                             } else if (answer[0] == 0x02) {
-                                Console.WriteLine("The block doesnt exist, but i have same height");
-                            } else if (answer[0] == 0x03) {
-                                Console.WriteLine("I dont have this height");
+                                Console.WriteLine("Your height is smaller!");
                             }
 
                         } else if (commandIndex == 0x01) {
@@ -108,8 +124,6 @@ namespace IronChain {
                             if (answer[0] == 0x00)
                                 sendTransaction(inOut);
 
-                        } else if (commandIndex == 0x03) {
-                            Console.WriteLine("Download blocks from specific server!");
                         }
 
                         inOut.Close();
@@ -118,10 +132,33 @@ namespace IronChain {
                     }
                 }
 
+                if (flagForFileInfo && highestHeight > Form1.instance.latestBlock) {
+
+                    Console.WriteLine("init process to download from highest node!");
+                    flagForFileInfo = false;
+
+                    downloadChain(ipOfHighest, portOfHighest);
+
+                }
 
             });
 
             a.Start();
+
+        }
+
+        public void downloadChain(IPAddress ip, int port) {
+
+            Console.WriteLine("process to download blocks!");
+
+            //send command 0x03!
+
+            //receive height and filesizes
+
+            //receive block
+            //receive particle
+            //receive light particle
+
 
         }
 
@@ -236,25 +273,45 @@ namespace IronChain {
                 sendFileInfo(command, socket);
             } else if (command[0] == 0x02) {
                 receiveTransaction(socket);
+            } else if (command[0] == 0x03) {
+                Console.WriteLine("download request received!");
+                Console.WriteLine("sending block {0}", BitConverter.ToInt64(command, 1));
+
+                //send height and filesizes
+                //send block
+                //send particle
+                //send light particle
+
             }
 
         }
 
         private void sendFileInfo(byte[] command, Socket socket) {
 
-            int height = BitConverter.ToInt32(command, 1);
+            int requestedHeight = BitConverter.ToInt32(command, 1);
             string hash = Convert.ToBase64String(command, 10, 16);
             byte[] ack = new byte[32];
 
-            if (Utility.ComputeHash(Form1.instance.globalChainPath + (height - 1)).Equals(hash)) {
-                //block exists, send your own height
-                ack[0] = 0x00;
-                byte[] num = BitConverter.GetBytes((long)Form1.instance.latestBlock);
-                Array.Copy(num, 0, ack, 1, num.Length);
-            } else {
-                //block
+            Console.WriteLine("sending file info");
 
+            if (requestedHeight > Form1.instance.latestBlock) {
+                Console.WriteLine("smaller!");
+                ack[0] = 0x02;
+            } else if (requestedHeight <= Form1.instance.latestBlock) {
+                Console.WriteLine(requestedHeight + " " + Form1.instance.latestBlock);
+                if (Utility.ComputeHash(Form1.instance.globalChainPath + (requestedHeight - 1)).Equals(hash)) {
+                    ack[0] = 0x00;
+                } else {
+                    ack[0] = 0x01;
+                }
+            } else {
+                //block doesnt exist, but i have height XXX
+                Console.WriteLine("block doesnt exist!");
+                ack[0] = 0x01;
             }
+
+            byte[] num = BitConverter.GetBytes((long)Form1.instance.latestBlock);
+            Array.Copy(num, 0, ack, 1, num.Length);
 
             socket.Send(ack, ack.Length, SocketFlags.None);
 
@@ -308,7 +365,7 @@ namespace IronChain {
 
         }
 
-        private byte[] createFuleSizeMessage(bool fileExist, long blockheight) {
+        private byte[] createFileSizeMessage(bool fileExist, long blockheight) {
 
             byte[] message = Enumerable.Repeat((byte)0x00, 32).ToArray();
 
@@ -346,13 +403,11 @@ namespace IronChain {
             Console.WriteLine("creating command");
 
             if (by == 0x00) {
-
                 //request file info
                 string hash = Utility.ComputeHash(Form1.instance.globalChainPath + num);
                 byte[] s = Convert.FromBase64String(hash);
                 Array.Copy(s, 0, message, 10, s.Length);
                 num++;
-
             }
 
             if (by == 0x02) {
