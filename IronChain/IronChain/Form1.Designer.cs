@@ -35,6 +35,7 @@
             this.importAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ironChainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteIronChainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
@@ -73,7 +74,9 @@
             this.button9 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
             this.button11 = new System.Windows.Forms.Button();
-            this.deleteAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button12 = new System.Windows.Forms.Button();
+            this.button13 = new System.Windows.Forms.Button();
+            this.button14 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -188,6 +191,13 @@
             this.deleteIronChainToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.deleteIronChainToolStripMenuItem.Text = "Delete IronChain";
             this.deleteIronChainToolStripMenuItem.Click += new System.EventHandler(this.onClickDeleteIronChain);
+            // 
+            // deleteAccountsToolStripMenuItem
+            // 
+            this.deleteAccountsToolStripMenuItem.Name = "deleteAccountsToolStripMenuItem";
+            this.deleteAccountsToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.deleteAccountsToolStripMenuItem.Text = "Delete Accounts";
+            this.deleteAccountsToolStripMenuItem.Click += new System.EventHandler(this.onBarDeleteAccounts);
             // 
             // panel1
             // 
@@ -575,13 +585,13 @@
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(176, 23);
             this.button10.TabIndex = 67;
-            this.button10.Text = "Push all Transactions to Server";
+            this.button10.Text = "Push Transaction to Server";
             this.button10.UseVisualStyleBackColor = true;
             this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // button11
             // 
-            this.button11.Location = new System.Drawing.Point(292, 221);
+            this.button11.Location = new System.Drawing.Point(20, 207);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(149, 23);
             this.button11.TabIndex = 12;
@@ -589,18 +599,44 @@
             this.button11.UseVisualStyleBackColor = true;
             this.button11.Click += new System.EventHandler(this.button11_Click);
             // 
-            // deleteAccountsToolStripMenuItem
+            // button12
             // 
-            this.deleteAccountsToolStripMenuItem.Name = "deleteAccountsToolStripMenuItem";
-            this.deleteAccountsToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.deleteAccountsToolStripMenuItem.Text = "Delete Accounts";
-            this.deleteAccountsToolStripMenuItem.Click += new System.EventHandler(this.onBarDeleteAccounts);
+            this.button12.Location = new System.Drawing.Point(265, 145);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(176, 23);
+            this.button12.TabIndex = 68;
+            this.button12.Text = "Push new block";
+            this.button12.UseVisualStyleBackColor = true;
+            this.button12.Click += new System.EventHandler(this.button12_Click);
+            // 
+            // button13
+            // 
+            this.button13.Location = new System.Drawing.Point(265, 177);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(176, 23);
+            this.button13.TabIndex = 69;
+            this.button13.Text = "Download whole chain!";
+            this.button13.UseVisualStyleBackColor = true;
+            this.button13.Click += new System.EventHandler(this.button13_Click);
+            // 
+            // button14
+            // 
+            this.button14.Location = new System.Drawing.Point(265, 207);
+            this.button14.Name = "button14";
+            this.button14.Size = new System.Drawing.Size(176, 23);
+            this.button14.TabIndex = 70;
+            this.button14.Text = "Request block";
+            this.button14.UseVisualStyleBackColor = true;
+            this.button14.Click += new System.EventHandler(this.button14_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(880, 430);
+            this.Controls.Add(this.button14);
+            this.Controls.Add(this.button13);
+            this.Controls.Add(this.button12);
             this.Controls.Add(this.button11);
             this.Controls.Add(this.button10);
             this.Controls.Add(this.button9);
@@ -682,6 +718,9 @@
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button11;
         private System.Windows.Forms.ToolStripMenuItem deleteAccountsToolStripMenuItem;
+        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.Button button14;
     }
 }
 

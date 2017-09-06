@@ -34,7 +34,7 @@ namespace IronChain {
             }
         }
 
-        public void requestFile() {
+        public void requestFileInfo() {
             sendCommandToServers(0x00);
         }
 
@@ -43,9 +43,11 @@ namespace IronChain {
         }
 
         public void pushTransactionToServer() {
-
             sendCommandToServers(0x02);
+        }
 
+        public void downloadChain() {
+            sendCommandToServers(0x03);
         }
 
         Transaction selectedTransforTransmitting;
@@ -54,79 +56,61 @@ namespace IronChain {
 
             Thread a = new Thread(() => {
 
-                //0 request file || 0, 8 block# = 9 bytes
+                //0 request file info || 0, 8 block# = 9 bytes
                 //1 new file mined || 1, 8 block# = 9 bytes
                 //2 push transaction || 2, transaction hash = 9 bytes
+                //3 download whole chain
 
-                Console.WriteLine("Sending?" + executerList.Count);
+                if (commandIndex == 0x02 && Form1.instance.TransactionPool.Count == 0) {
+                    Console.WriteLine("meme pool is empty!!");
+                    return;
+                }
 
                 foreach (IPAddress ip in executerList.Keys) {
                     try {
+
                         Socket inOut = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
                         inOut.Connect(new IPEndPoint(ip, executerList[ip]));
 
-
-                        if (inOut.Connected) {
-                            Console.WriteLine("Connecting to this socket worked");
-                        } else {
-                            Console.WriteLine("Connecting DID NOT WORK");
+                        if (!inOut.Connected) {
                             executerList.Remove(ip);
                         }
 
-                        if (commandIndex == 0x02 && Form1.instance.TransactionPool.Count == 0) {
-                            Console.WriteLine("meme pool is empty!!");
-                            inOut.Close();
-                            break;
-                        }
+                        //send command to server!
+                        byte[] command = new byte[32];
+                        command = createCommandMessage(Form1.instance.latestBlock, commandIndex);
+                        inOut.Send(command, 0, command.Length, SocketFlags.None);
 
-                        byte[] message = new byte[9];
+                        //receive answer
+                        byte[] answer = new byte[32];
+                        inOut.Receive(answer, 32, SocketFlags.None);
 
-                        message = createHeaderMessage(Form1.instance.latestBlock, commandIndex);
-
-
-
-                        inOut.Send(message, 0, message.Length, SocketFlags.None);
-                        Console.WriteLine("Sending header with command" + commandIndex);
-
-                        //receive acknowledgement:
-                        byte[] ack = new byte[32];
-                        inOut.Receive(ack, 32, SocketFlags.None);
-
-                        Console.WriteLine(BitConverter.ToInt64(ack, 8) + " << received ACK");
-
+                        //do stuff with specific answer
                         if (commandIndex == 0x00) {
-                            if (ack[0] == 0x00) {
-                                Console.WriteLine("Receiving Block now!");
-                                //now getting the files
-                                receiveBlock(inOut, Form1.instance.latestBlock + 1, ack);
-                                break;
-                            } else {
-                                Console.WriteLine("SERVER DOESNT HAVE THE FILES");
-                                break;
+                            //store information here for further progressing
+
+                            if (answer[0] == 0x00) {
+                                Console.WriteLine("You have height {0} and the hash existed before!", BitConverter.ToInt64(answer,1));
+                            } else if (answer[0] == 0x01) {
+                                Console.WriteLine("You have height XX, but the hash doesnt exist");
+                            } else if (answer[0] == 0x02) {
+                                Console.WriteLine("The block doesnt exist, but i have same height");
+                            } else if (answer[0] == 0x03) {
+                                Console.WriteLine("I dont have this height");
                             }
+
                         } else if (commandIndex == 0x01) {
 
-                            Console.WriteLine("SENDING NEW BLOCK HEIGHT WORKED!");
+                            if (answer[0] == 0x00)
+                                Console.WriteLine("everything worked");
 
                         } else if (commandIndex == 0x02) {
-                            if (ack[0] == 0x02) {
-                                Console.WriteLine("server is listening all ok go!");
-                            }
+                            if (answer[0] == 0x00)
+                                sendTransaction(inOut);
 
-                            Console.WriteLine("correct ack! now sending transaction size!!");
-
-                            byte[] transObj = Utility.ObjectToByteArray(selectedTransforTransmitting);
-
-                            byte[] msg = new byte[4];
-                            msg = BitConverter.GetBytes(transObj.Length);
-
-                            Console.WriteLine("filesize" + transObj.Length);
-                            inOut.Send(msg, 0, msg.Length, SocketFlags.None);
-
-                            inOut.Send(transObj, 0, transObj.Length, SocketFlags.None);
-
+                        } else if (commandIndex == 0x03) {
+                            Console.WriteLine("Download blocks from specific server!");
                         }
-
 
                         inOut.Close();
                     } catch (Exception e) {
@@ -139,6 +123,19 @@ namespace IronChain {
 
             a.Start();
 
+        }
+
+        private void sendTransaction(Socket inOut) {
+            Console.WriteLine("Sending transaction now because everything went fine!!!!");
+
+            byte[] transObj = Utility.ObjectToByteArray(selectedTransforTransmitting);
+            byte[] msg = new byte[4];
+            msg = BitConverter.GetBytes(transObj.Length);
+
+            Console.WriteLine("filesize" + transObj.Length);
+            inOut.Send(msg, 0, msg.Length, SocketFlags.None);
+
+            inOut.Send(transObj, 0, transObj.Length, SocketFlags.None);
         }
 
         private void receiveBlock(Socket inOut, int height, byte[] ack) {
@@ -210,7 +207,7 @@ namespace IronChain {
                         Console.WriteLine("accepted connection!");
 
                         //receiving message from client
-                        byte[] buffer = new byte[9];
+                        byte[] buffer = new byte[32];
                         socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
                         Console.WriteLine("received command");
                         //sending acknowledgement back
@@ -230,62 +227,55 @@ namespace IronChain {
 
         private void commandReceived(byte[] command, Socket socket) {
 
-            //0 means request
+            //0 means broadcast file height info
             //1 means a new file is up
+            //2 means receive a new transaction
+            //3 means client wants to download files from X to latest block
 
             if (command[0] == 0x00) {
-
-                int height = BitConverter.ToInt32(command, 1);
-
-                Console.WriteLine("Received request of block" + height);
-
-                //SEND ACKNOWLEDGEMENT
-                byte[] ack = new byte[32];
-                if (Form1.instance.latestBlock >= height) {
-
-                    Console.WriteLine("Send ack then all files");
-                    ack = createMessage(true, height);
-                    socket.Send(ack, ack.Length, SocketFlags.None);
-
-                    sendFile(height + ".blk", socket);
-                    sendFile("P" + height + ".blk", socket);
-                    sendFile("L" + height + ".blk", socket);
-
-                } else {
-
-                    Console.WriteLine("Stopped sending files!");
-                    ack = createMessage(false, height);
-                    socket.Send(ack, 0, ack.Length, SocketFlags.None);
-                    Console.WriteLine("Done Sending error ack");
-                }
-
-            } else if (command[0] == 0x01) {
-
-                //TODO REQUEST FILE FROM CLIENT!!
-                Console.WriteLine("YOU HAVE A NEW FILE? ILL CHECK THAT OUT!");
-                Console.WriteLine(executerList.Count + " << xount");
-                requestFile();
-
+                sendFileInfo(command, socket);
             } else if (command[0] == 0x02) {
+                receiveTransaction(socket);
+            }
 
-                Console.WriteLine("you have a transaction? ok sending confirmation ");
-                byte[] msg = new byte[32];
-                msg[0] = 0x02;
-                socket.Send(msg, 0, msg.Length, SocketFlags.None);
+        }
 
-                byte[] filesize = new byte[4];
-                socket.Receive(filesize, 0, filesize.Length, SocketFlags.None);
-                Console.WriteLine("received answer!" + BitConverter.ToInt32(filesize,0));
+        private void sendFileInfo(byte[] command, Socket socket) {
 
+            int height = BitConverter.ToInt32(command, 1);
+            string hash = Convert.ToBase64String(command, 10, 16);
+            byte[] ack = new byte[32];
 
-                int bytesNeeded = BitConverter.ToInt32(filesize, 0);
-                byte[] transaction = new byte[bytesNeeded];
-                socket.Receive(transaction, 0, bytesNeeded, SocketFlags.None);
-                Transaction t = Utility.ByteArrayToTransaction(transaction);
-
-                Form1.instance.TransactionPool.Add(t);
+            if (Utility.ComputeHash(Form1.instance.globalChainPath + (height - 1)).Equals(hash)) {
+                //block exists, send your own height
+                ack[0] = 0x00;
+                byte[] num = BitConverter.GetBytes((long)Form1.instance.latestBlock);
+                Array.Copy(num, 0, ack, 1, num.Length);
+            } else {
+                //block
 
             }
+
+            socket.Send(ack, ack.Length, SocketFlags.None);
+
+        }
+
+        private void receiveTransaction(Socket socket) {
+            Console.WriteLine("you have a transaction? ok sending confirmation ");
+            byte[] msg = new byte[32];
+            msg[0] = 0x02;
+            socket.Send(msg, 0, msg.Length, SocketFlags.None);
+
+            byte[] filesize = new byte[4];
+            socket.Receive(filesize, 0, filesize.Length, SocketFlags.None);
+            Console.WriteLine("received answer!" + BitConverter.ToInt32(filesize, 0));
+
+            int bytesNeeded = BitConverter.ToInt32(filesize, 0);
+            byte[] transaction = new byte[bytesNeeded];
+            socket.Receive(transaction, 0, bytesNeeded, SocketFlags.None);
+            Transaction t = Utility.ByteArrayToTransaction(transaction);
+
+            Form1.instance.TransactionPool.Add(t);
         }
 
         private void sendFile(string name, Socket serverStream) {
@@ -318,7 +308,7 @@ namespace IronChain {
 
         }
 
-        private byte[] createMessage(bool fileExist, long blockheight) {
+        private byte[] createFuleSizeMessage(bool fileExist, long blockheight) {
 
             byte[] message = Enumerable.Repeat((byte)0x00, 32).ToArray();
 
@@ -348,10 +338,22 @@ namespace IronChain {
 
         }
 
-        private byte[] createHeaderMessage(long num, byte by) {
+        private byte[] createCommandMessage(long num, byte by) {
 
-            if (by == 0x00)
+            byte[] message = new byte[32];
+            message[0] = by;
+
+            Console.WriteLine("creating command");
+
+            if (by == 0x00) {
+
+                //request file info
+                string hash = Utility.ComputeHash(Form1.instance.globalChainPath + num);
+                byte[] s = Convert.FromBase64String(hash);
+                Array.Copy(s, 0, message, 10, s.Length);
                 num++;
+
+            }
 
             if (by == 0x02) {
                 Transaction t = Form1.instance.TransactionPool[0];
@@ -361,12 +363,12 @@ namespace IronChain {
                 Console.WriteLine(num + " << hashcode");
             }
 
-            byte[] message = new byte[9];
 
-            message[0] = by;
             byte[] height = BitConverter.GetBytes(num);
 
             Array.Copy(height, 0, message, 1, height.Length);
+
+
 
             return message;
 
