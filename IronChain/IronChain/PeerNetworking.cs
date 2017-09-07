@@ -149,16 +149,34 @@ namespace IronChain {
 
         public void downloadChain(IPAddress ip, int port) {
 
-            Console.WriteLine("process to download blocks!");
+            Console.WriteLine("DOWNLOADING CHAIN!!");
+            Socket inOut = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+            inOut.Connect(new IPEndPoint(ip, port));
+
+            Console.WriteLine("requesting height " + (Form1.instance.latestBlock + 1));
 
             //send command 0x03!
+            byte[] message = new byte[32];
+            message[0] = 0x03;
+            byte[] num = BitConverter.GetBytes((long)Form1.instance.latestBlock + 1);
+            Array.Copy(num, 0, message, 8, num.Length);
+            inOut.Send(message, 0, message.Length, SocketFlags.None);
 
-            //receive height and filesizes
+
+            //receive filesizes
+            byte[] filesizes = new byte[32];
+            inOut.Receive(filesizes, 0, filesizes.Length, SocketFlags.None);
+
+            if (filesizes[0] == 0x01) {
+                Console.WriteLine("file doesnt exist!");
+                inOut.Close();
+                return;
+            }
 
             //receive block
-            //receive particle
-            //receive light particle
+            receiveBlock(inOut, Form1.instance.latestBlock + 1, filesizes);
 
+            downloadChain(ip, port);
 
         }
 
@@ -275,13 +293,22 @@ namespace IronChain {
                 receiveTransaction(socket);
             } else if (command[0] == 0x03) {
                 Console.WriteLine("download request received!");
-                Console.WriteLine("sending block {0}", BitConverter.ToInt64(command, 1));
+                Console.WriteLine("requested block {0}", BitConverter.ToInt64(command, 8));
 
-                //send height and filesizes
-                //send block
-                //send particle
-                //send light particle
+                //send filesizes
+                long height = BitConverter.ToInt64(command, 8);
 
+                byte[] filesizes = createFileSizeMessage(height);
+                socket.Send(filesizes, 0, filesizes.Length, SocketFlags.None);
+
+                if (height <= Form1.instance.latestBlock) {
+
+                    sendFile(height + ".blk", socket);
+                    sendFile("P" + height + ".blk", socket);
+                    sendFile("L" + height + ".blk", socket);
+                }
+
+                socket.Close();
             }
 
         }
@@ -365,12 +392,24 @@ namespace IronChain {
 
         }
 
-        private byte[] createFileSizeMessage(bool fileExist, long blockheight) {
+        private byte[] createFileSizeMessage(long blockheight) {
+
+            bool fileExist = false;
+
+            Console.WriteLine(Form1.instance.globalChainPath + blockheight + ".blk");
+
+            if (File.Exists(Form1.instance.globalChainPath + blockheight + ".blk")) {
+                fileExist = true;
+                Console.WriteLine("requested height EXISTS!");
+            } else {
+                Console.WriteLine("request height DOESNT EXIST");
+            }
 
             byte[] message = Enumerable.Repeat((byte)0x00, 32).ToArray();
 
             if (!fileExist) {
                 message[0] = 0x01;
+                Console.WriteLine("message 0x01");
             } else {
 
                 byte[] fileA = File.ReadAllBytes(Form1.instance.globalChainPath + blockheight + ".blk");
@@ -422,8 +461,6 @@ namespace IronChain {
             byte[] height = BitConverter.GetBytes(num);
 
             Array.Copy(height, 0, message, 1, height.Length);
-
-
 
             return message;
 
