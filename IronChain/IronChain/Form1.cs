@@ -35,6 +35,8 @@ namespace IronChain {
             TransactionPool = new List<Transaction>();
             accountList = new Dictionary<string, Account>();
 
+            Directory.CreateDirectory("C:\\IronChain\\");
+
             Utility.loadSettings();
 
             ip = new WebClient().DownloadString("http://icanhazip.com");
@@ -57,7 +59,7 @@ namespace IronChain {
 
         public void requestFilesEvery30Sec(Object myObject, EventArgs myEventArgs) {
             Console.WriteLine("checking files!");
-            if (manager2 != null) 
+            if (manager2 != null)
                 manager2.requestFileInfo();
         }
 

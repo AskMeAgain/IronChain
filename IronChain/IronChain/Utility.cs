@@ -179,6 +179,13 @@ namespace IronChain {
 
         private static string findRandomAcc() {
             string[] allAccountNames = Directory.GetFiles("C:\\IronChain\\", "*.acc");
+
+            if (allAccountNames.Length == 0) {
+
+                return "";
+
+            }
+
             Account a = loadFile<Account>(allAccountNames[0]);
             return a.name;
         }
