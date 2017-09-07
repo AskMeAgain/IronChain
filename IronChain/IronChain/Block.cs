@@ -19,6 +19,7 @@ namespace IronChain {
             }
         };
 
+        public int difficulty { get; set; }
         public string nonce { get; set; }
         public int name { get; set; }
         public string hashOfParticle { get; set; }

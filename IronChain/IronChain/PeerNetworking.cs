@@ -71,6 +71,8 @@ namespace IronChain {
                 highestHeight = 0;
                 flagForFileInfo = false;
 
+                Console.WriteLine("executing command " + executerList.Count);
+
                 foreach (IPAddress ip in executerList.Keys) {
                     try {
 
@@ -288,14 +290,22 @@ namespace IronChain {
             //3 means client wants to download files from X to latest block
 
             if (command[0] == 0x00) {
+
                 sendFileInfo(command, socket);
+
+            } else if (command[0] == 0x01) {
+                socket.Close();
+                requestFileInfo();
+
             } else if (command[0] == 0x02) {
+
                 receiveTransaction(socket);
+
             } else if (command[0] == 0x03) {
+
                 Console.WriteLine("download request received!");
                 Console.WriteLine("requested block {0}", BitConverter.ToInt64(command, 8));
 
-                //send filesizes
                 long height = BitConverter.ToInt64(command, 8);
 
                 byte[] filesizes = createFileSizeMessage(height);

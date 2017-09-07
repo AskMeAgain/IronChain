@@ -175,7 +175,7 @@ namespace IronChain {
             }
         }
 
-        private void mineNextBlock(string nonce) {
+        private void mineNextBlock(string nonce, int diff) {
 
             Block nextBlock = new Block();
             createParticles();
@@ -187,6 +187,7 @@ namespace IronChain {
             nextBlock.numberOfTransactions += p.allTransactions.Count;
             nextBlock.name = (latestBlock + 1);
             nextBlock.nonce = nonce;
+            nextBlock.difficulty = diff;
 
             nextBlock.createCoins(accountList[minerAccountName]);
 
@@ -243,7 +244,7 @@ namespace IronChain {
                 string hash = Utility.getHashSha256(hashToProof);
 
                 if (Utility.verifyHashDifficulty(hash, difficulty)) {
-                    mineNextBlock(i + "");
+                    mineNextBlock(i + "", difficulty);
                     break;
                 }
 
@@ -262,13 +263,14 @@ namespace IronChain {
             if (dontAnalyseYetFlag)
                 return;
 
-            int difficulty = miningDifficulty;
 
             if (!File.Exists(globalChainPath + "0.blk")) {
                 createGenesisBlock();
             }
 
             Block b = Utility.loadFile<Block>(globalChainPath + "0.blk");
+
+            int difficulty = b.difficulty;
 
             //get genesis block too
             foreach (Account acc in accountList.Values) {
@@ -612,6 +614,18 @@ namespace IronChain {
         private void button15_Click(object sender, EventArgs e) {
             globalChainPath = "C:\\IronChain\\TestChain\\";
             analyseChain();
+        }
+
+        private void button16_Click(object sender, EventArgs e) {
+            Console.WriteLine(PeerNetworking.executerList.Count);
+        }
+
+        private void button9_Click(object sender, EventArgs e) {
+            IPHostEntry entry = Dns.GetHostEntry(Dns.GetHostName());
+            IPAddress[] t = entry.AddressList;
+
+            manager2 = new PeerNetworking();
+            manager2.ConnectToListener(t[0], 3001);
         }
     }
 }
