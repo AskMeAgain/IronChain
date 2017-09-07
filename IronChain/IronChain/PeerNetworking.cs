@@ -185,6 +185,8 @@ namespace IronChain {
         private void sendTransaction(Socket inOut) {
             Console.WriteLine("Sending transaction now because everything went fine!!!!");
 
+
+
             byte[] transObj = Utility.ObjectToByteArray(selectedTransforTransmitting);
             byte[] msg = new byte[4];
             msg = BitConverter.GetBytes(transObj.Length);

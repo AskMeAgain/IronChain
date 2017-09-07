@@ -112,16 +112,8 @@ namespace IronChain {
         private void createGenesisBlock() {
             Block genesis = new Block(0);
             genesis.hashOfParticle = "genesis";
+            genesis.minerAddress = "";
             Utility.storeFile(genesis, globalChainPath + genesis.name + ".blk");
-        }
-
-        public void updateTransactionPoolWindow() {
-
-            // textBox2.Text = "";
-
-            foreach (Transaction t in TransactionPool) {
-                //         textBox2.AppendText(t.toString() + Environment.NewLine);
-            }
         }
 
         private void createParticles() {
@@ -149,8 +141,6 @@ namespace IronChain {
             particleName = "P" + (latestBlock + 1);
 
             Utility.storeFile(p, globalChainPath + particleName + ".blk");
-
-            updateTransactionPoolWindow();
 
             //create light particle
             Particle light = new Particle();
@@ -184,7 +174,6 @@ namespace IronChain {
 
             //GET HASHES NOW INTO BLOCK
             nextBlock.addHash((latestBlock + 1));
-            nextBlock.numberOfTransactions += p.allTransactions.Count;
             nextBlock.name = (latestBlock + 1);
             nextBlock.nonce = nonce;
             nextBlock.difficulty = diff;
@@ -276,11 +265,8 @@ namespace IronChain {
             //get genesis block too
             foreach (Account acc in accountList.Values) {
                 acc.coinCounter = 0;
-                foreach (Block.Coin coin in b.allCoins) {
-                    if (acc.publicKey.Equals(coin.owner)) {
-                        acc.coinCounter += coin.amount;
-                    }
-                }
+                if (acc.publicKey.Equals(b.minerAddress))
+                    acc.coinCounter += 3;
             }
 
             int i = 1;
@@ -299,7 +285,7 @@ namespace IronChain {
                 string hashOfBlock = Utility.ComputeHash(globalChainPath + i + "");
                 string hashOfBlockBefore = Utility.ComputeHash(globalChainPath + (i - 1) + "");
 
-                string hashToProof = b.nonce + hashOfBlockBefore + b.allCoins[0].owner;
+                string hashToProof = b.nonce + hashOfBlockBefore + b.minerAddress;
                 string proofHash = Utility.getHashSha256(hashToProof);
 
                 //checking nonce
@@ -413,11 +399,10 @@ namespace IronChain {
 
                 Block b = Utility.loadFile<Block>(globalChainPath + i + ".blk");
 
-                foreach (Block.Coin coin in b.allCoins) {
-                    if (coin.owner.Equals(owner)) {
-                        coinbalance += coin.amount;
-                    }
+                if (b.minerAddress.Equals(owner)) {
+                    coinbalance += 3;
                 }
+
 
                 if (i > 0) {
                     Particle p = Utility.loadFile<Particle>(globalChainPath + "P" + i + ".blk");
@@ -538,7 +523,7 @@ namespace IronChain {
 
             TransactionPool.Add(t);
 
-            if (!PeerNetworking.isServer) {
+            if (!PeerNetworking.isServer && manager2 != null) {
                 //push transaction because we are not hosting a server
                 manager2.pushTransactionToServer();
             }
