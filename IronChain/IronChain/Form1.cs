@@ -48,7 +48,17 @@ namespace IronChain {
                 createGenesisBlock();
             }
 
+            timer1.Tick += new EventHandler(requestFilesEvery30Sec);
+            timer1.Interval = 10000;
+            timer1.Start();
+
             analyseChain();
+        }
+
+        public void requestFilesEvery30Sec(Object myObject, EventArgs myEventArgs) {
+            Console.WriteLine("checking files!");
+            if (manager2 != null) 
+                manager2.requestFileInfo();
         }
 
         public void updateAccountList() {
@@ -372,7 +382,7 @@ namespace IronChain {
             if (InvokeRequired) {
                 Invoke(new Action(() => {
                     label5.Text = "Block " + latestBlock;
-                    label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock);
+                    label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
                 }));
             } else {
                 label5.Text = "Block " + latestBlock;

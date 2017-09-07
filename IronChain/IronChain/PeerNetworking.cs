@@ -119,8 +119,10 @@ namespace IronChain {
 
                         } else if (commandIndex == 0x01) {
 
-                            if (answer[0] == 0x00)
+                            if (answer[0] == 0x00) 
                                 Console.WriteLine("everything worked");
+                            
+
 
                         } else if (commandIndex == 0x02) {
                             if (answer[0] == 0x00)
@@ -359,7 +361,7 @@ namespace IronChain {
         private void receiveTransaction(Socket socket) {
             Console.WriteLine("you have a transaction? ok sending confirmation ");
             byte[] msg = new byte[32];
-            msg[0] = 0x02;
+            msg[0] = 0x00;
             socket.Send(msg, 0, msg.Length, SocketFlags.None);
 
             byte[] filesize = new byte[4];
@@ -372,6 +374,8 @@ namespace IronChain {
             Transaction t = Utility.ByteArrayToTransaction(transaction);
 
             Form1.instance.TransactionPool.Add(t);
+
+            socket.Close();
         }
 
         private void sendFile(string name, Socket serverStream) {
