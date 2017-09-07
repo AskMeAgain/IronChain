@@ -128,7 +128,7 @@ namespace IronChain {
             Utility.storeFile(genesis, globalChainPath + genesis.name + ".blk");
         }
 
-        private void createParticles() {
+        private void createParticles(int height) {
 
             string particleName = "";
 
@@ -144,28 +144,26 @@ namespace IronChain {
                 if (verifyTransactionHash(trans)) {
                     p.addTransaction(trans);
                 }
-
             }
 
             //add hash to block before
-            p.hashToBlock = Utility.ComputeHash(globalChainPath + latestBlock);
+            p.hashToBlock = Utility.ComputeHash(globalChainPath + (height-1));
 
-            particleName = "P" + (latestBlock + 1);
+            particleName = "P" + height;
 
             Utility.storeFile(p, globalChainPath + particleName + ".blk");
 
             //create light particle
             Particle light = new Particle();
-            string lightName = globalChainPath + "L" + (latestBlock + 1);
-            light.hashToBlock = Utility.ComputeHash(globalChainPath + "" + latestBlock);
+            string lightName = globalChainPath + "L" + height;
+            light.hashToBlock = Utility.ComputeHash(globalChainPath + "" + (height-1));
             Utility.storeFile(light, lightName + ".blk");
 
         }
 
         private bool verifyTransactionHash(Transaction trans) {
 
-            string hashOfEverything = trans.id + "" + trans.amount + "" + trans.receiver + "" + trans.owner;
-            string original = "" + hashOfEverything.GetHashCode();
+            string original = Utility.getHashSha256(trans.id + "");
 
             string publ = trans.owner;
             string signedHash = trans.proofOfOwnership;
@@ -180,7 +178,6 @@ namespace IronChain {
         private void mineNextBlock(string nonce, int diff) {
 
             Block nextBlock = new Block();
-            createParticles();
 
             Particle p = Utility.loadFile<Particle>(globalChainPath + "P" + (latestBlock + 1) + ".blk");
 
@@ -235,21 +232,30 @@ namespace IronChain {
 
             miningFlag = true;
 
-            int i = 0;
+            int nonce = 0;
+
             string hashFromLatestBlock = Utility.ComputeHash(globalChainPath + latestBlock + "");
+            string hashFromParticle = Utility.ComputeHash(globalChainPath + "P" + latestBlock);
+
             int difficulty = miningDifficulty;
+            bool firstTime = true;
             while (miningFlag) {
 
-                string hashToProof = i + hashFromLatestBlock + accountList[minerAccountName].publicKey;
+                if (TransactionPool.Count > 0 || firstTime) {
+                    createParticles(latestBlock+1);
+                    firstTime = false;
+                }
+
+                string hashToProof = nonce + hashFromLatestBlock + hashFromParticle;
 
                 string hash = Utility.getHashSha256(hashToProof);
 
                 if (Utility.verifyHashDifficulty(hash, difficulty)) {
-                    mineNextBlock(i + "", difficulty);
+                    mineNextBlock(nonce + "", difficulty);
                     break;
                 }
 
-                i++;
+                nonce++;
             }
         }
 
@@ -297,7 +303,7 @@ namespace IronChain {
                 string hashOfBlock = Utility.ComputeHash(globalChainPath + i + "");
                 string hashOfBlockBefore = Utility.ComputeHash(globalChainPath + (i - 1) + "");
 
-                string hashToProof = b.nonce + hashOfBlockBefore + b.minerAddress;
+                string hashToProof = b.nonce + hashOfBlockBefore + b.hashOfParticle;
                 string proofHash = Utility.getHashSha256(hashToProof);
 
                 //checking nonce
@@ -517,26 +523,20 @@ namespace IronChain {
         private void onClickSendIron(object sender, EventArgs e) {
 
             int amount = Convert.ToInt32(textBox6.Text);
-            Transaction t = new Transaction(latestBlock + amount);
             string receiver = textBox2.Text;
 
             Account thisAccount = accountList[comboBox3.Text];
 
 
             //SIGN TRANSACTION
-            t.owner = thisAccount.publicKey;
-            t.receiver = receiver;
-            t.amount = amount;
+            Transaction t = new Transaction(thisAccount.publicKey, receiver, amount);
+            t.giveID(latestBlock);
 
-            string hashOfEverything = t.id + "" + t.amount + "" + t.receiver + "" + t.owner;
-            string hash = "" + hashOfEverything.GetHashCode();
-
-            t.proofOfOwnership = Utility.signData(hash, thisAccount.privateKey);
+            t.proofOfOwnership = Utility.signData(Utility.getHashSha256(t.id + ""), thisAccount.privateKey);
 
             TransactionPool.Add(t);
 
             if (!PeerNetworking.isServer && manager2 != null) {
-                //push transaction because we are not hosting a server
                 manager2.pushTransactionToServer();
             }
 
