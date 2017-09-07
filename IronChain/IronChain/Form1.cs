@@ -257,6 +257,7 @@ namespace IronChain {
         }
 
         public int miningDifficulty;
+        public bool isLightMode;
 
         public void analyseChain() {
 
@@ -308,6 +309,7 @@ namespace IronChain {
                 }
 
                 if (File.Exists(globalChainPath + "P" + i + ".blk")) {
+
                     //particle exists
                     Particle p = Utility.loadFile<Particle>(globalChainPath + "P" + i + ".blk");
 
