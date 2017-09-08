@@ -23,7 +23,7 @@ namespace IronChain {
         public string minerAccountName;
         public string mainAccount;
 
-        public Dictionary<String, Account> accountList;
+        public Dictionary<string, Account> accountList;
         bool dontAnalyseYetFlag = true;
 
         string ip;
@@ -34,6 +34,7 @@ namespace IronChain {
             instance = this;
             TransactionPool = new List<Transaction>();
             accountList = new Dictionary<string, Account>();
+            userTransactionHistory = new List<Transaction>();
 
             Directory.CreateDirectory("C:\\IronChain\\");
 
@@ -270,6 +271,7 @@ namespace IronChain {
         }
 
         public int miningDifficulty;
+        public List<Transaction> userTransactionHistory;
 
         public void analyseChain() {
 
@@ -282,8 +284,10 @@ namespace IronChain {
             }
 
             Block b = Utility.loadFile<Block>(globalChainPath + "0.blk");
-
+            int i = 1;
+            bool errorFlag = false;
             int difficulty = b.difficulty;
+            userTransactionHistory = new List<Transaction>();
 
             //get genesis block too
             foreach (Account acc in accountList.Values) {
@@ -291,9 +295,6 @@ namespace IronChain {
                 if (acc.publicKey.Equals(b.minerAddress))
                     acc.coinCounter += 3;
             }
-
-            int i = 1;
-            bool errorFlag = false;
 
             while (File.Exists(globalChainPath + i + ".blk")) {
 
@@ -340,12 +341,19 @@ namespace IronChain {
                         //verify each transaction
                         if (verifyTransactionHash(trans)) {
 
+                            //add transaction to history for user
+                            if (trans.owner.Equals(accountList[mainAccount].publicKey) || trans.receiver.Equals(accountList[mainAccount].publicKey)) {
+                                userTransactionHistory.Add(trans);
+                            }
+
                             //add transactions to a list
                             if (listOfAllOwners.ContainsKey(trans.owner)) {
                                 listOfAllOwners[trans.owner] += trans.amount;
                             } else {
                                 listOfAllOwners.Add(trans.owner, trans.amount);
                             }
+
+                            
 
                             // check if each transaction is possible
                             foreach (string owner in listOfAllOwners.Keys) {
@@ -357,6 +365,8 @@ namespace IronChain {
 
                         }
                     }
+
+
 
                 } else {
                     break;
@@ -612,7 +622,15 @@ namespace IronChain {
         }
 
         private void button16_Click(object sender, EventArgs e) {
-            Console.WriteLine(PeerNetworking.executerList.Count);
+            displayTransactionHistory();
+        }
+
+        private void displayTransactionHistory() {
+            label18.Text = "";
+            foreach (Transaction trans in userTransactionHistory) {
+                
+                label18.Text += Environment.NewLine + trans.toString();
+            }
         }
 
         private void button9_Click(object sender, EventArgs e) {
