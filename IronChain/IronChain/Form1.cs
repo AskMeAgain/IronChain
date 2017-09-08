@@ -154,12 +154,6 @@ namespace IronChain {
 
             Utility.storeFile(p, globalChainPath + particleName + ".blk");
 
-            //create light particle
-            Particle light = new Particle();
-            string lightName = globalChainPath + "L" + height;
-            light.hashToBlock = Utility.ComputeHash(globalChainPath + "" + (height - 1));
-            Utility.storeFile(light, lightName + ".blk");
-
         }
 
         private bool verifyTransactionHash(Transaction trans) {
@@ -272,7 +266,6 @@ namespace IronChain {
         }
 
         public int miningDifficulty;
-        public bool isLightMode;
 
         public void analyseChain() {
 
@@ -359,20 +352,6 @@ namespace IronChain {
                             }
 
                         }
-                    }
-
-                } else if (File.Exists(globalChainPath + "L" + i + ".blk")) {
-
-                    Particle p = Utility.loadFile<Particle>(globalChainPath + "L" + i + ".blk");
-
-                    //block points to particle
-                    if (!Utility.ComputeHash(globalChainPath + "L" + i).Equals(b.hashOfLightParticle)) {
-                        break;
-                    }
-
-                    //particle points to block before
-                    if (!Utility.ComputeHash(globalChainPath + (i - 1)).Equals(p.hashToBlock)) {
-                        break;
                     }
 
                 } else {
@@ -640,8 +619,5 @@ namespace IronChain {
             manager2.ConnectToListener(t[0], 3001);
         }
 
-        private void onClickChangeLightMode(object sender, EventArgs e) {
-            isLightMode = checkBox1.Checked;
-        }
     }
 }
