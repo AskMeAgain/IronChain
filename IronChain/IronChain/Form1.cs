@@ -144,6 +144,8 @@ namespace IronChain {
                 if (verifyTransactionHash(trans)) {
                     Console.WriteLine("correct transaction!");
                     p.addTransaction(trans);
+                } else {
+                    Console.WriteLine("TRANSACTION NOT CORRECT!");
                 }
             }
 
@@ -241,9 +243,11 @@ namespace IronChain {
 
             int difficulty = miningDifficulty;
             bool firstTime = true;
+
             while (miningFlag) {
 
                 if (TransactionPool.Count > 0 || firstTime) {
+                    Console.WriteLine("mining block:" + latestBlock);
                     createParticles(latestBlock + 1);
                     firstTime = false;
                 }
