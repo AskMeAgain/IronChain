@@ -52,7 +52,7 @@ namespace IronChain {
 
             timer1.Tick += new EventHandler(requestFilesEvery30Sec);
             timer1.Interval = 10000;
-            timer1.Start();
+            //timer1.Start();
 
             analyseChain();
         }
@@ -528,8 +528,8 @@ namespace IronChain {
 
             TransactionPool.Add(t);
 
-            if (!PeerNetworking.isServer && manager2 != null) {
-                manager2.pushTransactionToServer();
+            if (manager2 != null) {
+                manager2.pushTransactionToServers();
             }
 
             textBox6.Clear();
@@ -570,7 +570,7 @@ namespace IronChain {
         }
 
         private void button10_Click(object sender, EventArgs e) {
-            manager2.pushTransactionToServer();
+            manager2.pushTransactionToServers();
         }
 
         private void button11_Click(object sender, EventArgs e) {

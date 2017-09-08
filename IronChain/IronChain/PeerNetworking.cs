@@ -42,7 +42,7 @@ namespace IronChain {
             sendCommandToServers(0x01);
         }
 
-        public void pushTransactionToServer() {
+        public void pushTransactionToServers() {
             sendCommandToServers(0x02);
         }
 
@@ -71,17 +71,13 @@ namespace IronChain {
                 highestHeight = 0;
                 flagForFileInfo = false;
 
-                Console.WriteLine("executing command " + executerList.Count);
+                Console.WriteLine("executing command to {0} users", executerList.Count);
 
                 foreach (IPAddress ip in executerList.Keys) {
                     try {
 
                         Socket inOut = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
                         inOut.Connect(new IPEndPoint(ip, executerList[ip]));
-
-                        if (!inOut.Connected) {
-                            executerList.Remove(ip);
-                        }
 
                         //send command to server!
                         byte[] command = new byte[32];
@@ -216,13 +212,16 @@ namespace IronChain {
         private void receiveFileAndStore(Socket serverStream, string filename, long fileSize) {
 
             string file = Form1.instance.globalChainPath + filename;
+            FileStream fileStream;
 
             if (File.Exists(file)) {
-                File.Delete(file);
+                fileStream = new FileStream(file, FileMode.Create);
+            } else {
+                fileStream = new FileStream(file, FileMode.Append);
             }
 
             byte[] receiveBuffer = new byte[1024];
-            FileStream fileStream = new FileStream(file, FileMode.Append);
+           
 
             int counter = 0;
             Console.WriteLine("Storing file with " + fileSize);
@@ -297,7 +296,14 @@ namespace IronChain {
                 sendFileInfo(command, socket);
 
             } else if (command[0] == 0x01) {
+                //socket.Close();
+
+                byte[] msg = new byte[32];
+                msg[0] = 0x00;
+
+                socket.Send(msg, 0, msg.Length, SocketFlags.None);
                 socket.Close();
+
                 requestFileInfo();
 
             } else if (command[0] == 0x02) {
