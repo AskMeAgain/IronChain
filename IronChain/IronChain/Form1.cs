@@ -142,12 +142,13 @@ namespace IronChain {
                 TransactionPool.RemoveAt(0);
 
                 if (verifyTransactionHash(trans)) {
+                    Console.WriteLine("correct transaction!");
                     p.addTransaction(trans);
                 }
             }
 
             //add hash to block before
-            p.hashToBlock = Utility.ComputeHash(globalChainPath + (height-1));
+            p.hashToBlock = Utility.ComputeHash(globalChainPath + (height - 1));
 
             particleName = "P" + height;
 
@@ -156,7 +157,7 @@ namespace IronChain {
             //create light particle
             Particle light = new Particle();
             string lightName = globalChainPath + "L" + height;
-            light.hashToBlock = Utility.ComputeHash(globalChainPath + "" + (height-1));
+            light.hashToBlock = Utility.ComputeHash(globalChainPath + "" + (height - 1));
             Utility.storeFile(light, lightName + ".blk");
 
         }
@@ -234,15 +235,22 @@ namespace IronChain {
 
             int nonce = 0;
 
+
+
             string hashFromLatestBlock = Utility.ComputeHash(globalChainPath + latestBlock + "");
-            string hashFromParticle = Utility.ComputeHash(globalChainPath + "P" + latestBlock);
+
+            string hashFromParticle = hashFromLatestBlock;
+
+            if (latestBlock > 0) {
+                hashFromParticle = Utility.ComputeHash(globalChainPath + "P" + latestBlock);
+            }
 
             int difficulty = miningDifficulty;
             bool firstTime = true;
             while (miningFlag) {
 
                 if (TransactionPool.Count > 0 || firstTime) {
-                    createParticles(latestBlock+1);
+                    createParticles(latestBlock + 1);
                     firstTime = false;
                 }
 
@@ -328,6 +336,8 @@ namespace IronChain {
                     }
 
                     Dictionary<string, int> listOfAllOwners = new Dictionary<string, int>();
+                    listOfAllOwners.Add(b.minerAddress, 0);
+
                     foreach (Transaction trans in p.allTransactions) {
 
                         //verify each transaction
@@ -347,6 +357,7 @@ namespace IronChain {
                                     break;
                                 }
                             }
+
                         }
                     }
 
@@ -355,12 +366,12 @@ namespace IronChain {
                     Particle p = Utility.loadFile<Particle>(globalChainPath + "L" + i + ".blk");
 
                     //block points to particle
-                    if (!Utility.ComputeHash("L" + i).Equals(b.hashOfLightParticle)) {
+                    if (!Utility.ComputeHash(globalChainPath + "L" + i).Equals(b.hashOfLightParticle)) {
                         break;
                     }
 
                     //particle points to block before
-                    if (!Utility.ComputeHash("" + (i - 1)).Equals(p.hashToBlock)) {
+                    if (!Utility.ComputeHash(globalChainPath + (i - 1)).Equals(p.hashToBlock)) {
                         break;
                     }
 
@@ -394,7 +405,8 @@ namespace IronChain {
                 }));
             } else {
                 label5.Text = "Block " + latestBlock;
-                label3.Text = checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
+                if (accountList.ContainsKey(comboBox1.Text))
+                    label3.Text = checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
             }
         }
 
@@ -424,14 +436,15 @@ namespace IronChain {
 
                 if (i > 0) {
                     Particle p = Utility.loadFile<Particle>(globalChainPath + "P" + i + ".blk");
+                    if (p != null) {
+                        foreach (Transaction trans in p.allTransactions) {
+                            if (trans.receiver.Equals(owner)) {
+                                coinbalance += trans.amount;
+                            }
 
-                    foreach (Transaction trans in p.allTransactions) {
-                        if (trans.receiver.Equals(owner)) {
-                            coinbalance += trans.amount;
-                        }
-
-                        if (trans.owner.Equals(owner)) {
-                            coinbalance -= trans.amount;
+                            if (trans.owner.Equals(owner)) {
+                                coinbalance -= trans.amount;
+                            }
                         }
                     }
                 }
@@ -625,6 +638,10 @@ namespace IronChain {
 
             manager2 = new PeerNetworking();
             manager2.ConnectToListener(t[0], 3001);
+        }
+
+        private void onClickChangeLightMode(object sender, EventArgs e) {
+            isLightMode = checkBox1.Checked;
         }
     }
 }
