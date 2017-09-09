@@ -56,6 +56,7 @@ namespace IronChain {
             //timer1.Start();
 
             analyseChain();
+
         }
 
         public void requestFilesEvery30Sec(Object myObject, EventArgs myEventArgs) {
@@ -353,7 +354,7 @@ namespace IronChain {
                                 listOfAllOwners.Add(trans.owner, trans.amount);
                             }
 
-                            
+
 
                             // check if each transaction is possible
                             foreach (string owner in listOfAllOwners.Keys) {
@@ -387,20 +388,22 @@ namespace IronChain {
                 i--;
             }
 
-            Console.WriteLine("latest Block!" + i);
-
             latestBlock = i;
 
             if (InvokeRequired) {
                 Invoke(new Action(() => {
                     label5.Text = "Block " + latestBlock;
                     label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
+                    displayTransactionHistory();
                 }));
             } else {
                 label5.Text = "Block " + latestBlock;
                 if (accountList.ContainsKey(comboBox1.Text))
                     label3.Text = checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
+                displayTransactionHistory();
             }
+
+            
         }
 
         public void isServerUI() {
@@ -625,11 +628,36 @@ namespace IronChain {
             displayTransactionHistory();
         }
 
+        int transPage = 0;
+
         private void displayTransactionHistory() {
-            label18.Text = "";
-            foreach (Transaction trans in userTransactionHistory) {
-                
-                label18.Text += Environment.NewLine + trans.toString();
+            label19.Text = "";
+
+            if (transPage == 0) {
+                button18.Enabled = false;
+            } else {
+                button18.Enabled = true;
+            }
+
+            int count = 0;
+
+            for (int i = 0 + 5 * transPage; i < 5 + 5 * transPage && i < userTransactionHistory.Count; i++) {
+                Transaction t = userTransactionHistory[i];
+                string s = "";
+                count++;
+                if (accountList[mainAccount].publicKey.Equals(t.owner)) {
+                    s = "Sending " + t.amount + " Iron to " + t.receiver;
+                } else {
+                    s = "Receiving " + t.amount + " Iron from " + t.owner;
+                }
+
+                label19.Text += s + Environment.NewLine;
+            }
+
+            if (count < 5) {
+                button17.Enabled = false;
+            } else {
+                button17.Enabled = true;
             }
         }
 
@@ -641,5 +669,18 @@ namespace IronChain {
             manager2.ConnectToListener(t[0], 3001);
         }
 
+        private void onClickShowPreviousPage(object sender, EventArgs e) {
+            transPage--;
+
+            if (transPage < 0)
+                transPage = 0;
+
+            displayTransactionHistory();
+        }
+
+        private void onClickShowNextPages(object sender, EventArgs e) {
+            transPage++;
+            displayTransactionHistory();
+        }
     }
 }

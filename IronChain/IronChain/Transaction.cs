@@ -29,7 +29,7 @@ namespace IronChain {
         }
 
         public string toString() {
-            return "Transaction" + id + ": Sending " + amount + " from " + owner + " to " + receiver; 
+            return id + ": Sending " + amount + " from " + owner + " to " + receiver; 
         }
 
     }
