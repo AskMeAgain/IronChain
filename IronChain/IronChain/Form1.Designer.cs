@@ -29,11 +29,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.actionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sendIronToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ironChainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteIronChainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,6 +81,11 @@
             this.panel6 = new System.Windows.Forms.Panel();
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
+            this.button19 = new System.Windows.Forms.Button();
+            this.windowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.transactionPoolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -142,56 +142,20 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.actionToolStripMenuItem,
-            this.ironChainToolStripMenuItem});
+            this.ironChainToolStripMenuItem,
+            this.windowsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(880, 24);
             this.menuStrip1.TabIndex = 35;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
-            // 
-            // actionToolStripMenuItem
-            // 
-            this.actionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.sendIronToolStripMenuItem,
-            this.addAccountToolStripMenuItem,
-            this.importAccountToolStripMenuItem});
-            this.actionToolStripMenuItem.Name = "actionToolStripMenuItem";
-            this.actionToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
-            this.actionToolStripMenuItem.Text = "Action";
-            // 
-            // sendIronToolStripMenuItem
-            // 
-            this.sendIronToolStripMenuItem.Name = "sendIronToolStripMenuItem";
-            this.sendIronToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.sendIronToolStripMenuItem.Text = "Send Iron";
-            this.sendIronToolStripMenuItem.Click += new System.EventHandler(this.onClickSendIron);
-            // 
-            // addAccountToolStripMenuItem
-            // 
-            this.addAccountToolStripMenuItem.Name = "addAccountToolStripMenuItem";
-            this.addAccountToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.addAccountToolStripMenuItem.Text = "Create Account";
-            this.addAccountToolStripMenuItem.Click += new System.EventHandler(this.onClickAddAccount);
-            // 
-            // importAccountToolStripMenuItem
-            // 
-            this.importAccountToolStripMenuItem.Name = "importAccountToolStripMenuItem";
-            this.importAccountToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.importAccountToolStripMenuItem.Text = "Import Account";
-            // 
             // ironChainToolStripMenuItem
             // 
             this.ironChainToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deleteIronChainToolStripMenuItem,
-            this.deleteAccountsToolStripMenuItem});
+            this.deleteAccountsToolStripMenuItem,
+            this.addAccountToolStripMenuItem});
             this.ironChainToolStripMenuItem.Name = "ironChainToolStripMenuItem";
             this.ironChainToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
             this.ironChainToolStripMenuItem.Text = "IronChain";
@@ -697,9 +661,8 @@
             this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label19.Location = new System.Drawing.Point(0, 0);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(48, 15);
+            this.label19.Size = new System.Drawing.Size(0, 15);
             this.label19.TabIndex = 0;
-            this.label19.Text = "label19";
             // 
             // label18
             // 
@@ -712,11 +675,49 @@
             this.label18.TabIndex = 0;
             this.label18.Text = "Transaction History";
             // 
+            // button19
+            // 
+            this.button19.Location = new System.Drawing.Point(42, 453);
+            this.button19.Name = "button19";
+            this.button19.Size = new System.Drawing.Size(75, 23);
+            this.button19.TabIndex = 74;
+            this.button19.Text = "public key";
+            this.button19.UseVisualStyleBackColor = true;
+            this.button19.Click += new System.EventHandler(this.button19_Click);
+            // 
+            // windowsToolStripMenuItem
+            // 
+            this.windowsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.testWindowToolStripMenuItem,
+            this.transactionPoolToolStripMenuItem});
+            this.windowsToolStripMenuItem.Name = "windowsToolStripMenuItem";
+            this.windowsToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
+            this.windowsToolStripMenuItem.Text = "Window";
+            // 
+            // testWindowToolStripMenuItem
+            // 
+            this.testWindowToolStripMenuItem.Name = "testWindowToolStripMenuItem";
+            this.testWindowToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.testWindowToolStripMenuItem.Text = "Test Window";
+            // 
+            // transactionPoolToolStripMenuItem
+            // 
+            this.transactionPoolToolStripMenuItem.Name = "transactionPoolToolStripMenuItem";
+            this.transactionPoolToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.transactionPoolToolStripMenuItem.Text = "Transaction Pool";
+            // 
+            // addAccountToolStripMenuItem
+            // 
+            this.addAccountToolStripMenuItem.Name = "addAccountToolStripMenuItem";
+            this.addAccountToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.addAccountToolStripMenuItem.Text = "Add Account";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(880, 624);
+            this.Controls.Add(this.button19);
             this.Controls.Add(this.panel5);
             this.Controls.Add(this.button16);
             this.Controls.Add(this.button15);
@@ -762,14 +763,9 @@
         private System.Windows.Forms.Label label7;
         public System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem actionToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem sendIronToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ironChainToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem addAccountToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteIronChainToolStripMenuItem;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.ToolStripMenuItem importAccountToolStripMenuItem;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textBox4;
@@ -785,7 +781,7 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.ComboBox comboBox2;
+        public System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Panel panel4;
@@ -796,7 +792,7 @@
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.ComboBox comboBox3;
+        public System.Windows.Forms.ComboBox comboBox3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.ComboBox comboBox4;
@@ -819,6 +815,11 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Button button18;
         private System.Windows.Forms.Button button17;
+        private System.Windows.Forms.Button button19;
+        private System.Windows.Forms.ToolStripMenuItem addAccountToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem windowsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem testWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem transactionPoolToolStripMenuItem;
     }
 }
 

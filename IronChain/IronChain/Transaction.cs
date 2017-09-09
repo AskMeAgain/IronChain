@@ -24,8 +24,7 @@ namespace IronChain {
         }
 
         public void giveID(int height) {
-            long num = owner.GetHashCode() - receiver.GetHashCode();
-            id = Convert.ToInt64(string.Format("{0}{1}{2}", height, amount, num));
+            id = Convert.ToInt64(string.Format("{0}{1}{2}", height, amount, 33));
         }
 
         public string toString() {

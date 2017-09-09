@@ -14,6 +14,9 @@ using System.Xml.Serialization;
 namespace IronChain {
     public static class Utility {
 
+        static string RSAKEYPatternStart = "<RSAKeyValue><Modulus>";
+        static string RSAKEYPatternEnd = "</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>";
+
         public static T loadFile<T>(string fileName) {
             if (string.IsNullOrEmpty(fileName)) { return default(T); }
 
@@ -41,6 +44,10 @@ namespace IronChain {
             }
 
             return objectOut;
+        }
+
+        public static string buildRealPublicKey(string s) {
+            return RSAKEYPatternStart + s + RSAKEYPatternEnd;
         }
 
         public static void storeFile<T>(T serializableObject, string fileName) {

@@ -19,7 +19,12 @@ namespace IronChain {
 
             Utility.storeFile(a, Form1.instance.globalChainPath + a.name + ".acc");
 
+            Form1.instance.mainAccount = a.name;
+            Form1.instance.minerAccountName = a.name;
             Form1.instance.updateAccountList();
+
+
+            Console.WriteLine("test!");
 
             this.Close();
 

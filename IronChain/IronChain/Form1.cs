@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Windows.Forms;
-
+using System.Xml.Linq;
 
 namespace IronChain {
 
@@ -164,7 +164,8 @@ namespace IronChain {
 
             string original = Utility.getHashSha256(trans.id + "");
 
-            string publ = trans.owner;
+            string publ = Utility.buildRealPublicKey(trans.owner);
+
             string signedHash = trans.proofOfOwnership;
 
             if (Utility.verifyData(original, publ, signedHash)) {
@@ -682,5 +683,13 @@ namespace IronChain {
             transPage++;
             displayTransactionHistory();
         }
+
+
+
+        private void button19_Click(object sender, EventArgs e) {
+
+        }
+
+        
     }
 }
