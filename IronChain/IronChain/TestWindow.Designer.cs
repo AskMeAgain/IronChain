@@ -50,7 +50,7 @@
             // 
             this.button14.Location = new System.Drawing.Point(12, 296);
             this.button14.Name = "button14";
-            this.button14.Size = new System.Drawing.Size(176, 23);
+            this.button14.Size = new System.Drawing.Size(192, 23);
             this.button14.TabIndex = 81;
             this.button14.Text = "Download blocks from Server";
             this.button14.UseVisualStyleBackColor = true;
@@ -60,9 +60,9 @@
             // 
             this.button12.Location = new System.Drawing.Point(12, 267);
             this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(176, 23);
+            this.button12.Size = new System.Drawing.Size(192, 23);
             this.button12.TabIndex = 79;
-            this.button12.Text = "Push new block height to Server";
+            this.button12.Text = "Push new block height to all Servers";
             this.button12.UseVisualStyleBackColor = true;
             this.button12.Click += new System.EventHandler(this.onClickPushBlock);
             // 
@@ -139,7 +139,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(487, 366);
+            this.ClientSize = new System.Drawing.Size(487, 329);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
