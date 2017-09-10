@@ -32,6 +32,10 @@
             this.ironChainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteIronChainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.windowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.transactionPoolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
@@ -63,17 +67,6 @@
             this.label13 = new System.Windows.Forms.Label();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.button6 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            this.button9 = new System.Windows.Forms.Button();
-            this.button10 = new System.Windows.Forms.Button();
-            this.button11 = new System.Windows.Forms.Button();
-            this.button12 = new System.Windows.Forms.Button();
-            this.button13 = new System.Windows.Forms.Button();
-            this.button14 = new System.Windows.Forms.Button();
-            this.button15 = new System.Windows.Forms.Button();
-            this.button16 = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.panel5 = new System.Windows.Forms.Panel();
             this.button18 = new System.Windows.Forms.Button();
@@ -82,10 +75,6 @@
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.button19 = new System.Windows.Forms.Button();
-            this.windowsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.transactionPoolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -157,8 +146,8 @@
             this.deleteAccountsToolStripMenuItem,
             this.addAccountToolStripMenuItem});
             this.ironChainToolStripMenuItem.Name = "ironChainToolStripMenuItem";
-            this.ironChainToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
-            this.ironChainToolStripMenuItem.Text = "IronChain";
+            this.ironChainToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.ironChainToolStripMenuItem.Text = "File";
             // 
             // deleteIronChainToolStripMenuItem
             // 
@@ -173,6 +162,35 @@
             this.deleteAccountsToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.deleteAccountsToolStripMenuItem.Text = "Delete Accounts";
             this.deleteAccountsToolStripMenuItem.Click += new System.EventHandler(this.onBarDeleteAccounts);
+            // 
+            // addAccountToolStripMenuItem
+            // 
+            this.addAccountToolStripMenuItem.Name = "addAccountToolStripMenuItem";
+            this.addAccountToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.addAccountToolStripMenuItem.Text = "Add Account";
+            this.addAccountToolStripMenuItem.Click += new System.EventHandler(this.addAccountToolStripMenuItem_Click);
+            // 
+            // windowsToolStripMenuItem
+            // 
+            this.windowsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.testWindowToolStripMenuItem,
+            this.transactionPoolToolStripMenuItem});
+            this.windowsToolStripMenuItem.Name = "windowsToolStripMenuItem";
+            this.windowsToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
+            this.windowsToolStripMenuItem.Text = "Window";
+            // 
+            // testWindowToolStripMenuItem
+            // 
+            this.testWindowToolStripMenuItem.Name = "testWindowToolStripMenuItem";
+            this.testWindowToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.testWindowToolStripMenuItem.Text = "Test Window";
+            this.testWindowToolStripMenuItem.Click += new System.EventHandler(this.onBarOpenTestWindow);
+            // 
+            // transactionPoolToolStripMenuItem
+            // 
+            this.transactionPoolToolStripMenuItem.Name = "transactionPoolToolStripMenuItem";
+            this.transactionPoolToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.transactionPoolToolStripMenuItem.Text = "Transaction Pool";
             // 
             // panel1
             // 
@@ -504,116 +522,6 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Transaction Panel";
             // 
-            // button6
-            // 
-            this.button6.Location = new System.Drawing.Point(433, 453);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(75, 23);
-            this.button6.TabIndex = 63;
-            this.button6.Text = "Server 3000";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
-            // 
-            // button7
-            // 
-            this.button7.Location = new System.Drawing.Point(515, 453);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(75, 23);
-            this.button7.TabIndex = 64;
-            this.button7.Text = "Server 3001";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
-            // 
-            // button8
-            // 
-            this.button8.Location = new System.Drawing.Point(424, 482);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(84, 23);
-            this.button8.TabIndex = 65;
-            this.button8.Text = "Connect 3000";
-            this.button8.UseVisualStyleBackColor = true;
-            this.button8.Click += new System.EventHandler(this.button8_Click);
-            // 
-            // button9
-            // 
-            this.button9.Location = new System.Drawing.Point(515, 483);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(85, 23);
-            this.button9.TabIndex = 66;
-            this.button9.Text = "Connect 3001";
-            this.button9.UseVisualStyleBackColor = true;
-            this.button9.Click += new System.EventHandler(this.button9_Click);
-            // 
-            // button10
-            // 
-            this.button10.Location = new System.Drawing.Point(686, 453);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(176, 23);
-            this.button10.TabIndex = 67;
-            this.button10.Text = "Push Transaction to Server";
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.button10_Click);
-            // 
-            // button11
-            // 
-            this.button11.Location = new System.Drawing.Point(441, 545);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(149, 23);
-            this.button11.TabIndex = 12;
-            this.button11.Text = "Show Transactions";
-            this.button11.UseVisualStyleBackColor = true;
-            this.button11.Click += new System.EventHandler(this.button11_Click);
-            // 
-            // button12
-            // 
-            this.button12.Location = new System.Drawing.Point(686, 483);
-            this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(176, 23);
-            this.button12.TabIndex = 68;
-            this.button12.Text = "Push new block";
-            this.button12.UseVisualStyleBackColor = true;
-            this.button12.Click += new System.EventHandler(this.button12_Click);
-            // 
-            // button13
-            // 
-            this.button13.Location = new System.Drawing.Point(686, 515);
-            this.button13.Name = "button13";
-            this.button13.Size = new System.Drawing.Size(176, 23);
-            this.button13.TabIndex = 69;
-            this.button13.Text = "Download whole chain!";
-            this.button13.UseVisualStyleBackColor = true;
-            this.button13.Click += new System.EventHandler(this.button13_Click);
-            // 
-            // button14
-            // 
-            this.button14.Location = new System.Drawing.Point(686, 545);
-            this.button14.Name = "button14";
-            this.button14.Size = new System.Drawing.Size(176, 23);
-            this.button14.TabIndex = 70;
-            this.button14.Text = "Request block";
-            this.button14.UseVisualStyleBackColor = true;
-            this.button14.Click += new System.EventHandler(this.button14_Click);
-            // 
-            // button15
-            // 
-            this.button15.Location = new System.Drawing.Point(686, 575);
-            this.button15.Name = "button15";
-            this.button15.Size = new System.Drawing.Size(176, 23);
-            this.button15.TabIndex = 71;
-            this.button15.Text = "change path to desktop";
-            this.button15.UseVisualStyleBackColor = true;
-            this.button15.Click += new System.EventHandler(this.button15_Click);
-            // 
-            // button16
-            // 
-            this.button16.Location = new System.Drawing.Point(441, 575);
-            this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(75, 23);
-            this.button16.TabIndex = 72;
-            this.button16.Text = "button16";
-            this.button16.UseVisualStyleBackColor = true;
-            this.button16.Click += new System.EventHandler(this.button16_Click);
-            // 
             // panel5
             // 
             this.panel5.BackColor = System.Drawing.SystemColors.ActiveCaption;
@@ -685,33 +593,6 @@
             this.button19.UseVisualStyleBackColor = true;
             this.button19.Click += new System.EventHandler(this.button19_Click);
             // 
-            // windowsToolStripMenuItem
-            // 
-            this.windowsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.testWindowToolStripMenuItem,
-            this.transactionPoolToolStripMenuItem});
-            this.windowsToolStripMenuItem.Name = "windowsToolStripMenuItem";
-            this.windowsToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
-            this.windowsToolStripMenuItem.Text = "Window";
-            // 
-            // testWindowToolStripMenuItem
-            // 
-            this.testWindowToolStripMenuItem.Name = "testWindowToolStripMenuItem";
-            this.testWindowToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.testWindowToolStripMenuItem.Text = "Test Window";
-            // 
-            // transactionPoolToolStripMenuItem
-            // 
-            this.transactionPoolToolStripMenuItem.Name = "transactionPoolToolStripMenuItem";
-            this.transactionPoolToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.transactionPoolToolStripMenuItem.Text = "Transaction Pool";
-            // 
-            // addAccountToolStripMenuItem
-            // 
-            this.addAccountToolStripMenuItem.Name = "addAccountToolStripMenuItem";
-            this.addAccountToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.addAccountToolStripMenuItem.Text = "Add Account";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -719,17 +600,6 @@
             this.ClientSize = new System.Drawing.Size(880, 624);
             this.Controls.Add(this.button19);
             this.Controls.Add(this.panel5);
-            this.Controls.Add(this.button16);
-            this.Controls.Add(this.button15);
-            this.Controls.Add(this.button14);
-            this.Controls.Add(this.button13);
-            this.Controls.Add(this.button12);
-            this.Controls.Add(this.button11);
-            this.Controls.Add(this.button10);
-            this.Controls.Add(this.button9);
-            this.Controls.Add(this.button8);
-            this.Controls.Add(this.button7);
-            this.Controls.Add(this.button6);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.menuStrip1);
@@ -796,18 +666,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.ComboBox comboBox4;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Button button9;
-        private System.Windows.Forms.Button button10;
-        private System.Windows.Forms.Button button11;
         private System.Windows.Forms.ToolStripMenuItem deleteAccountsToolStripMenuItem;
-        private System.Windows.Forms.Button button12;
-        private System.Windows.Forms.Button button13;
-        private System.Windows.Forms.Button button14;
-        private System.Windows.Forms.Button button15;
-        private System.Windows.Forms.Button button16;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Panel panel6;

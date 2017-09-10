@@ -690,6 +690,14 @@ namespace IronChain {
 
         }
 
-        
+        private void addAccountToolStripMenuItem_Click(object sender, EventArgs e) {
+            addAccount a = new addAccount();
+            a.Show();
+        }
+
+        private void onBarOpenTestWindow(object sender, EventArgs e) {
+            TestWindow a = new TestWindow();
+            a.Show();
+        }
     }
 }
