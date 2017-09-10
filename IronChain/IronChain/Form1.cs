@@ -51,17 +51,16 @@ namespace IronChain {
                 createGenesisBlock();
             }
 
-            timer1.Tick += new EventHandler(requestFilesEvery30Sec);
+            timer1.Tick += new EventHandler(requestFilesEvery10Sec);
             timer1.Interval = 10000;
-            //timer1.Start();
+            timer1.Start();
 
             analyseChain();
 
         }
 
-        public void requestFilesEvery30Sec(Object myObject, EventArgs myEventArgs) {
-            Console.WriteLine("checking files!");
-            if (manager2 != null)
+        public void requestFilesEvery10Sec(Object myObject, EventArgs myEventArgs) {
+            if (manager2 != null && automaticFileRequestFlag)
                 manager2.requestFileInfo();
         }
 
@@ -495,7 +494,7 @@ namespace IronChain {
             manager2.ListenForConnections(4712);
         }
 
-        PeerNetworking manager2;
+        public PeerNetworking manager2;
 
         private void onClickConnectClient(object sender, EventArgs e) {
 
@@ -568,15 +567,7 @@ namespace IronChain {
             miningDifficulty = comboBox4.SelectedIndex + 4;
         }
 
-        private void button6_Click(object sender, EventArgs e) {
-            manager2 = new PeerNetworking();
-            manager2.ListenForConnections(3000);
-        }
-
-        private void button7_Click(object sender, EventArgs e) {
-            manager2 = new PeerNetworking();
-            manager2.ListenForConnections(3001);
-        }
+       
 
         private void button8_Click(object sender, EventArgs e) {
 
@@ -586,6 +577,8 @@ namespace IronChain {
             manager2 = new PeerNetworking();
             manager2.ConnectToListener(t[0], 3000);
         }
+
+        public bool automaticFileRequestFlag = true;
 
         private void button10_Click(object sender, EventArgs e) {
             manager2.pushTransactionToServers();
@@ -682,12 +675,6 @@ namespace IronChain {
         private void onClickShowNextPages(object sender, EventArgs e) {
             transPage++;
             displayTransactionHistory();
-        }
-
-
-
-        private void button19_Click(object sender, EventArgs e) {
-
         }
 
         private void addAccountToolStripMenuItem_Click(object sender, EventArgs e) {

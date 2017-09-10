@@ -52,5 +52,17 @@ namespace IronChain {
         private void onClickChangeGlobalPath(object sender, EventArgs e) {
             Form1.instance.globalChainPath = "C:\\IronChain\\TestChain\\";
         }
+
+        private void disableEnableAutomaticBlockDownload(object sender, EventArgs e) {
+
+            if (Form1.instance.automaticFileRequestFlag) {
+                button1.Text = "DISABLE automatic block download";
+            } else {
+                button1.Text = "ENABLE automatic block download";
+            }
+
+            Form1.instance.automaticFileRequestFlag = !Form1.instance.automaticFileRequestFlag;
+            Console.WriteLine(Form1.instance.automaticFileRequestFlag);
+        }
     }
 }

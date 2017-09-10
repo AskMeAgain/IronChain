@@ -591,7 +591,6 @@
             this.button19.TabIndex = 74;
             this.button19.Text = "public key";
             this.button19.UseVisualStyleBackColor = true;
-            this.button19.Click += new System.EventHandler(this.button19_Click);
             // 
             // Form1
             // 

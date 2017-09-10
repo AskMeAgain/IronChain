@@ -10,7 +10,7 @@ using System.Threading;
 using System.Reflection;
 
 namespace IronChain {
-    class PeerNetworking {
+    public class PeerNetworking {
 
         public static bool isServer = false;
 
