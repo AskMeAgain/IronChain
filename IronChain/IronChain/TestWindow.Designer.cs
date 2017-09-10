@@ -129,9 +129,9 @@
             // 
             this.button1.Location = new System.Drawing.Point(12, 238);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(176, 23);
+            this.button1.Size = new System.Drawing.Size(192, 23);
             this.button1.TabIndex = 85;
-            this.button1.Text = "disable automatic block download";
+            this.button1.Text = "DISABLE automatic block download";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.disableEnableAutomaticBlockDownload);
             // 
