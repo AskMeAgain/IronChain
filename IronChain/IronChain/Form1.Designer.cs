@@ -190,6 +190,7 @@
             this.transactionPoolToolStripMenuItem.Name = "transactionPoolToolStripMenuItem";
             this.transactionPoolToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.transactionPoolToolStripMenuItem.Text = "Transaction Pool";
+            this.transactionPoolToolStripMenuItem.Click += new System.EventHandler(this.onBarOpenTransactionPool);
             // 
             // panel1
             // 

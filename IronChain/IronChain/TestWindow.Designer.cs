@@ -34,6 +34,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button15
@@ -74,7 +75,7 @@
             this.button9.TabIndex = 77;
             this.button9.Text = "Connect to Server with port 3000";
             this.button9.UseVisualStyleBackColor = true;
-            this.button9.Click += new System.EventHandler(this.onClickConnectTo3001);
+            this.button9.Click += new System.EventHandler(this.onClickConnectTo3000);
             // 
             // button8
             // 
@@ -84,7 +85,7 @@
             this.button8.TabIndex = 76;
             this.button8.Text = "Connect to Server with port 3001";
             this.button8.UseVisualStyleBackColor = true;
-            this.button8.Click += new System.EventHandler(this.onClickConnectTo3000);
+            this.button8.Click += new System.EventHandler(this.onClickConnectTo3001);
             // 
             // button7
             // 
@@ -135,11 +136,22 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.disableEnableAutomaticBlockDownload);
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(268, 238);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(207, 23);
+            this.button2.TabIndex = 86;
+            this.button2.Text = "Add random Transaction every Second";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.onClickAddRandomTrans);
+            // 
             // TestWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(487, 329);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -168,5 +180,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
     }
 }

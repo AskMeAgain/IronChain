@@ -17,10 +17,12 @@ namespace IronChain {
 
         }
 
-        public Transaction(string key, string receiv, int am) {
+        public Transaction(string key, string receiv, int am, string privateKey, long latestblock) {
             owner = key;
             receiver = receiv;
             amount = am;
+            giveID((int)latestblock);
+            proofOfOwnership = Utility.signData(Utility.getHashSha256(id + ""), privateKey);
         }
 
         public void giveID(int height) {

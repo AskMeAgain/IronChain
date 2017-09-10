@@ -240,7 +240,7 @@ namespace IronChain {
                 fileStream.Write(receiveBuffer, 0, receivedBytes);
                 Console.WriteLine("?" + receivedBytes);
 
-                if (fileSize == 0)
+                if (fileSize == 0 || receivedBytes == 0)
                     break;
             }
 

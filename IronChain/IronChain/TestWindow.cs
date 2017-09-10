@@ -33,25 +33,25 @@ namespace IronChain {
 
         }
 
-        private void onClickConnectTo3000(object sender, EventArgs e) {
+        private void onClickConnectTo3001(object sender, EventArgs e) {
 
             if (button9.Enabled) {
                 IPHostEntry entry = Dns.GetHostEntry(Dns.GetHostName());
                 IPAddress[] t = entry.AddressList;
                 Form1.instance.manager2 = new PeerNetworking();
-                Form1.instance.manager2.ConnectToListener(t[0], 3000);
+                Form1.instance.manager2.ConnectToListener(t[0], 3001);
             }
 
             button9.Enabled = false;
         }
 
-        private void onClickConnectTo3001(object sender, EventArgs e) {
+        private void onClickConnectTo3000(object sender, EventArgs e) {
 
             if (button8.Enabled) {
                 IPHostEntry entry = Dns.GetHostEntry(Dns.GetHostName());
                 IPAddress[] t = entry.AddressList;
                 Form1.instance.manager2 = new PeerNetworking();
-                Form1.instance.manager2.ConnectToListener(t[0], 3001);
+                Form1.instance.manager2.ConnectToListener(t[0], 3000);
             }
 
             button8.Enabled = false;
@@ -83,6 +83,22 @@ namespace IronChain {
             }
 
             Form1.instance.automaticFileRequestFlag = !Form1.instance.automaticFileRequestFlag;
+        }
+
+        private Timer timer1;
+
+        private void onClickAddRandomTrans(object sender, EventArgs e) {
+
+            timer1 = new Timer();
+            timer1.Interval = 1000;
+            timer1.Tick += new EventHandler(createTrans);
+            timer1.Start();    
+
+        }
+
+        public void createTrans(object sender, EventArgs e) {
+            Transaction t = new Transaction(Form1.instance.accountList[Form1.instance.mainAccount].publicKey, "TestAccount", 1, Form1.instance.accountList[Form1.instance.mainAccount].privateKey, Form1.instance.latestBlock);
+            Form1.instance.TransactionPool.Add(t);
         }
     }
 }

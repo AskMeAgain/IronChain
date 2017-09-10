@@ -35,6 +35,7 @@ namespace IronChain {
             TransactionPool = new List<Transaction>();
             accountList = new Dictionary<string, Account>();
             userTransactionHistory = new List<Transaction>();
+            Form1.instance.Text = "IronChain";
 
             Directory.CreateDirectory("C:\\IronChain\\");
 
@@ -538,10 +539,7 @@ namespace IronChain {
 
 
             //SIGN TRANSACTION
-            Transaction t = new Transaction(thisAccount.publicKey, receiver, amount);
-            t.giveID(latestBlock);
-
-            t.proofOfOwnership = Utility.signData(Utility.getHashSha256(t.id + ""), thisAccount.privateKey);
+            Transaction t = new Transaction(thisAccount.publicKey, receiver, amount, thisAccount.privateKey, latestBlock);
 
             TransactionPool.Add(t);
 
@@ -685,6 +683,13 @@ namespace IronChain {
         private void onBarOpenTestWindow(object sender, EventArgs e) {
             TestWindow a = new TestWindow();
             a.Show();
+        }
+
+        private void onBarOpenTransactionPool(object sender, EventArgs e) {
+
+            TransactionPool a = new TransactionPool();
+            a.Show();
+
         }
     }
 }
