@@ -70,6 +70,8 @@ namespace IronChain {
             button15.Text = "Path changed";
 
             Form1.instance.globalChainPath = "C:\\IronChain\\TestChain\\";
+
+            Form1.instance.analyseChain();
         }
 
         private void disableEnableAutomaticBlockDownload(object sender, EventArgs e) {
