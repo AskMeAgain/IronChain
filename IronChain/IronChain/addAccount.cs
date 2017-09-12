@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,24 @@ namespace IronChain {
             Console.WriteLine("test!");
 
             this.Close();
+
+        }
+
+        private void panel1_DragOver(object sender, DragEventArgs e) {
+
+            string[] FileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            string[] splitted = FileList[0].Split('\\');
+            string name = splitted[splitted.Length - 1];
+
+
+            Console.WriteLine(FileList[0]);
+
+            if (FileList[0].EndsWith(".acc")) {
+                File.Copy(FileList[0],"C:\\IronChain\\" + name,true);
+                Form1.instance.updateAccountList();
+                this.Close();
+            }
+
 
         }
     }
