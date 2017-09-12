@@ -99,6 +99,9 @@ namespace IronChain {
         public void createTrans(object sender, EventArgs e) {
             Transaction t = new Transaction(Form1.instance.accountList[Form1.instance.mainAccount].publicKey, "TestAccount", 1, Form1.instance.accountList[Form1.instance.mainAccount].privateKey, Form1.instance.latestBlock);
             Form1.instance.TransactionPool.Add(t);
+
+            if (Form1.instance.transactionPoolWindow != null)
+                Form1.instance.transactionPoolWindow.updateTransactionPool();
         }
     }
 }

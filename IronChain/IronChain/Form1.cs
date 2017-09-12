@@ -543,6 +543,10 @@ namespace IronChain {
 
             TransactionPool.Add(t);
 
+            if (transactionPoolWindow != null)
+                transactionPoolWindow.updateTransactionPool();
+
+
             if (manager2 != null) {
                 manager2.pushTransactionToServers();
             }
@@ -687,9 +691,13 @@ namespace IronChain {
 
         private void onBarOpenTransactionPool(object sender, EventArgs e) {
 
-            TransactionPool a = new TransactionPool();
-            a.Show();
+            transactionPoolWindow = new TransactionPool();
+            transactionPoolWindow.Show();
+
+            transactionPoolWindow.updateTransactionPool();
 
         }
+
+        public TransactionPool transactionPoolWindow;
     }
 }
