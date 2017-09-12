@@ -41,7 +41,7 @@ namespace IronChain {
             Console.WriteLine(FileList[0]);
 
             if (FileList[0].EndsWith(".acc")) {
-                File.Copy(FileList[0],"C:\\IronChain\\" + name,true);
+                File.Copy(FileList[0], "C:\\IronChain\\" + name, true);
                 Form1.instance.updateAccountList();
                 this.Close();
             }

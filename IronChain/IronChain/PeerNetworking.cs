@@ -203,7 +203,9 @@ namespace IronChain {
             receiveFileAndStore(inOut, height + ".blk", BitConverter.ToInt64(ack, 8));
             receiveFileAndStore(inOut, "P" + height + ".blk", BitConverter.ToInt64(ack, 16));
 
-            Console.WriteLine("Reading 3 files now!");
+            foreach (Transaction trans in Form1.instance.usedTransactions) {
+                Form1.instance.TransactionPool.Add(trans);
+            }
 
             Form1.instance.analyseChain();
 

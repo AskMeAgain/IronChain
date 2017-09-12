@@ -36,6 +36,7 @@ namespace IronChain {
             accountList = new Dictionary<string, Account>();
             userTransactionHistory = new List<Transaction>();
             Form1.instance.Text = "IronChain";
+            usedTransactions = new List<Transaction>();
 
             Directory.CreateDirectory("C:\\IronChain\\");
 
@@ -130,13 +131,15 @@ namespace IronChain {
             Utility.storeFile(genesis, globalChainPath + genesis.name + ".blk");
         }
 
+        public List<Transaction> usedTransactions;
+
         private void createParticles(int height) {
 
             string particleName = "";
 
-            //transaction particle
             Particle p = new Particle();
             transHistory = new Dictionary<string, int>();
+            usedTransactions = new List<Transaction>();
 
             while (TransactionPool.Count > 0) {
 
@@ -145,11 +148,13 @@ namespace IronChain {
 
                 if (verifyTransactionHash(trans)) {
                     Console.WriteLine("correct transaction!");
-                    p.addTransaction(trans);
+                    usedTransactions.Add(trans);
                 } else {
                     Console.WriteLine("TRANSACTION NOT CORRECT!");
                 }
             }
+
+            p.allTransactions = usedTransactions;
 
             //add hash to block before
             p.hashToBlock = Utility.ComputeHash(globalChainPath + (height - 1));
@@ -330,8 +335,13 @@ namespace IronChain {
                         break;
                     }
 
+                    //block points to block before
+                    if (!hashOfBlockBefore.Equals(b.hashOfBlockBefore)) {
+                        break;
+                    }
+
                     //particle points to block before
-                    if (!Utility.ComputeHash(globalChainPath + (i - 1)).Equals(p.hashToBlock)) {
+                    if (!hashOfBlockBefore.Equals(p.hashToBlock)) {
                         break;
                     }
 
