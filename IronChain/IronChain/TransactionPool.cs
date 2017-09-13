@@ -12,6 +12,7 @@ namespace IronChain {
     public partial class TransactionPool : Form {
         public TransactionPool() {
             InitializeComponent();
+            updateTransactionPool();
         }
 
         public void updateTransactionPool() {

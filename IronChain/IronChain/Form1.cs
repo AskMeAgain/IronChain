@@ -17,7 +17,6 @@ namespace IronChain {
         public List<Transaction> TransactionPool;
 
         bool miningFlag = true;
-        Dictionary<string, int> transHistory;
         public int latestBlock = 0;
 
         public string minerAccountName;
@@ -268,7 +267,7 @@ namespace IronChain {
                 string hash = Utility.getHashSha256(hashToProof);
 
                 if (Utility.verifyHashDifficulty(hash, difficulty)) {
-                                TransactionPool.Clear();
+                    TransactionPool.Clear();
 
                     mineNextBlock(nonce + "", difficulty);
                     break;
@@ -650,12 +649,10 @@ namespace IronChain {
                 button18.Enabled = true;
             }
 
-            int count = 0;
 
             for (int i = 0 + 5 * transPage; i < 5 + 5 * transPage && i < userTransactionHistory.Count; i++) {
                 Transaction t = userTransactionHistory[i];
                 string s = "";
-                count++;
                 if (accountList[mainAccount].publicKey.Equals(t.owner)) {
                     s = "Sending " + t.amount + " Iron to " + t.receiver;
                 } else {
@@ -665,27 +662,12 @@ namespace IronChain {
                 label19.Text += s + Environment.NewLine;
             }
 
-            if (count < 5) {
-                button17.Enabled = false;
-            } else {
-                button17.Enabled = true;
-            }
-        }
+            button17.Enabled = (transPage + 1) * 5 < userTransactionHistory.Count ? true : false;
 
-        private void button9_Click(object sender, EventArgs e) {
-            IPHostEntry entry = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress[] t = entry.AddressList;
-
-            manager2 = new PeerNetworking();
-            manager2.ConnectToListener(t[0], 3001);
         }
 
         private void onClickShowPreviousPage(object sender, EventArgs e) {
             transPage--;
-
-            if (transPage < 0)
-                transPage = 0;
-
             displayTransactionHistory();
         }
 
@@ -708,8 +690,6 @@ namespace IronChain {
 
             transactionPoolWindow = new TransactionPool();
             transactionPoolWindow.Show();
-
-            transactionPoolWindow.updateTransactionPool();
 
         }
 
