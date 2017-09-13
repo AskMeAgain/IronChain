@@ -37,9 +37,7 @@ namespace IronChain {
             string[] splitted = FileList[0].Split('\\');
             string nameWithEnding = splitted[splitted.Length - 1];
             string[] name = nameWithEnding.Split('.');
-
-            Console.WriteLine(FileList[0]);
-
+             
             if (FileList[0].EndsWith(".acc")) {
                 File.Copy(FileList[0], "C:\\IronChain\\" + nameWithEnding, true);
 
