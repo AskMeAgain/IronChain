@@ -58,6 +58,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.button6 = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
             this.button5 = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
@@ -423,6 +424,7 @@
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panel4.Controls.Add(this.button6);
             this.panel4.Controls.Add(this.label17);
             this.panel4.Controls.Add(this.button5);
             this.panel4.Controls.Add(this.label16);
@@ -436,6 +438,16 @@
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(414, 149);
             this.panel4.TabIndex = 62;
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(242, 108);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(61, 26);
+            this.button6.TabIndex = 12;
+            this.button6.Text = "add Data";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.onClickAddData);
             // 
             // label17
             // 
@@ -480,7 +492,7 @@
             this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox2.Location = new System.Drawing.Point(28, 108);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(263, 26);
+            this.textBox2.Size = new System.Drawing.Size(208, 26);
             this.textBox2.TabIndex = 4;
             // 
             // textBox6
@@ -667,6 +679,7 @@
         private System.Windows.Forms.ToolStripMenuItem windowsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem testWindowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem transactionPoolToolStripMenuItem;
+        private System.Windows.Forms.Button button6;
     }
 }
 

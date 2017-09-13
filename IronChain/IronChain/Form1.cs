@@ -554,6 +554,7 @@ namespace IronChain {
 
             //SIGN TRANSACTION
             Transaction t = new Transaction(thisAccount.publicKey, receiver, amount, thisAccount.privateKey, latestBlock);
+            t.data = TransData;
 
             TransactionPool.Add(t);
 
@@ -694,5 +695,11 @@ namespace IronChain {
         }
 
         public TransactionPool transactionPoolWindow;
+        public string TransData;
+
+        private void onClickAddData(object sender, EventArgs e) {
+            addData a = new addData();
+            a.Show();
+        }
     }
 }
