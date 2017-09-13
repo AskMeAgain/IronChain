@@ -15,11 +15,5 @@ namespace IronChain {
             allTransactions = new List<Transaction>();
         }
 
-        public void addTransaction(Transaction t) {
-
-            allTransactions.Add(t);
-
-        }
-
     }
 }

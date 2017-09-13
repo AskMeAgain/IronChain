@@ -41,8 +41,12 @@ namespace IronChain {
             Directory.CreateDirectory("C:\\IronChain\\");
 
             Utility.loadSettings();
+            try {
+                ip = new WebClient().DownloadString("http://icanhazip.com");
+            } catch (Exception e) {
 
-            ip = new WebClient().DownloadString("http://icanhazip.com");
+            }
+
             textBox1.Text = ip + ":::4712";
             comboBox4.SelectedIndex = 0;
 
@@ -138,23 +142,19 @@ namespace IronChain {
             string particleName = "";
 
             Particle p = new Particle();
-            transHistory = new Dictionary<string, int>();
-            usedTransactions = new List<Transaction>();
 
-            while (TransactionPool.Count > 0) {
-
-                Transaction trans = TransactionPool[0];
-                TransactionPool.RemoveAt(0);
-
+            foreach (Transaction trans in TransactionPool) {
                 if (verifyTransactionHash(trans)) {
                     Console.WriteLine("correct transaction!");
-                    usedTransactions.Add(trans);
+                    p.allTransactions.Add(trans);
                 } else {
                     Console.WriteLine("TRANSACTION NOT CORRECT!");
+                    TransactionPool.Remove(trans);
                 }
             }
 
-            p.allTransactions = usedTransactions;
+            if (transactionPoolWindow != null)
+                transactionPoolWindow.updateTransactionPool();
 
             //add hash to block before
             p.hashToBlock = Utility.ComputeHash(globalChainPath + (height - 1));
@@ -196,6 +196,10 @@ namespace IronChain {
 
             //Store Block
             Utility.storeFile(nextBlock, globalChainPath + (latestBlock + 1) + ".blk");
+
+            foreach (Transaction trans in p.allTransactions) {
+                TransactionPool.Remove(trans);
+            }
 
             analyseChain();
 
@@ -239,8 +243,6 @@ namespace IronChain {
 
             int nonce = 0;
 
-
-
             string hashFromLatestBlock = Utility.ComputeHash(globalChainPath + latestBlock + "");
 
             string hashFromParticle = hashFromLatestBlock;
@@ -251,11 +253,12 @@ namespace IronChain {
 
             int difficulty = miningDifficulty;
             bool firstTime = true;
+            int count = 0;
 
             while (miningFlag) {
 
-                if (TransactionPool.Count > 0 || firstTime) {
-                    Console.WriteLine("mining block:" + latestBlock);
+                if (TransactionPool.Count > count || firstTime) {
+                    count = TransactionPool.Count;
                     createParticles(latestBlock + 1);
                     firstTime = false;
                 }
@@ -265,6 +268,8 @@ namespace IronChain {
                 string hash = Utility.getHashSha256(hashToProof);
 
                 if (Utility.verifyHashDifficulty(hash, difficulty)) {
+                                TransactionPool.Clear();
+
                     mineNextBlock(nonce + "", difficulty);
                     break;
                 }
@@ -286,15 +291,14 @@ namespace IronChain {
                 return;
 
 
-            if (!File.Exists(globalChainPath + "0.blk")) {
+            if (!File.Exists(globalChainPath + "0.blk"))
                 createGenesisBlock();
-            }
+
 
             Block b = Utility.loadFile<Block>(globalChainPath + "0.blk");
             int i = 1;
             bool errorFlag = false;
             int difficulty = b.difficulty;
-            userTransactionHistory = new List<Transaction>();
 
             //get genesis block too
             foreach (Account acc in accountList.Values) {
@@ -302,6 +306,8 @@ namespace IronChain {
                 if (acc.publicKey.Equals(b.minerAddress))
                     acc.coinCounter += 3;
             }
+
+            userTransactionHistory.Clear();
 
             while (File.Exists(globalChainPath + i + ".blk")) {
 
@@ -390,11 +396,10 @@ namespace IronChain {
             i--;
 
             if (errorFlag) {
-                Console.WriteLine("ERROR BLOCK");
+                Console.WriteLine("ERROR BLOCK<this?");
 
                 File.Delete(globalChainPath + i + ".blk");
                 File.Delete(globalChainPath + "P" + i + ".blk");
-                File.Delete(globalChainPath + "L" + i + ".blk");
 
                 i--;
             }
@@ -414,7 +419,7 @@ namespace IronChain {
                 displayTransactionHistory();
             }
 
-            
+
         }
 
         public void isServerUI() {
@@ -579,7 +584,7 @@ namespace IronChain {
             miningDifficulty = comboBox4.SelectedIndex + 4;
         }
 
-       
+
 
         private void button8_Click(object sender, EventArgs e) {
 

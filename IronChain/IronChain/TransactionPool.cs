@@ -15,14 +15,21 @@ namespace IronChain {
         }
 
         public void updateTransactionPool() {
-            textBox1.Text = "";
 
-            Console.WriteLine("exeuting" + Form1.instance.TransactionPool.Count);
-
-            foreach (Transaction trans in Form1.instance.TransactionPool) {
-                Console.WriteLine("adding trans");
-                textBox1.Text += trans.toString() + Environment.NewLine;
+            if (InvokeRequired) {
+                Invoke(new Action(() => {
+                    textBox1.Text = "";
+                    foreach (Transaction trans in Form1.instance.TransactionPool) {
+                        textBox1.Text += trans.toString() + Environment.NewLine;
+                    }
+                }));
+            } else {
+                textBox1.Text = "";
+                foreach (Transaction trans in Form1.instance.TransactionPool) {
+                    textBox1.Text += trans.toString() + Environment.NewLine;
+                }
             }
+
         }
     }
 }
