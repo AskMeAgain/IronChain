@@ -43,6 +43,8 @@ Important to note is that when importing a file, the file is copied. Which means
 
 ## Testing the IronChain
 
+![alt text](https://puu.sh/xz1Eb/60d078a387.png "Testing Window")
+
 1. Open two instances of the program.
 2. Open on each instance the test window (Window -> Test window)
 3. Change the iron chain path of one instance
