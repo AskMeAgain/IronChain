@@ -1,6 +1,6 @@
 # IronChain
 
-A blockchain made from ground up to as a personal challenge. In the end it should have the same main features as the original bitcoin blockchain.
+A blockchain made from ground up to as a personal challenge in C#. In the end it should have the same main features as the original bitcoin blockchain as described in the [Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf).
 
 ## General Features
 
@@ -36,4 +36,6 @@ Sending a transaction is self explanatory:
 
 ## Testing the IronChain
 
-1. Open the 
+1. Open two instances of the program.
+2. Open on each instance the test window (Window -> Test window)
+3. Change the iron chain path of 
