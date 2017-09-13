@@ -35,14 +35,18 @@ namespace IronChain {
 
             string[] FileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
             string[] splitted = FileList[0].Split('\\');
-            string name = splitted[splitted.Length - 1];
-
+            string nameWithEnding = splitted[splitted.Length - 1];
+            string[] name = nameWithEnding.Split('.');
 
             Console.WriteLine(FileList[0]);
 
             if (FileList[0].EndsWith(".acc")) {
-                File.Copy(FileList[0], "C:\\IronChain\\" + name, true);
+                File.Copy(FileList[0], "C:\\IronChain\\" + nameWithEnding, true);
+
+                Form1.instance.mainAccount = name[0];
+                Form1.instance.minerAccountName = name[0];
                 Form1.instance.updateAccountList();
+
                 this.Close();
             }
 
