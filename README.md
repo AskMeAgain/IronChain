@@ -1,27 +1,27 @@
 # IronChain
 
-A blockchain made from ground up to as a personal challenge in C#. In the end it should have the same main features as the original bitcoin blockchain as described in the [Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf).
+A blockchain made from ground up to as a personal challenge in C#. In the end it should have the same main features as the original bitcoin blockchain described in the  [Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf).
 
-## General Features
+## General Features of the IronChain
 
 Linking Blocks via hashes  
 Proof-Of-Work mining  
 RSA verification  
 Account system  
-Peer to Peer system  
+(pseudo) P2P system  
 All-in-One Client/Miner/Wallet software  
 Local test suite  
 Transaction Fees  
 Transaction History  
 
-PS: Note that this software only has a pseudo P2P system. Discovery is not possible without hosting a server or doing some trade offs.
+PS: Note that this software only has a pseudo P2P system. Doing a real P2P system is not possible without some trade offs, which iam not willing to do (hosting a server etc).
 
 
 ## General Guide
 
 ![alt text](https://puu.sh/xz0o9/64641f92e6.png "Main Window")
 
-1. Host your Server and connect to a server (if you connect over the internet you need to open port 4712 to host a server)
+1. Host your Server and connect to a server (if you connect over the internet you need to open port 4712 to host a server, still WIP)
 2. Wait 20 Seconds and the client should auto update the blocks (or go Window -> Test Window -> Download blocks from server)
 3. Once updated, click on mine (recommended difficulty is 5 which takes 20-30 seconds).
 4. If a block is found, your client will send the files to all connected clients.
@@ -32,10 +32,18 @@ Sending a transaction is self explanatory:
 1. enter amount
 2. enter transaction fee
 3. click on send
-4. If you are connected to some servers, the transaction will be pushed to all servers.
+If you are connected to some servers, the transaction will be pushed to all servers too.
 
 ## Testing the IronChain
 
 1. Open two instances of the program.
 2. Open on each instance the test window (Window -> Test window)
-3. Change the iron chain path of 
+3. Change the iron chain path of one instance
+4. Each instance should host on a different port
+5. Each instance needs to connect to the port of the other instance.
+6. Disable auto download
+7. Use the provided buttons to test each feature
+
+## Current bugs and missing features
+
+1. In theory you should be able to connect to others over the internet, in practice this is not working because of different things (router blocking connections, ISP's sometimes not using IPv6 and other stuff). I try to fix this, but testing it locally is proof enough that it works. 
