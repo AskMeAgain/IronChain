@@ -13,6 +13,7 @@ namespace IronChain {
         public string proofOfOwnership;
         public int amount;
         public string data;
+        public int transactionfee;
 
         public Transaction() {
 

@@ -58,6 +58,8 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.label20 = new System.Windows.Forms.Label();
+            this.comboBox5 = new System.Windows.Forms.ComboBox();
             this.button6 = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
             this.button5 = new System.Windows.Forms.Button();
@@ -424,6 +426,8 @@
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panel4.Controls.Add(this.label20);
+            this.panel4.Controls.Add(this.comboBox5);
             this.panel4.Controls.Add(this.button6);
             this.panel4.Controls.Add(this.label17);
             this.panel4.Controls.Add(this.button5);
@@ -439,6 +443,34 @@
             this.panel4.Size = new System.Drawing.Size(414, 149);
             this.panel4.TabIndex = 62;
             // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label20.Location = new System.Drawing.Point(220, 41);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(25, 13);
+            this.label20.TabIndex = 14;
+            this.label20.Text = "Fee";
+            // 
+            // comboBox5
+            // 
+            this.comboBox5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.comboBox5.FormattingEnabled = true;
+            this.comboBox5.Items.AddRange(new object[] {
+            "1 Iron",
+            "2 Iron",
+            "3 Iron",
+            "4 Iron",
+            "5 Iron"});
+            this.comboBox5.Location = new System.Drawing.Point(222, 60);
+            this.comboBox5.Name = "comboBox5";
+            this.comboBox5.Size = new System.Drawing.Size(60, 24);
+            this.comboBox5.TabIndex = 13;
+            this.comboBox5.SelectedIndexChanged += new System.EventHandler(this.onTransactionFeeChanged);
+            this.comboBox5.SelectedIndex = 0;
+            // 
             // button6
             // 
             this.button6.Location = new System.Drawing.Point(242, 108);
@@ -453,7 +485,7 @@
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(295, 62);
+            this.label17.Location = new System.Drawing.Point(305, 60);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(55, 22);
             this.label17.TabIndex = 11;
@@ -472,7 +504,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(153, 41);
+            this.label16.Location = new System.Drawing.Point(136, 41);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(43, 13);
             this.label16.TabIndex = 10;
@@ -498,10 +530,11 @@
             // textBox6
             // 
             this.textBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox6.Location = new System.Drawing.Point(156, 60);
+            this.textBox6.Location = new System.Drawing.Point(139, 60);
             this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(90, 26);
+            this.textBox6.Size = new System.Drawing.Size(80, 26);
             this.textBox6.TabIndex = 9;
+            this.textBox6.Text = "0";
             this.textBox6.TextChanged += new System.EventHandler(this.onAmountChanged);
             // 
             // label13
@@ -520,7 +553,7 @@
             this.comboBox3.FormattingEnabled = true;
             this.comboBox3.Location = new System.Drawing.Point(28, 60);
             this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(121, 26);
+            this.comboBox3.Size = new System.Drawing.Size(105, 26);
             this.comboBox3.TabIndex = 2;
             // 
             // label4
@@ -680,6 +713,8 @@
         private System.Windows.Forms.ToolStripMenuItem testWindowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem transactionPoolToolStripMenuItem;
         private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.ComboBox comboBox5;
+        private System.Windows.Forms.Label label20;
     }
 }
 

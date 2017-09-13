@@ -298,6 +298,7 @@ namespace IronChain {
             int i = 1;
             bool errorFlag = false;
             int difficulty = b.difficulty;
+            userTransactionHistory.Clear();
 
             //get genesis block too
             foreach (Account acc in accountList.Values) {
@@ -306,7 +307,6 @@ namespace IronChain {
                     acc.coinCounter += 3;
             }
 
-            userTransactionHistory.Clear();
 
             while (File.Exists(globalChainPath + i + ".blk")) {
 
@@ -353,6 +353,9 @@ namespace IronChain {
                     Dictionary<string, int> listOfAllOwners = new Dictionary<string, int>();
                     listOfAllOwners.Add(b.minerAddress, 0);
 
+
+
+
                     foreach (Transaction trans in p.allTransactions) {
 
                         //verify each transaction
@@ -369,8 +372,6 @@ namespace IronChain {
                             } else {
                                 listOfAllOwners.Add(trans.owner, trans.amount);
                             }
-
-
 
                             // check if each transaction is possible
                             foreach (string owner in listOfAllOwners.Keys) {
@@ -444,7 +445,6 @@ namespace IronChain {
                     coinbalance += 3;
                 }
 
-
                 if (i > 0) {
                     Particle p = Utility.loadFile<Particle>(globalChainPath + "P" + i + ".blk");
                     if (p != null) {
@@ -454,7 +454,12 @@ namespace IronChain {
                             }
 
                             if (trans.owner.Equals(owner)) {
-                                coinbalance -= trans.amount;
+                                coinbalance -= trans.amount + trans.transactionfee;
+                                
+                            }
+
+                            if (b.minerAddress.Equals(owner)) {
+                                coinbalance += trans.transactionfee;
                             }
                         }
                     }
@@ -555,6 +560,7 @@ namespace IronChain {
             //SIGN TRANSACTION
             Transaction t = new Transaction(thisAccount.publicKey, receiver, amount, thisAccount.privateKey, latestBlock);
             t.data = TransData;
+            t.transactionfee = comboBox5.SelectedIndex + 1;
 
             TransactionPool.Add(t);
 
@@ -572,12 +578,15 @@ namespace IronChain {
         }
 
         private void onAmountChanged(object sender, EventArgs e) {
+            calculateTransactionAmount();
+        }
 
-            label17.Text = textBox6.Text + " Iron";
+        private void calculateTransactionAmount() {
 
-            if (textBox6.Text.Equals("")) {
-                label17.Text = "0 Iron";
-            }
+            int amount = 0;
+            int.TryParse(textBox6.Text, out amount);
+           
+            label17.Text = (1 + amount + comboBox5.SelectedIndex) + " Iron";
         }
 
         private void onDifficultyChanged(object sender, EventArgs e) {
@@ -653,12 +662,10 @@ namespace IronChain {
 
             for (int i = 0 + 5 * transPage; i < 5 + 5 * transPage && i < userTransactionHistory.Count; i++) {
                 Transaction t = userTransactionHistory[i];
-                string s = "";
-                if (accountList[mainAccount].publicKey.Equals(t.owner)) {
-                    s = "Sending " + t.amount + " Iron to " + t.receiver;
-                } else {
+
+                string s = accountList[mainAccount].publicKey.Equals(t.owner) ? 
+                    s = "Sending " + t.amount + " Iron to " + t.receiver :
                     s = "Receiving " + t.amount + " Iron from " + t.owner;
-                }
 
                 label19.Text += s + Environment.NewLine;
             }
@@ -700,6 +707,10 @@ namespace IronChain {
         private void onClickAddData(object sender, EventArgs e) {
             addData a = new addData();
             a.Show();
+        }
+
+        private void onTransactionFeeChanged(object sender, EventArgs e) {
+            calculateTransactionAmount();
         }
     }
 }
