@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -85,11 +86,11 @@ namespace IronChain {
             Form1.instance.automaticFileRequestFlag = !Form1.instance.automaticFileRequestFlag;
         }
 
-        private Timer timer1;
+        private System.Windows.Forms.Timer timer1;
 
         private void onClickAddRandomTrans(object sender, EventArgs e) {
 
-            timer1 = new Timer();
+            timer1 = new System.Windows.Forms.Timer();
             timer1.Interval = 1000;
             timer1.Tick += new EventHandler(createTrans);
             timer1.Start();    
@@ -102,6 +103,13 @@ namespace IronChain {
 
             if (Form1.instance.transactionPoolWindow != null)
                 Form1.instance.transactionPoolWindow.updateTransactionPool();
+        }
+
+        private void onClickMineASingleBlock(object sender, EventArgs e) {
+            Form1.instance.mineASingleBlockFlag = true;
+            Thread a = new Thread(Form1.instance.mine);
+            a.Name = "Mining";
+            a.Start();
         }
     }
 }

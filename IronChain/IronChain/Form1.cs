@@ -165,6 +165,8 @@ namespace IronChain {
 
         }
 
+        public bool mineASingleBlockFlag = false;
+
         private bool verifyTransactionHash(Transaction trans) {
 
             string original = Utility.getHashSha256(trans.id + "");
@@ -206,13 +208,15 @@ namespace IronChain {
             if (manager2 != null)
                 manager2.pushFile();
 
-            if (miningFlag) {
+            if (miningFlag && !mineASingleBlockFlag) {
                 mine();
             }
 
         }
 
-        private void mine() {
+        public void mine() {
+
+
             if (InvokeRequired) {
                 Invoke(new Action(() => {
                     button1.Enabled = false;
@@ -531,6 +535,7 @@ namespace IronChain {
 
         private void onClickMineBlock(object sender, EventArgs e) {
             Thread a = new Thread(mine);
+            mineASingleBlockFlag = false;
             a.Name = "Mining";
             a.Start();
         }
