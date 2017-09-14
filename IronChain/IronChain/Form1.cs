@@ -131,6 +131,7 @@ namespace IronChain {
             Block genesis = new Block(0);
             genesis.hashOfParticle = "genesis";
             genesis.minerAddress = "";
+            genesis.difficulty = 4;
             Utility.storeFile(genesis, globalChainPath + genesis.name + ".blk");
         }
 
@@ -711,6 +712,14 @@ namespace IronChain {
 
         private void onTransactionFeeChanged(object sender, EventArgs e) {
             calculateTransactionAmount();
+        }
+
+        private void onClickChainGlobalPath(object sender, EventArgs e) {
+            var dialog = new FolderBrowserDialog();
+            dialog.ShowDialog();
+
+            globalChainPath = dialog.SelectedPath + "\\";
+            analyseChain();
         }
     }
 }

@@ -77,6 +77,7 @@
             this.panel6 = new System.Windows.Forms.Panel();
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
+            this.changeChainPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -146,7 +147,8 @@
             this.ironChainToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deleteIronChainToolStripMenuItem,
             this.deleteAccountsToolStripMenuItem,
-            this.addAccountToolStripMenuItem});
+            this.addAccountToolStripMenuItem,
+            this.changeChainPathToolStripMenuItem});
             this.ironChainToolStripMenuItem.Name = "ironChainToolStripMenuItem";
             this.ironChainToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.ironChainToolStripMenuItem.Text = "File";
@@ -154,21 +156,21 @@
             // deleteIronChainToolStripMenuItem
             // 
             this.deleteIronChainToolStripMenuItem.Name = "deleteIronChainToolStripMenuItem";
-            this.deleteIronChainToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.deleteIronChainToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.deleteIronChainToolStripMenuItem.Text = "Delete IronChain";
             this.deleteIronChainToolStripMenuItem.Click += new System.EventHandler(this.onClickDeleteIronChain);
             // 
             // deleteAccountsToolStripMenuItem
             // 
             this.deleteAccountsToolStripMenuItem.Name = "deleteAccountsToolStripMenuItem";
-            this.deleteAccountsToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.deleteAccountsToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.deleteAccountsToolStripMenuItem.Text = "Delete Accounts";
             this.deleteAccountsToolStripMenuItem.Click += new System.EventHandler(this.onBarDeleteAccounts);
             // 
             // addAccountToolStripMenuItem
             // 
             this.addAccountToolStripMenuItem.Name = "addAccountToolStripMenuItem";
-            this.addAccountToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.addAccountToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.addAccountToolStripMenuItem.Text = "Add Account";
             this.addAccountToolStripMenuItem.Click += new System.EventHandler(this.addAccountToolStripMenuItem_Click);
             // 
@@ -469,7 +471,6 @@
             this.comboBox5.Size = new System.Drawing.Size(60, 24);
             this.comboBox5.TabIndex = 13;
             this.comboBox5.SelectedIndexChanged += new System.EventHandler(this.onTransactionFeeChanged);
-            this.comboBox5.SelectedIndex = 0;
             // 
             // button6
             // 
@@ -628,6 +629,13 @@
             this.label18.TabIndex = 0;
             this.label18.Text = "Transaction History";
             // 
+            // changeChainPathToolStripMenuItem
+            // 
+            this.changeChainPathToolStripMenuItem.Name = "changeChainPathToolStripMenuItem";
+            this.changeChainPathToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.changeChainPathToolStripMenuItem.Text = "Change Chain Path";
+            this.changeChainPathToolStripMenuItem.Click += new System.EventHandler(this.onClickChainGlobalPath);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -715,6 +723,7 @@
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.ComboBox comboBox5;
         private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.ToolStripMenuItem changeChainPathToolStripMenuItem;
     }
 }
 
