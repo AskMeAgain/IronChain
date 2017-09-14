@@ -7,7 +7,7 @@ namespace IronChain {
     [Serializable]
     public class Transaction {
 
-        public long id;
+        public string id;
         public string owner;
         public string receiver;
         public string proofOfOwnership;
@@ -28,7 +28,7 @@ namespace IronChain {
         }
 
         public void giveID(int height) {
-            id = Convert.ToInt64(string.Format("{0}{1}{2}", height, amount, 33));
+            id = Utility.getHashSha256(height + owner + receiver + data + amount + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond));
         }
 
         public string toString() {
