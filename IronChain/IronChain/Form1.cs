@@ -276,9 +276,6 @@ namespace IronChain {
             Console.WriteLine("getting hash of particle " + (latestBlock + 1));
             hashFromParticle = Utility.ComputeHash(globalChainPath + "P" + (latestBlock + 1));
 
-
-
-
             int difficulty = miningDifficulty;
 
             while (miningFlag) {
@@ -333,6 +330,8 @@ namespace IronChain {
                     acc.coinCounter += 3;
             }
 
+            List<bool> listOfMissingExtBlocks = new List<bool>();
+
             while (File.Exists(globalChainPath + i + ".blk")) {
 
                 b = Utility.loadFile<Block>(globalChainPath + i + ".blk");
@@ -377,37 +376,38 @@ namespace IronChain {
 
                     Dictionary<string, int> listOfAllOwners = new Dictionary<string, int>();
                     listOfAllOwners.Add(b.minerAddress, 0);
-
+                    listOfMissingExtBlocks.Add(ext != null ? true : false);
 
                     for (int index = 0; index < p.allTransactions.Count; index++) {
 
                         Transaction trans = p.allTransactions[index];
 
-
                         //verify each transaction
-                        if (verifyTransactionHashSegWit(trans, ext.proof[index])) {
+                        if (ext != null)
+                            if (!verifyTransactionHashSegWit(trans, ext.proof[index]))
+                                break;
 
-                            //add transaction to history for user
-                            if (trans.owner.Equals(accountList[mainAccount].publicKey) || trans.receiver.Equals(accountList[mainAccount].publicKey)) {
-                                userTransactionHistory.Add(trans);
-                            }
-
-                            //add transactions to a list
-                            if (listOfAllOwners.ContainsKey(trans.owner)) {
-                                listOfAllOwners[trans.owner] += trans.amount;
-                            } else {
-                                listOfAllOwners.Add(trans.owner, trans.amount);
-                            }
-
-                            // check if each transaction is possible
-                            foreach (string owner in listOfAllOwners.Keys) {
-                                if (checkCoinBalance(owner, i - 1) < listOfAllOwners[owner]) {
-                                    errorFlag = true;
-                                    break;
-                                }
-                            }
-
+                        //add transaction to history for user
+                        if (trans.owner.Equals(accountList[mainAccount].publicKey) || trans.receiver.Equals(accountList[mainAccount].publicKey)) {
+                            userTransactionHistory.Add(trans);
                         }
+
+                        //add transactions to a list
+                        if (listOfAllOwners.ContainsKey(trans.owner)) {
+                            listOfAllOwners[trans.owner] += trans.amount;
+                        } else {
+                            listOfAllOwners.Add(trans.owner, trans.amount);
+                        }
+
+                        // check if each transaction is possible
+                        foreach (string owner in listOfAllOwners.Keys) {
+                            if (checkCoinBalance(owner, i - 1) < listOfAllOwners[owner]) {
+                                errorFlag = true;
+                                break;
+                            }
+                        }
+
+
                     }
 
 
@@ -431,6 +431,19 @@ namespace IronChain {
             }
 
             latestBlock = i;
+
+            if (i > 3) {
+                for (int index = listOfMissingExtBlocks.Count - 1; index > 1; index--) {
+                    if (listOfMissingExtBlocks[index] && listOfMissingExtBlocks[index - 1]) {
+                        break;
+                    } else {
+                        Console.WriteLine("deleting from " + globalChainPath + "P" + index + 1 + ".blk");
+                        File.Delete(globalChainPath + "P" + (index + 1) + ".blk");
+                        File.Delete(globalChainPath + (index + 1) + ".blk");
+                        latestBlock = index;
+                    }
+                }
+            }
 
             if (InvokeRequired) {
                 Invoke(new Action(() => {
