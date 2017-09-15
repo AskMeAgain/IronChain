@@ -13,6 +13,7 @@ namespace IronChain {
 
         public string globalChainPath;
         public static Form1 instance;
+        public bool mineASingleBlockFlag = false;
 
         public List<Transaction> TransactionPool;
 
@@ -138,16 +139,23 @@ namespace IronChain {
         public List<Transaction> usedTransactions;
 
         private void createParticles(int height) {
-             
-
-            string particleName = "";
 
             Particle p = new Particle();
+            ExtendedParticle extParticle = new ExtendedParticle();
+            extParticle.proof = new List<string>();
 
-            foreach (Transaction trans in TransactionPool) {
-                if (verifyTransactionHash(trans)) {
-                    Console.WriteLine("correct transaction!");
-                    p.allTransactions.Add(trans);
+            for (int i = 0; i < TransactionPool.Count; i++) {
+
+                Transaction trans = TransactionPool[i];
+
+                if (verifyTransactionHashNoSegWit(trans)) {
+
+                    //converting now to segit transaction
+                    extParticle.proof.Add(trans.proofOfOwnership);
+                    Transaction temp = trans;
+                    temp.proofOfOwnership = "_";
+
+                    p.allTransactions.Add(temp);
                 } else {
                     Console.WriteLine("TRANSACTION NOT CORRECT!");
                     TransactionPool.Remove(trans);
@@ -160,20 +168,16 @@ namespace IronChain {
             //add hash to block before
             p.hashToBlock = Utility.ComputeHash(globalChainPath + (height - 1));
 
-            particleName = "P" + height;
-
-            Utility.storeFile(p, globalChainPath + particleName + ".blk");
+            Utility.storeFile(extParticle, globalChainPath + "E" + height + ".blk");
+            Utility.storeFile(p, globalChainPath + "P" + height + ".blk");
 
         }
 
-        public bool mineASingleBlockFlag = false;
 
-        private bool verifyTransactionHash(Transaction trans) {
+        private bool verifyTransactionHashNoSegWit(Transaction trans) {
 
             string original = Utility.getHashSha256(trans.id + "");
-
             string publ = Utility.buildRealPublicKey(trans.owner);
-
             string signedHash = trans.proofOfOwnership;
 
             if (Utility.verifyData(original, publ, signedHash)) {
@@ -183,11 +187,23 @@ namespace IronChain {
             }
         }
 
+        private bool verifyTransactionHashSegWit(Transaction trans, string signedHash) {
+
+            string original = Utility.getHashSha256(trans.id + "");
+            string publ = Utility.buildRealPublicKey(trans.owner);
+
+            if (Utility.verifyData(original, publ, signedHash)) {
+                Console.WriteLine("trans is legit!");
+                return true;
+            } else {
+                Console.WriteLine("trans is WRONG!");
+                return false;
+            }
+        }
+
         private void mineNextBlock(string nonce, int diff) {
 
             Block nextBlock = new Block();
-
-            Particle p = Utility.loadFile<Particle>(globalChainPath + "P" + (latestBlock + 1) + ".blk");
 
             //GET HASHES NOW INTO BLOCK
             nextBlock.addHash((latestBlock + 1));
@@ -200,8 +216,12 @@ namespace IronChain {
             //Store Block
             Utility.storeFile(nextBlock, globalChainPath + (latestBlock + 1) + ".blk");
 
+            Particle p = Utility.loadFile<Particle>(globalChainPath + "P" + (latestBlock + 1) + ".blk");
             foreach (Transaction trans in p.allTransactions) {
-                TransactionPool.Remove(trans);
+                for (int i = 0; i < TransactionPool.Count; i++) {
+                    if (trans.id.Equals(TransactionPool[i].id))
+                        TransactionPool.RemoveAt(i);
+                }
             }
 
             analyseChain();
@@ -217,10 +237,9 @@ namespace IronChain {
 
         public void mine() {
 
-
             if (InvokeRequired) {
                 Invoke(new Action(() => {
-                    button1.Enabled = false;
+                    //button1.Enabled = false;
                     button1.Text = "Mining!";
                     button3.Enabled = true;
                 }));
@@ -248,24 +267,26 @@ namespace IronChain {
 
             int nonce = 0;
 
-            string hashFromLatestBlock = Utility.ComputeHash(globalChainPath + latestBlock + "");
+            int count = TransactionPool.Count;
+            createParticles(latestBlock + 1);
 
+            string hashFromLatestBlock = Utility.ComputeHash(globalChainPath + latestBlock + "");
             string hashFromParticle = hashFromLatestBlock;
 
-            if (latestBlock > 0) {
-                hashFromParticle = Utility.ComputeHash(globalChainPath + "P" + latestBlock);
-            }
+            Console.WriteLine("getting hash of particle " + (latestBlock + 1));
+            hashFromParticle = Utility.ComputeHash(globalChainPath + "P" + (latestBlock + 1));
+
+
+
 
             int difficulty = miningDifficulty;
-            bool firstTime = true;
-            int count = 0;
 
             while (miningFlag) {
 
-                if (TransactionPool.Count > count || firstTime) {
+                if (TransactionPool.Count > count) {
                     count = TransactionPool.Count;
                     createParticles(latestBlock + 1);
-                    firstTime = false;
+                    hashFromParticle = Utility.ComputeHash(globalChainPath + "P" + (latestBlock + 1));
                 }
 
                 string hashToProof = nonce + hashFromLatestBlock + hashFromParticle;
@@ -273,8 +294,7 @@ namespace IronChain {
                 string hash = Utility.getHashSha256(hashToProof);
 
                 if (Utility.verifyHashDifficulty(hash, difficulty)) {
-                    TransactionPool.Clear();
-
+                    Console.WriteLine("calculated > " + nonce + "__" + hashFromLatestBlock + "__" + hashFromParticle);
                     mineNextBlock(nonce + "", difficulty);
                     break;
                 }
@@ -313,7 +333,6 @@ namespace IronChain {
                     acc.coinCounter += 3;
             }
 
-
             while (File.Exists(globalChainPath + i + ".blk")) {
 
                 b = Utility.loadFile<Block>(globalChainPath + i + ".blk");
@@ -324,15 +343,14 @@ namespace IronChain {
                     break;
                 }
 
-                string hashOfBlock = Utility.ComputeHash(globalChainPath + i + "");
-                string hashOfBlockBefore = Utility.ComputeHash(globalChainPath + (i - 1) + "");
-
-                string hashToProof = b.nonce + hashOfBlockBefore + b.hashOfParticle;
-                string proofHash = Utility.getHashSha256(hashToProof);
+                string hashOfThisBlock = Utility.ComputeHash(globalChainPath + i);
+                string hashOfBlockBefore = Utility.ComputeHash(globalChainPath + (i - 1));
+                string proofHash = Utility.getHashSha256(b.nonce + hashOfBlockBefore + b.hashOfParticle);
 
                 //checking nonce
                 if (!Utility.verifyHashDifficulty(proofHash, difficulty)) {
-                    Console.WriteLine("WRONG SHIT!");
+                    Console.WriteLine("WRONG SHIT! HASH DIFFICULTY WRONG!");
+                    //Console.WriteLine("analyseChain > " + b.nonce + "__" + hashOfBlockBefore + "__" + b.hashOfParticle);
                     break;
                 }
 
@@ -340,6 +358,7 @@ namespace IronChain {
 
                     //particle exists
                     Particle p = Utility.loadFile<Particle>(globalChainPath + "P" + i + ".blk");
+                    ExtendedParticle ext = Utility.loadFile<ExtendedParticle>(globalChainPath + "E" + i + ".blk");
 
                     //block points to particle
                     if (!Utility.ComputeHash(globalChainPath + "P" + i).Equals(b.hashOfParticle)) {
@@ -360,12 +379,13 @@ namespace IronChain {
                     listOfAllOwners.Add(b.minerAddress, 0);
 
 
+                    for (int index = 0; index < p.allTransactions.Count; index++) {
 
+                        Transaction trans = p.allTransactions[index];
 
-                    foreach (Transaction trans in p.allTransactions) {
 
                         //verify each transaction
-                        if (verifyTransactionHash(trans)) {
+                        if (verifyTransactionHashSegWit(trans, ext.proof[index])) {
 
                             //add transaction to history for user
                             if (trans.owner.Equals(accountList[mainAccount].publicKey) || trans.receiver.Equals(accountList[mainAccount].publicKey)) {
@@ -461,7 +481,7 @@ namespace IronChain {
 
                             if (trans.owner.Equals(owner)) {
                                 coinbalance -= trans.amount + trans.transactionfee;
-                                
+
                             }
 
                             if (b.minerAddress.Equals(owner)) {
@@ -536,7 +556,8 @@ namespace IronChain {
 
         private void onClickMineBlock(object sender, EventArgs e) {
             Thread a = new Thread(mine);
-            mineASingleBlockFlag = false;
+            //mineASingleBlockFlag = false;
+            mineASingleBlockFlag = true;
             a.Name = "Mining";
             a.Start();
         }
@@ -592,7 +613,7 @@ namespace IronChain {
 
             int amount = 0;
             int.TryParse(textBox6.Text, out amount);
-           
+
             label17.Text = (1 + amount + comboBox5.SelectedIndex) + " Iron";
         }
 
@@ -670,7 +691,7 @@ namespace IronChain {
             for (int i = 0 + 5 * transPage; i < 5 + 5 * transPage && i < userTransactionHistory.Count; i++) {
                 Transaction t = userTransactionHistory[i];
 
-                string s = accountList[mainAccount].publicKey.Equals(t.owner) ? 
+                string s = accountList[mainAccount].publicKey.Equals(t.owner) ?
                     s = "Sending " + t.amount + " Iron to " + t.receiver :
                     s = "Receiving " + t.amount + " Iron from " + t.owner;
 

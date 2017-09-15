@@ -65,6 +65,7 @@
       <DependentUpon>addData.cs</DependentUpon>
     </Compile>
     <Compile Include="Block.cs" />
+    <Compile Include="ExtendedParticle.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
