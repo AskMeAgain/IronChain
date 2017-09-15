@@ -138,6 +138,7 @@ namespace IronChain {
         public List<Transaction> usedTransactions;
 
         private void createParticles(int height) {
+             
 
             string particleName = "";
 
