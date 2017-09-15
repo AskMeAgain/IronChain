@@ -471,6 +471,7 @@
             this.comboBox5.Size = new System.Drawing.Size(60, 24);
             this.comboBox5.TabIndex = 13;
             this.comboBox5.SelectedIndexChanged += new System.EventHandler(this.onTransactionFeeChanged);
+            this.comboBox5.SelectedIndex = 0;
             // 
             // button6
             // 
