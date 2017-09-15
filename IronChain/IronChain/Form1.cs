@@ -357,7 +357,10 @@ namespace IronChain {
 
                     //particle exists
                     Particle p = Utility.loadFile<Particle>(globalChainPath + "P" + i + ".blk");
-                    ExtendedParticle ext = Utility.loadFile<ExtendedParticle>(globalChainPath + "E" + i + ".blk");
+                    ExtendedParticle ext = null;
+
+                    if (File.Exists(globalChainPath + "E" + i + ".blk"))
+                        ext = Utility.loadFile<ExtendedParticle>(globalChainPath + "E" + i + ".blk");
 
                     //block points to particle
                     if (!Utility.ComputeHash(globalChainPath + "P" + i).Equals(b.hashOfParticle)) {
@@ -452,8 +455,6 @@ namespace IronChain {
             } else {
                 updateCoinBalanceGUI();
             }
-
-
         }
 
         private void updateCoinBalanceGUI() {
@@ -570,8 +571,7 @@ namespace IronChain {
 
         private void onClickMineBlock(object sender, EventArgs e) {
             Thread a = new Thread(mine);
-            //mineASingleBlockFlag = false;
-            mineASingleBlockFlag = true;
+            mineASingleBlockFlag = false;
             a.Name = "Mining";
             a.Start();
         }
