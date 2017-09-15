@@ -2,7 +2,7 @@
 
 A blockchain made from ground up to as a personal challenge in C#. In the end it should have the same "main" features as the original bitcoin blockchain as described in the  [Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf). The only difference is that i changed the way transactions are structured.
 
-## General Features of the IronChain
+## General Features of the IronChain V1.1
 
 Linking Blocks via hashes  (blockchain)
 Proof-Of-Work mining (PoW) 
@@ -53,10 +53,12 @@ Important to note is that when importing a file, the file is copied. Which means
 6. Disable auto download
 7. Use the provided buttons to test each feature
 
-## Current bugs and missing features (v1.0)
+## Current bugs and missing features (v1.1)
 
 1. In theory you should be able to connect to others over the internet, in practice this is not working because of different things (router blocking connections, ISP's sometimes not using IPv6 and other stuff). I try to fix this, but testing it locally is proof enough that it works. 
 
 ## Download
 
 Just download the .exe file from the project.
+
+
