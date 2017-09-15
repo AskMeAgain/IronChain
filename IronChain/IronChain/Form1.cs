@@ -447,18 +447,19 @@ namespace IronChain {
 
             if (InvokeRequired) {
                 Invoke(new Action(() => {
-                    label5.Text = "Block " + latestBlock;
-                    label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
-                    displayTransactionHistory();
+                    updateCoinBalanceGUI();
                 }));
             } else {
-                label5.Text = "Block " + latestBlock;
-                if (accountList.ContainsKey(comboBox1.Text))
-                    label3.Text = checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
-                displayTransactionHistory();
+                updateCoinBalanceGUI();
             }
 
 
+        }
+
+        private void updateCoinBalanceGUI() {
+            label5.Text = "Block " + latestBlock;
+            label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
+            displayTransactionHistory();
         }
 
         public void isServerUI() {
