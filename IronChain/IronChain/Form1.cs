@@ -154,7 +154,7 @@ namespace IronChain {
 
                     //converting now to segwit transaction
                     extParticle.proof.Add(trans.proofOfOwnership);
-                    Transaction temp = trans;
+                    Transaction temp = new Transaction(trans);
                     temp.proofOfOwnership = "_";
 
                     p.allTransactions.Add(temp);
@@ -261,6 +261,8 @@ namespace IronChain {
             int difficulty = miningDifficulty;
 
             miningFlag = true;
+
+
 
             while (miningFlag) {
 

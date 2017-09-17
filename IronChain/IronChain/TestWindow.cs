@@ -94,7 +94,7 @@ namespace IronChain {
         private void onClickAddRandomTrans(object sender, EventArgs e) {
 
             timer1 = new System.Windows.Forms.Timer();
-            timer1.Interval = 1000;
+            timer1.Interval = 2000;
             timer1.Tick += new EventHandler(createTrans);
             timer1.Start();    
 
@@ -102,6 +102,9 @@ namespace IronChain {
 
         public void createTrans(object sender, EventArgs e) {
             Transaction t = new Transaction(Form1.instance.accountList[Form1.instance.mainAccount].publicKey, "TestAccount", 1, Form1.instance.accountList[Form1.instance.mainAccount].privateKey, Form1.instance.latestBlock);
+            t.data = "";
+            t.transactionfee = Form1.instance.comboBox5.SelectedIndex + 1;
+
             Form1.instance.TransactionPool.Add(t);
 
             if (Form1.instance.transactionPoolWindow != null)

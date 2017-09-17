@@ -21,13 +21,13 @@ namespace IronChain {
                 Invoke(new Action(() => {
                     textBox1.Text = "";
                     foreach (Transaction trans in Form1.instance.TransactionPool) {
-                        textBox1.Text += trans.toString() + Environment.NewLine;
+                        textBox1.Text += trans.proofOfOwnership + Environment.NewLine;
                     }
                 }));
             } else {
                 textBox1.Text = "";
                 foreach (Transaction trans in Form1.instance.TransactionPool) {
-                    textBox1.Text += trans.toString() + Environment.NewLine;
+                    textBox1.Text += trans.proofOfOwnership + Environment.NewLine;
                 }
             }
 

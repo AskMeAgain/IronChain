@@ -723,7 +723,7 @@
         private System.Windows.Forms.ToolStripMenuItem testWindowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem transactionPoolToolStripMenuItem;
         private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.ComboBox comboBox5;
+        public System.Windows.Forms.ComboBox comboBox5;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.ToolStripMenuItem changeChainPathToolStripMenuItem;
     }

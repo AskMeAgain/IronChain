@@ -134,7 +134,7 @@ namespace IronChain {
         }
 
         [Serializable]
-        public class Settings{
+        public class Settings {
             public string mainAccount;
             public string minerAccount;
             public string globalChainPath;
@@ -210,6 +210,9 @@ namespace IronChain {
         }
 
         public static bool verifyData(string orig, string publicKey, string sign) {
+
+            if (sign.Equals("_"))
+                return false;
 
             byte[] signature = Convert.FromBase64String(sign);
             byte[] original = ASCIIEncoding.Unicode.GetBytes(orig);

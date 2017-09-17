@@ -19,6 +19,14 @@ namespace IronChain {
 
         }
 
+        public Transaction(Transaction trans) {
+            owner = trans.owner;
+            receiver = trans.receiver;
+            amount = trans.amount;
+            id = trans.id;
+            proofOfOwnership = trans.proofOfOwnership;
+        }
+
         public Transaction(string key, string receiv, int am, string privateKey, long latestblock) {
             owner = key;
             receiver = receiv;
