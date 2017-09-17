@@ -1,21 +1,21 @@
 # IronChain
 
-A blockchain made from ground up to as a personal challenge in C#. In the end it should have the same main features as the original bitcoin blockchain described in the  [Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf).
+A blockchain made from ground up to as a personal challenge in C#. In the end it should have the same "main" features as the original bitcoin blockchain as described in the  [Bitcoin whitepaper](https://bitcoin.org/bitcoin.pdf). The only difference is that i changed the way transactions are structured.
 
-## General Features of the IronChain
+## General Features of the IronChain V1.1
 
-Linking Blocks via hashes  
-Proof-Of-Work mining  
-RSA verification  
+Linking Blocks via hashes  (blockchain)
+Proof-Of-Work mining (PoW) 
+Private/Public key verification  
+Segregated Witnesses (SegWit)  
 Account system  
 (pseudo) P2P system  
 All-in-One Client/Miner/Wallet software  
-Local test suite  
 Transaction Fees  
 Transaction History  
+Local test suite  
 
-PS: Note that this software only has a pseudo P2P system. Doing a real P2P system is not possible without some trade offs, which iam not willing to do (hosting a server etc).
-
+PS: Note that this software only has a pseudo P2P system. I only wanted to see if i can build my own blockchain and not if i can build a P2P system from scratch.
 
 ## General Guide
 
@@ -53,12 +53,12 @@ Important to note is that when importing a file, the file is copied. Which means
 6. Disable auto download
 7. Use the provided buttons to test each feature
 
-## Current bugs and missing features (v1.0)
+## Current bugs and missing features (v1.1)
 
 1. In theory you should be able to connect to others over the internet, in practice this is not working because of different things (router blocking connections, ISP's sometimes not using IPv6 and other stuff). I try to fix this, but testing it locally is proof enough that it works. 
-
-2. You cant create an account from a single private key. 
 
 ## Download
 
 Just download the .exe file from the project.
+
+
