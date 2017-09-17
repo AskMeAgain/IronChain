@@ -57,11 +57,9 @@ The proof for each transaction is stored inside an extended block. You can safel
 6. Disable auto download
 7. Use the provided buttons to test each feature
 
-## Current bugs and missing features (v1.2)
+## Current bugs and missing features (v1.3)
 
 1. In theory you should be able to connect to others over the internet, in practice this is not working because of different things (router blocking connections, ISP's sometimes not using IPv6 and other stuff). I try to fix this, but testing it locally is proof enough that it works. 
-
-2. Currently you cant act as a server when you delete your extended blocks, but i will add this in V1.3
 
 ## Download
 
