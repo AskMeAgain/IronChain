@@ -4,8 +4,8 @@ A blockchain made from ground up to as a personal challenge in C#. In the end it
 
 ## General Features of the IronChain V1.1
 
-Linking Blocks via hashes  (blockchain)
-Proof-Of-Work mining (PoW) 
+Linking Blocks via hashes  (blockchain)  
+Proof-Of-Work mining (PoW)   
 Private/Public key verification  
 Segregated Witnesses (SegWit)  
 Account system  
