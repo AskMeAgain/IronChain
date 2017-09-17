@@ -371,6 +371,7 @@
             this.comboBox4.Size = new System.Drawing.Size(77, 21);
             this.comboBox4.TabIndex = 5;
             this.comboBox4.SelectedIndexChanged += new System.EventHandler(this.onDifficultyChanged);
+            this.comboBox4.SelectedIndex = 0;
             // 
             // button3
             // 

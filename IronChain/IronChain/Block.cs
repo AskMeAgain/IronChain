@@ -21,19 +21,20 @@ namespace IronChain {
             hashOfParticle = "";
         }
 
-        public Block(int n) {
-            name = n;
-            hashOfParticle = "";
+
+        public Block(int height, string nonc, int diff, string key) {
+            name = height;
+            nonce = nonc;
+            difficulty = diff;
+            minerAddress = key;
+
+            addHash();
         }
 
-        public void addHash(int i) {
-            hashOfParticle = Utility.ComputeHash(Form1.instance.globalChainPath + "P" + i);
-            hashOfBlockBefore = Utility.ComputeHash(Form1.instance.globalChainPath + (i - 1));
-            hashOfExtendedParticle = Utility.ComputeHash(Form1.instance.globalChainPath + "E" + i);
-        }
-
-        public void createCoins(Account acc) {
-            minerAddress = acc.publicKey;
+        private void addHash() {
+            hashOfParticle = Utility.ComputeHash(Form1.instance.globalChainPath + "P" + name);
+            hashOfBlockBefore = Utility.ComputeHash(Form1.instance.globalChainPath + (name - 1));
+            hashOfExtendedParticle = Utility.ComputeHash(Form1.instance.globalChainPath + "E" + name);
         }
 
     }

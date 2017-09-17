@@ -16,6 +16,7 @@ namespace IronChain {
         public bool mineASingleBlockFlag = false;
 
         public List<Transaction> TransactionPool;
+        public List<Transaction> usedTransactions;
 
         bool miningFlag = true;
         public int latestBlock = 0;
@@ -31,27 +32,28 @@ namespace IronChain {
         public Form1() {
 
             InitializeComponent();
+
             instance = this;
+
+
             TransactionPool = new List<Transaction>();
             accountList = new Dictionary<string, Account>();
             userTransactionHistory = new List<Transaction>();
-            Form1.instance.Text = "IronChain";
             usedTransactions = new List<Transaction>();
 
             Directory.CreateDirectory("C:\\IronChain\\");
+            this.Text = "IronChain";
 
             Utility.loadSettings();
+
             try {
                 ip = new WebClient().DownloadString("http://icanhazip.com");
+                textBox1.Text = ip + ":::4712";
             } catch (Exception e) {
-
+                textBox1.Text = "ERROR: " + e.ToString();
             }
 
-            textBox1.Text = ip + ":::4712";
-            comboBox4.SelectedIndex = 0;
-
             updateAccountList();
-
 
             if (!File.Exists(globalChainPath + "0.blk")) {
                 createGenesisBlock();
@@ -72,8 +74,8 @@ namespace IronChain {
 
         public void updateAccountList() {
 
-            Account a = new Account("Add a new Account", 0);
-            Account addAccount = a;
+            Account accountEntry = new Account("Add a new Account", 0);
+            Account addAccountEntry = accountEntry;
 
             string[] allAccountNames = Directory.GetFiles("C:\\IronChain\\", "*.acc");
 
@@ -83,12 +85,11 @@ namespace IronChain {
 
                 string[] splitted = s.Split('\\');
                 string nameOfFile = splitted[splitted.Length - 1];
-                a = Utility.loadFile<Account>("C:\\IronChain\\" + nameOfFile);
-
                 string[] onlyName = nameOfFile.Split('.');
 
-                accountList.Add(onlyName[0], a);
+                accountEntry = Utility.loadFile<Account>("C:\\IronChain\\" + nameOfFile);
 
+                accountList.Add(onlyName[0], accountEntry);
             }
 
             if (accountList.Count == 0) {
@@ -118,10 +119,9 @@ namespace IronChain {
 
             }
 
-            comboBox1.Items.Add(addAccount);
+            comboBox1.Items.Add(addAccountEntry);
 
             dontAnalyseYetFlag = false;
-
         }
 
         private void onClickCreateGenesisBlock(object sender, EventArgs e) {
@@ -129,14 +129,12 @@ namespace IronChain {
         }
 
         private void createGenesisBlock() {
-            Block genesis = new Block(0);
+            Block genesis = new Block();
             genesis.hashOfParticle = "genesis";
             genesis.minerAddress = "";
             genesis.difficulty = 4;
             Utility.storeFile(genesis, globalChainPath + genesis.name + ".blk");
         }
-
-        public List<Transaction> usedTransactions;
 
         private void createParticles(int height) {
 
@@ -148,7 +146,7 @@ namespace IronChain {
 
                 Transaction trans = TransactionPool[i];
 
-                if (verifyTransactionHashNoSegWit(trans)) {
+                if (verifyTransaction(trans,trans.proofOfOwnership)) {
 
                     //converting now to segit transaction
                     extParticle.proof.Add(trans.proofOfOwnership);
@@ -173,26 +171,12 @@ namespace IronChain {
 
         }
 
-
-        private bool verifyTransactionHashNoSegWit(Transaction trans) {
-
-            string original = Utility.getHashSha256(trans.id + "");
-            string publ = Utility.buildRealPublicKey(trans.owner);
-            string signedHash = trans.proofOfOwnership;
-
-            if (Utility.verifyData(original, publ, signedHash)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        private bool verifyTransactionHashSegWit(Transaction trans, string signedHash) {
+        private bool verifyTransaction(Transaction trans, string signedHash) {
 
             string original = Utility.getHashSha256(trans.id + "");
-            string publ = Utility.buildRealPublicKey(trans.owner);
+            string publicKey = Utility.buildRealPublicKey(trans.owner);
 
-            if (Utility.verifyData(original, publ, signedHash)) {
+            if (Utility.verifyData(original, publicKey, signedHash)) {
                 Console.WriteLine("trans is legit!");
                 return true;
             } else {
@@ -203,15 +187,7 @@ namespace IronChain {
 
         private void mineNextBlock(string nonce, int diff) {
 
-            Block nextBlock = new Block();
-
-            //GET HASHES NOW INTO BLOCK
-            nextBlock.addHash((latestBlock + 1));
-            nextBlock.name = (latestBlock + 1);
-            nextBlock.nonce = nonce;
-            nextBlock.difficulty = diff;
-
-            nextBlock.createCoins(accountList[minerAccountName]);
+            Block nextBlock = new Block(latestBlock + 1, nonce, diff, accountList[minerAccountName].publicKey);
 
             //Store Block
             Utility.storeFile(nextBlock, globalChainPath + (latestBlock + 1) + ".blk");
@@ -387,7 +363,7 @@ namespace IronChain {
 
                         //verify each transaction
                         if (ext != null)
-                            if (!verifyTransactionHashSegWit(trans, ext.proof[index]))
+                            if (!verifyTransaction(trans, ext.proof[index]))
                                 break;
 
                         //add transaction to history for user
