@@ -19,8 +19,8 @@ namespace IronChain {
 
         private void onClickHostServer3000(object sender, EventArgs e) {
             if (button7.Enabled) {
-                Form1.instance.manager2 = new PeerNetworking();
-                Form1.instance.manager2.ListenForConnections(3000);
+                Form1.instance.networkManager = new PeerNetworking();
+                Form1.instance.networkManager.ListenForConnections(3000);
             }
             button7.Enabled = false;
         }
@@ -28,8 +28,8 @@ namespace IronChain {
         private void onClickHostServer3001(object sender, EventArgs e) {
 
             if (button6.Enabled) {
-                Form1.instance.manager2 = new PeerNetworking();
-                Form1.instance.manager2.ListenForConnections(3001);
+                Form1.instance.networkManager = new PeerNetworking();
+                Form1.instance.networkManager.ListenForConnections(3001);
             }
             button6.Enabled = false;
 
@@ -40,8 +40,8 @@ namespace IronChain {
             if (button9.Enabled) {
                 IPHostEntry entry = Dns.GetHostEntry(Dns.GetHostName());
                 IPAddress[] t = entry.AddressList;
-                Form1.instance.manager2 = new PeerNetworking();
-                Form1.instance.manager2.ConnectToListener(t[0], 3001);
+                Form1.instance.networkManager = new PeerNetworking();
+                Form1.instance.networkManager.ConnectToListener(t[0], 3001);
             }
 
             button9.Enabled = false;
@@ -52,19 +52,19 @@ namespace IronChain {
             if (button8.Enabled) {
                 IPHostEntry entry = Dns.GetHostEntry(Dns.GetHostName());
                 IPAddress[] t = entry.AddressList;
-                Form1.instance.manager2 = new PeerNetworking();
-                Form1.instance.manager2.ConnectToListener(t[0], 3000);
+                Form1.instance.networkManager = new PeerNetworking();
+                Form1.instance.networkManager.ConnectToListener(t[0], 3000);
             }
 
             button8.Enabled = false;
         }
 
         private void onClickRequestBlock(object sender, EventArgs e) {
-            Form1.instance.manager2.requestFileInfo();
+            Form1.instance.networkManager.requestFileInfo();
         }
 
         private void onClickPushBlock(object sender, EventArgs e) {
-            Form1.instance.manager2.pushFile();
+            Form1.instance.networkManager.pushFile();
         }
 
         private void onClickChangeGlobalPath(object sender, EventArgs e) {

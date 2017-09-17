@@ -20,8 +20,12 @@ namespace IronChain {
         public List<Transaction> TransactionPool;
         public List<Transaction> usedTransactions;
 
-        public PeerNetworking manager2;
+        public TransactionPool transactionPoolWindow;
+        public string TransData;
+        public PeerNetworking networkManager;
+        public bool automaticFileRequestFlag = true;
 
+        int transPage = 0;
 
         bool miningFlag = true;
         public int latestBlock = 0;
@@ -73,8 +77,8 @@ namespace IronChain {
         }
 
         public void requestFilesEvery10Sec(Object myObject, EventArgs myEventArgs) {
-            if (manager2 != null && automaticFileRequestFlag)
-                manager2.requestFileInfo();
+            if (networkManager != null && automaticFileRequestFlag)
+                networkManager.requestFileInfo();
         }
 
         public void updateAccountList() {
@@ -129,10 +133,6 @@ namespace IronChain {
             dontAnalyseYetFlag = false;
         }
 
-        private void onClickCreateGenesisBlock(object sender, EventArgs e) {
-            createGenesisBlock();
-        }
-
         private void createGenesisBlock() {
             Block genesis = new Block();
             genesis.hashOfParticle = "genesis";
@@ -145,7 +145,6 @@ namespace IronChain {
 
             Particle p = new Particle();
             ExtendedParticle extParticle = new ExtendedParticle();
-            extParticle.proof = new List<string>();
 
             for (int i = 0; i < TransactionPool.Count; i++) {
 
@@ -153,7 +152,7 @@ namespace IronChain {
 
                 if (verifyTransaction(trans,trans.proofOfOwnership)) {
 
-                    //converting now to segit transaction
+                    //converting now to segwit transaction
                     extParticle.proof.Add(trans.proofOfOwnership);
                     Transaction temp = trans;
                     temp.proofOfOwnership = "_";
@@ -207,8 +206,8 @@ namespace IronChain {
 
             analyseChain();
 
-            if (manager2 != null)
-                manager2.pushFile();
+            if (networkManager != null)
+                networkManager.pushFile();
 
             if (miningFlag && !mineASingleBlockFlag) {
                 mine();
@@ -288,14 +287,11 @@ namespace IronChain {
             if (!File.Exists(globalChainPath + "0.blk"))
                 createGenesisBlock();
 
-
             Block b = Utility.loadFile<Block>(globalChainPath + "0.blk");
             int i = 1;
             bool errorFlag = false;
             int difficulty = b.difficulty;
             List<bool> listOfMissingExtBlocks = new List<bool>();
-
-
             userTransactionHistory.Clear();
 
             //get genesis block too
@@ -323,7 +319,6 @@ namespace IronChain {
                 //checking nonce
                 if (!Utility.verifyHashDifficulty(proofHash, difficulty)) {
                     Console.WriteLine("WRONG SHIT! HASH DIFFICULTY WRONG!");
-                    //Console.WriteLine("analyseChain > " + b.nonce + "__" + hashOfBlockBefore + "__" + b.hashOfParticle);
                     break;
                 }
 
@@ -486,8 +481,8 @@ namespace IronChain {
 
             if (comboBox1.Text.Equals("Add a new Account")) {
 
-                addAccount a = new addAccount();
-                a.Show();
+                addAccount window = new addAccount();
+                window.Show();
 
             } else {
 
@@ -517,19 +512,19 @@ namespace IronChain {
         }
 
         private void onClickCreateServerListener(object sender, EventArgs e) {
-            manager2 = new PeerNetworking();
-            manager2.ListenForConnections(4712);
+            networkManager = new PeerNetworking();
+            networkManager.ListenForConnections(4712);
         }
 
         private void onClickConnectClient(object sender, EventArgs e) {
-            manager2.ConnectToListener(IPAddress.Parse(textBox5.Text), Convert.ToInt32(textBox5.Text));
+            networkManager.ConnectToListener(IPAddress.Parse(textBox5.Text), Convert.ToInt32(textBox5.Text));
         }
 
         private void onClickStartServer(object sender, EventArgs e) {
             button4.Enabled = false;
             button4.Text = "Hosting Server";
-            manager2 = new PeerNetworking();
-            manager2.ListenForConnections(30000);
+            networkManager = new PeerNetworking();
+            networkManager.ListenForConnections(30000);
         }
 
         private void onClickMineBlock(object sender, EventArgs e) {
@@ -573,8 +568,8 @@ namespace IronChain {
                 transactionPoolWindow.updateTransactionPool();
 
 
-            if (manager2 != null) {
-                manager2.pushTransactionToServers();
+            if (networkManager != null) {
+                networkManager.pushTransactionToServers();
             }
 
             textBox6.Clear();
@@ -598,29 +593,6 @@ namespace IronChain {
             miningDifficulty = comboBox4.SelectedIndex + 4;
         }
 
-
-
-        private void button8_Click(object sender, EventArgs e) {
-
-            IPHostEntry entry = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress[] t = entry.AddressList;
-
-            manager2 = new PeerNetworking();
-            manager2.ConnectToListener(t[0], 3000);
-        }
-
-        public bool automaticFileRequestFlag = true;
-
-        private void button10_Click(object sender, EventArgs e) {
-            manager2.pushTransactionToServers();
-        }
-
-        private void button11_Click(object sender, EventArgs e) {
-            foreach (Transaction t in TransactionPool) {
-                Console.WriteLine("transaction" + t.amount + " " + t.owner);
-            }
-        }
-
         private void onBarDeleteAccounts(object sender, EventArgs e) {
 
             string[] allFiles = Directory.GetFiles("C:\\IronChain\\", "*.acc");
@@ -632,28 +604,6 @@ namespace IronChain {
 
             updateAccountList();
         }
-
-        private void button14_Click(object sender, EventArgs e) {
-            manager2.requestFileInfo();
-        }
-
-        private void button13_Click(object sender, EventArgs e) {
-        }
-
-        private void button12_Click(object sender, EventArgs e) {
-            manager2.pushFile();
-        }
-
-        private void button15_Click(object sender, EventArgs e) {
-            globalChainPath = "C:\\IronChain\\TestChain\\";
-            analyseChain();
-        }
-
-        private void button16_Click(object sender, EventArgs e) {
-            displayTransactionHistory();
-        }
-
-        int transPage = 0;
 
         private void displayTransactionHistory() {
             label19.Text = "";
@@ -690,28 +640,24 @@ namespace IronChain {
         }
 
         private void addAccountToolStripMenuItem_Click(object sender, EventArgs e) {
-            addAccount a = new addAccount();
-            a.Show();
+            addAccount window = new addAccount();
+            window.Show();
         }
 
         private void onBarOpenTestWindow(object sender, EventArgs e) {
-            TestWindow a = new TestWindow();
-            a.Show();
+            TestWindow window = new TestWindow();
+            window.Show();
         }
 
         private void onBarOpenTransactionPool(object sender, EventArgs e) {
 
             transactionPoolWindow = new TransactionPool();
             transactionPoolWindow.Show();
-
         }
 
-        public TransactionPool transactionPoolWindow;
-        public string TransData;
-
         private void onClickAddData(object sender, EventArgs e) {
-            addData a = new addData();
-            a.Show();
+            addData window = new addData();
+            window.Show();
         }
 
         private void onTransactionFeeChanged(object sender, EventArgs e) {

@@ -11,7 +11,7 @@ namespace IronChain {
         public List<string> proof;
 
         public ExtendedParticle() {
-
+            proof = new List<string>();
         }
 
     }
