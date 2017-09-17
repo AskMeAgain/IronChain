@@ -14,7 +14,9 @@ namespace IronChain {
         public string globalChainPath;
         public static Form1 instance;
         public bool mineASingleBlockFlag = false;
+        public int miningDifficulty;
 
+        public List<Transaction> userTransactionHistory;
         public List<Transaction> TransactionPool;
         public List<Transaction> usedTransactions;
 
@@ -136,7 +138,7 @@ namespace IronChain {
             Utility.storeFile(genesis, globalChainPath + genesis.name + ".blk");
         }
 
-        private void createParticles(int height) {
+        private void createParticle(int height) {
 
             Particle p = new Particle();
             ExtendedParticle extParticle = new ExtendedParticle();
@@ -189,10 +191,10 @@ namespace IronChain {
 
             Block nextBlock = new Block(latestBlock + 1, nonce, diff, accountList[minerAccountName].publicKey);
 
-            //Store Block
             Utility.storeFile(nextBlock, globalChainPath + (latestBlock + 1) + ".blk");
 
             Particle p = Utility.loadFile<Particle>(globalChainPath + "P" + (latestBlock + 1) + ".blk");
+
             foreach (Transaction trans in p.allTransactions) {
                 for (int i = 0; i < TransactionPool.Count; i++) {
                     if (trans.id.Equals(TransactionPool[i].id))
@@ -215,12 +217,11 @@ namespace IronChain {
 
             if (InvokeRequired) {
                 Invoke(new Action(() => {
-                    //button1.Enabled = false;
+                    button1.Enabled = false;
                     button1.Text = "Mining!";
                     button3.Enabled = true;
                 }));
             }
-
 
             if (minerAccountName.Equals("")) {
 
@@ -239,32 +240,29 @@ namespace IronChain {
                 }
             }
 
-            miningFlag = true;
+
+            createParticle(latestBlock + 1);
 
             int nonce = 0;
-
             int count = TransactionPool.Count;
-            createParticles(latestBlock + 1);
 
             string hashFromLatestBlock = Utility.ComputeHash(globalChainPath + latestBlock + "");
-            string hashFromParticle = hashFromLatestBlock;
-
-            Console.WriteLine("getting hash of particle " + (latestBlock + 1));
-            hashFromParticle = Utility.ComputeHash(globalChainPath + "P" + (latestBlock + 1));
-
+            string hashFromParticle = Utility.ComputeHash(globalChainPath + "P" + (latestBlock + 1));
+            
             int difficulty = miningDifficulty;
+
+            miningFlag = true;
 
             while (miningFlag) {
 
                 if (TransactionPool.Count > count) {
                     count = TransactionPool.Count;
-                    createParticles(latestBlock + 1);
+                    createParticle(latestBlock + 1);
                     hashFromParticle = Utility.ComputeHash(globalChainPath + "P" + (latestBlock + 1));
                 }
 
-                string hashToProof = nonce + hashFromLatestBlock + hashFromParticle;
-
-                string hash = Utility.getHashSha256(hashToProof);
+                //this hash needs to get checked against the difficulty
+                string hash = Utility.getHashSha256(nonce + hashFromLatestBlock + hashFromParticle);
 
                 if (Utility.verifyHashDifficulty(hash, difficulty)) {
                     mineNextBlock(nonce + "", difficulty);
@@ -279,14 +277,10 @@ namespace IronChain {
             miningFlag = false;
         }
 
-        public int miningDifficulty;
-        public List<Transaction> userTransactionHistory;
-
         public void analyseChain() {
 
             if (dontAnalyseYetFlag)
                 return;
-
 
             if (!File.Exists(globalChainPath + "0.blk"))
                 createGenesisBlock();
@@ -296,6 +290,9 @@ namespace IronChain {
             int i = 1;
             bool errorFlag = false;
             int difficulty = b.difficulty;
+            List<bool> listOfMissingExtBlocks = new List<bool>();
+
+
             userTransactionHistory.Clear();
 
             //get genesis block too
@@ -305,7 +302,6 @@ namespace IronChain {
                     acc.coinCounter += 3;
             }
 
-            List<bool> listOfMissingExtBlocks = new List<bool>();
 
             while (File.Exists(globalChainPath + i + ".blk")) {
 
@@ -404,24 +400,26 @@ namespace IronChain {
 
                 File.Delete(globalChainPath + i + ".blk");
                 File.Delete(globalChainPath + "P" + i + ".blk");
+                File.Delete(globalChainPath + "E" + i + ".blk");
 
                 i--;
             }
 
             latestBlock = i;
 
+            //check if the last 2 blocks have extended blocks
             if (i > 3) {
                 for (int index = listOfMissingExtBlocks.Count - 1; index > 1; index--) {
                     if (listOfMissingExtBlocks[index] && listOfMissingExtBlocks[index - 1]) {
                         break;
                     } else {
                         try {
-                            Console.WriteLine("deleting from " + globalChainPath + "P" + index + 1 + ".blk");
                             File.Delete(globalChainPath + "P" + (index + 1) + ".blk");
                             File.Delete(globalChainPath + (index + 1) + ".blk");
                         } catch (Exception e) {
                             Console.WriteLine("Error: " + e.ToString());
                         }
+
                         latestBlock = index;
                     }
                 }
@@ -440,14 +438,6 @@ namespace IronChain {
             label5.Text = "Block " + latestBlock;
             label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
             displayTransactionHistory();
-        }
-
-        public void isServerUI() {
-            if (InvokeRequired) {
-                Invoke(new Action(() => label1.Text = "Listening for Connections"));
-            } else {
-                label1.Text = "Listening for Connections";
-            }
         }
 
         private int checkCoinBalance(string owner, int blockheight) {
