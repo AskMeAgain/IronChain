@@ -173,8 +173,6 @@ namespace IronChain {
                 return;
             }
 
-            Console.WriteLine(">size of file 3" + BitConverter.ToInt64(filesizes, 24));
-
             //receive block
             receiveBlock(inOut, Form1.instance.latestBlock + 1, filesizes);
 
@@ -200,14 +198,11 @@ namespace IronChain {
         private void receiveBlock(Socket inOut, int height, byte[] ack) {
 
             Console.WriteLine("receiving blockheight" + height);
-            Console.WriteLine("filesize of 3 " + BitConverter.ToInt64(ack, 24));
 
             //receiving 3 files
             receiveFileAndStore(inOut, height + ".blk", BitConverter.ToInt64(ack, 8));
             receiveFileAndStore(inOut, "P" + height + ".blk", BitConverter.ToInt64(ack, 16));
-
-            if (BitConverter.ToInt64(ack, 24) >= 5)
-                receiveFileAndStore(inOut, "E" + height + ".blk", BitConverter.ToInt64(ack, 24));
+            receiveFileAndStore(inOut, "E" + height + ".blk", BitConverter.ToInt64(ack, 24));
 
             foreach (Transaction trans in Form1.instance.usedTransactions) {
                 Form1.instance.TransactionPool.Add(trans);
@@ -330,16 +325,11 @@ namespace IronChain {
 
                 Console.WriteLine("CREATED FILESIZE: {0}", BitConverter.ToInt64(filesizes, 24));
 
-
-
                 if (height <= Form1.instance.latestBlock) {
 
                     sendFile(height + ".blk", socket);
                     sendFile("P" + height + ".blk", socket);
-
-                    if (BitConverter.ToInt64(filesizes, 24) != 4) {
-                        sendFile("E" + height + ".blk", socket);
-                    }
+                    sendFile("E" + height + ".blk", socket);
 
                 }
 
@@ -455,6 +445,7 @@ namespace IronChain {
 
                 if (!File.Exists(Form1.instance.globalChainPath + "E" + blockheight + ".blk")) {
                     fileC = BitConverter.GetBytes(0);
+                    message[0] = 0x02;
                 } else {
                     fileC = File.ReadAllBytes(Form1.instance.globalChainPath + "E" + blockheight + ".blk");
                 }
@@ -466,8 +457,6 @@ namespace IronChain {
                 Array.Copy(sizeA, 0, message, 8, sizeA.Length);
                 Array.Copy(sizeB, 0, message, 16, sizeB.Length);
                 Array.Copy(sizeC, 0, message, 24, sizeC.Length);
-
-                Console.WriteLine(">" + BitConverter.ToInt64(message, 24));
 
             }
 
