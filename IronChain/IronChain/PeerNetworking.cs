@@ -115,9 +115,9 @@ namespace IronChain {
 
                         } else if (commandIndex == 0x01) {
 
-                            if (answer[0] == 0x00) 
+                            if (answer[0] == 0x00)
                                 Console.WriteLine("everything worked");
-                            
+
 
 
                         } else if (commandIndex == 0x02) {
@@ -202,7 +202,9 @@ namespace IronChain {
             //receiving 3 files
             receiveFileAndStore(inOut, height + ".blk", BitConverter.ToInt64(ack, 8));
             receiveFileAndStore(inOut, "P" + height + ".blk", BitConverter.ToInt64(ack, 16));
-            receiveFileAndStore(inOut, "E" + height + ".blk", BitConverter.ToInt64(ack, 24));
+
+            if (BitConverter.ToInt64(ack, 24) >= 5)
+                receiveFileAndStore(inOut, "E" + height + ".blk", BitConverter.ToInt64(ack, 24));
 
             foreach (Transaction trans in Form1.instance.usedTransactions) {
                 Form1.instance.TransactionPool.Add(trans);
@@ -224,7 +226,7 @@ namespace IronChain {
             }
 
             byte[] receiveBuffer = new byte[1024];
-           
+
 
             int counter = 0;
             Console.WriteLine("Storing file with " + fileSize);
@@ -327,7 +329,9 @@ namespace IronChain {
 
                     sendFile(height + ".blk", socket);
                     sendFile("P" + height + ".blk", socket);
-                    sendFile("E" + height + ".blk", socket);
+
+                    if (File.Exists(Form1.instance.globalChainPath + "E" + height + ".blk"))
+                        sendFile("E" + height + ".blk", socket);
 
                 }
 
@@ -439,7 +443,13 @@ namespace IronChain {
 
                 byte[] fileA = File.ReadAllBytes(Form1.instance.globalChainPath + blockheight + ".blk");
                 byte[] fileB = File.ReadAllBytes(Form1.instance.globalChainPath + "P" + blockheight + ".blk");
-                byte[] fileC = File.ReadAllBytes(Form1.instance.globalChainPath + "E" + blockheight + ".blk");
+                byte[] fileC;
+
+                if (!File.Exists(Form1.instance.globalChainPath + "E" + blockheight + ".blk")) {
+                    fileC = BitConverter.GetBytes(0);
+                } else {
+                    fileC = File.ReadAllBytes(Form1.instance.globalChainPath + "E" + blockheight + ".blk");
+                }
 
                 byte[] sizeA = BitConverter.GetBytes(fileA.Length);
                 byte[] sizeB = BitConverter.GetBytes(fileB.Length);

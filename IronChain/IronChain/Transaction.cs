@@ -23,12 +23,12 @@ namespace IronChain {
             owner = key;
             receiver = receiv;
             amount = am;
-            giveID((int)latestblock);
+            giveID();
             proofOfOwnership = Utility.signData(Utility.getHashSha256(id + ""), privateKey);
         }
 
-        public void giveID(int height) {
-            id = Utility.getHashSha256(height + owner + receiver + data + amount + (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond));
+        public void giveID() {
+            id = Utility.getHashSha256(owner + receiver + data + amount);
         }
 
         public string toString() {

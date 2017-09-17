@@ -150,7 +150,7 @@ namespace IronChain {
 
                 Transaction trans = TransactionPool[i];
 
-                if (verifyTransaction(trans,trans.proofOfOwnership)) {
+                if (verifyTransaction(trans, trans.proofOfOwnership)) {
 
                     //converting now to segwit transaction
                     extParticle.proof.Add(trans.proofOfOwnership);
@@ -182,7 +182,14 @@ namespace IronChain {
 
             if (Utility.verifyData(original, publicKey, signedHash)) {
                 Console.WriteLine("trans is legit!");
-                return true;
+
+                string TransID = trans.owner + trans.receiver + trans.data + trans.amount;
+
+                if (Utility.getHashSha256(TransID).Equals(trans.id)) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 Console.WriteLine("trans is WRONG!");
                 return false;
@@ -250,7 +257,7 @@ namespace IronChain {
 
             string hashFromLatestBlock = Utility.ComputeHash(globalChainPath + latestBlock + "");
             string hashFromParticle = Utility.ComputeHash(globalChainPath + "P" + (latestBlock + 1));
-            
+
             int difficulty = miningDifficulty;
 
             miningFlag = true;
