@@ -401,7 +401,7 @@ namespace IronChain {
             i--;
 
             if (errorFlag) {
-                Console.WriteLine("ERROR BLOCK");
+                Console.WriteLine("ERROR BLOCK<this?");
 
                 File.Delete(globalChainPath + i + ".blk");
                 File.Delete(globalChainPath + "P" + i + ".blk");
