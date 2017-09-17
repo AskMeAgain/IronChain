@@ -413,7 +413,7 @@ namespace IronChain {
             latestBlock = i;
 
             //check if the last 2 blocks have extended blocks
-            if (i > 3) {
+            if (i > 3 && !downloadingFlag) {
                 for (int index = listOfMissingExtBlocks.Count - 1; index > 1; index--) {
                     if (listOfMissingExtBlocks[index] && listOfMissingExtBlocks[index - 1]) {
                         break;
@@ -438,6 +438,8 @@ namespace IronChain {
                 updateCoinBalanceGUI();
             }
         }
+
+        public bool downloadingFlag = false;
 
         private void updateCoinBalanceGUI() {
             label5.Text = "Block " + latestBlock;

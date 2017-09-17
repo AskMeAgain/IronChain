@@ -136,6 +136,7 @@ namespace IronChain {
 
                     Console.WriteLine("init process to download from highest node!");
                     flagForFileInfo = false;
+                    Form1.instance.downloadingFlag = true;
 
                     downloadChain(ipOfHighest, portOfHighest);
 
@@ -146,6 +147,8 @@ namespace IronChain {
             a.Start();
 
         }
+
+        bool downloadingFlag = false;
 
         public void downloadChain(IPAddress ip, int port) {
 
@@ -169,6 +172,7 @@ namespace IronChain {
 
             if (filesizes[0] == 0x01) {
                 Console.WriteLine("file doesnt exist!");
+                downloadingFlag = false;
                 inOut.Close();
                 return;
             }
@@ -202,7 +206,12 @@ namespace IronChain {
             //receiving 3 files
             receiveFileAndStore(inOut, height + ".blk", BitConverter.ToInt64(ack, 8));
             receiveFileAndStore(inOut, "P" + height + ".blk", BitConverter.ToInt64(ack, 16));
-            receiveFileAndStore(inOut, "E" + height + ".blk", BitConverter.ToInt64(ack, 24));
+
+            if (ack[0] == 0x02) {
+                Console.WriteLine("EXTENDED BLOCK IS MISSING!");
+            } else {
+                receiveFileAndStore(inOut, "E" + height + ".blk", BitConverter.ToInt64(ack, 24));
+            }
 
             foreach (Transaction trans in Form1.instance.usedTransactions) {
                 Form1.instance.TransactionPool.Add(trans);
@@ -329,7 +338,12 @@ namespace IronChain {
 
                     sendFile(height + ".blk", socket);
                     sendFile("P" + height + ".blk", socket);
-                    sendFile("E" + height + ".blk", socket);
+
+                    if (filesizes[0] == 0x02) {
+                        Console.WriteLine("I DONT HAVE EXTENDED BLOCK!");
+                    } else {
+                        sendFile("E" + height + ".blk", socket);
+                    }
 
                 }
 
