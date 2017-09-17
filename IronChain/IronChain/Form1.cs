@@ -20,6 +20,9 @@ namespace IronChain {
         public List<Transaction> TransactionPool;
         public List<Transaction> usedTransactions;
 
+        public PeerNetworking manager2;
+
+
         bool miningFlag = true;
         public int latestBlock = 0;
 
@@ -375,7 +378,7 @@ namespace IronChain {
 
                         // check if each transaction is possible
                         foreach (string owner in listOfAllOwners.Keys) {
-                            if (checkCoinBalance(owner, i - 1) < listOfAllOwners[owner]) {
+                            if (returnCoinBalance(owner, i - 1) < listOfAllOwners[owner]) {
                                 errorFlag = true;
                                 break;
                             }
@@ -436,11 +439,11 @@ namespace IronChain {
 
         private void updateCoinBalanceGUI() {
             label5.Text = "Block " + latestBlock;
-            label3.Text = "" + checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
+            label3.Text = "" + returnCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
             displayTransactionHistory();
         }
 
-        private int checkCoinBalance(string owner, int blockheight) {
+        private int returnCoinBalance(string owner, int blockheight) {
 
             int coinbalance = 0;
             for (int i = 0; i <= blockheight; i++) {
@@ -465,7 +468,6 @@ namespace IronChain {
 
                             if (trans.owner.Equals(owner)) {
                                 coinbalance -= trans.amount + trans.transactionfee;
-
                             }
 
                             if (b.minerAddress.Equals(owner)) {
@@ -495,14 +497,9 @@ namespace IronChain {
                 Utility.storeFile(set, "C:\\IronChain\\settings.set");
 
                 analyseChain();
-                label3.Text = checkCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
+                label3.Text = returnCoinBalance(accountList[comboBox1.Text].publicKey, latestBlock) + " Iron";
 
             }
-        }
-
-        private void onClickAddAccount(object sender, EventArgs e) {
-            Form f2 = new addAccount();
-            f2.ShowDialog();
         }
 
         private void onClickDeleteIronChain(object sender, EventArgs e) {
@@ -524,10 +521,7 @@ namespace IronChain {
             manager2.ListenForConnections(4712);
         }
 
-        public PeerNetworking manager2;
-
         private void onClickConnectClient(object sender, EventArgs e) {
-
             manager2.ConnectToListener(IPAddress.Parse(textBox5.Text), Convert.ToInt32(textBox5.Text));
         }
 
