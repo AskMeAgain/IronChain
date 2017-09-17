@@ -173,6 +173,8 @@ namespace IronChain {
                 return;
             }
 
+            Console.WriteLine(">size of file 3" + BitConverter.ToInt64(filesizes, 24));
+
             //receive block
             receiveBlock(inOut, Form1.instance.latestBlock + 1, filesizes);
 
@@ -198,6 +200,7 @@ namespace IronChain {
         private void receiveBlock(Socket inOut, int height, byte[] ack) {
 
             Console.WriteLine("receiving blockheight" + height);
+            Console.WriteLine("filesize of 3 " + BitConverter.ToInt64(ack, 24));
 
             //receiving 3 files
             receiveFileAndStore(inOut, height + ".blk", BitConverter.ToInt64(ack, 8));
@@ -325,13 +328,18 @@ namespace IronChain {
                 byte[] filesizes = createFileSizeMessage(height);
                 socket.Send(filesizes, 0, filesizes.Length, SocketFlags.None);
 
+                Console.WriteLine("CREATED FILESIZE: {0}", BitConverter.ToInt64(filesizes, 24));
+
+
+
                 if (height <= Form1.instance.latestBlock) {
 
                     sendFile(height + ".blk", socket);
                     sendFile("P" + height + ".blk", socket);
 
-                    if (File.Exists(Form1.instance.globalChainPath + "E" + height + ".blk"))
+                    if (BitConverter.ToInt64(filesizes, 24) != 4) {
                         sendFile("E" + height + ".blk", socket);
+                    }
 
                 }
 
@@ -458,6 +466,8 @@ namespace IronChain {
                 Array.Copy(sizeA, 0, message, 8, sizeA.Length);
                 Array.Copy(sizeB, 0, message, 16, sizeB.Length);
                 Array.Copy(sizeC, 0, message, 24, sizeC.Length);
+
+                Console.WriteLine(">" + BitConverter.ToInt64(message, 24));
 
             }
 
