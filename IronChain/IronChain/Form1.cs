@@ -267,7 +267,6 @@ namespace IronChain {
                 string hash = Utility.getHashSha256(hashToProof);
 
                 if (Utility.verifyHashDifficulty(hash, difficulty)) {
-                    Console.WriteLine("calculated > " + nonce + "__" + hashFromLatestBlock + "__" + hashFromParticle);
                     mineNextBlock(nonce + "", difficulty);
                     break;
                 }
@@ -416,9 +415,13 @@ namespace IronChain {
                     if (listOfMissingExtBlocks[index] && listOfMissingExtBlocks[index - 1]) {
                         break;
                     } else {
-                        Console.WriteLine("deleting from " + globalChainPath + "P" + index + 1 + ".blk");
-                        File.Delete(globalChainPath + "P" + (index + 1) + ".blk");
-                        File.Delete(globalChainPath + (index + 1) + ".blk");
+                        try {
+                            Console.WriteLine("deleting from " + globalChainPath + "P" + index + 1 + ".blk");
+                            File.Delete(globalChainPath + "P" + (index + 1) + ".blk");
+                            File.Delete(globalChainPath + (index + 1) + ".blk");
+                        } catch (Exception e) {
+                            Console.WriteLine("Error: " + e.ToString());
+                        }
                         latestBlock = index;
                     }
                 }

@@ -202,6 +202,7 @@ namespace IronChain {
             //receiving 3 files
             receiveFileAndStore(inOut, height + ".blk", BitConverter.ToInt64(ack, 8));
             receiveFileAndStore(inOut, "P" + height + ".blk", BitConverter.ToInt64(ack, 16));
+            receiveFileAndStore(inOut, "E" + height + ".blk", BitConverter.ToInt64(ack, 24));
 
             foreach (Transaction trans in Form1.instance.usedTransactions) {
                 Form1.instance.TransactionPool.Add(trans);
@@ -326,6 +327,8 @@ namespace IronChain {
 
                     sendFile(height + ".blk", socket);
                     sendFile("P" + height + ".blk", socket);
+                    sendFile("E" + height + ".blk", socket);
+
                 }
 
                 socket.Close();
@@ -436,15 +439,15 @@ namespace IronChain {
 
                 byte[] fileA = File.ReadAllBytes(Form1.instance.globalChainPath + blockheight + ".blk");
                 byte[] fileB = File.ReadAllBytes(Form1.instance.globalChainPath + "P" + blockheight + ".blk");
+                byte[] fileC = File.ReadAllBytes(Form1.instance.globalChainPath + "E" + blockheight + ".blk");
 
                 byte[] sizeA = BitConverter.GetBytes(fileA.Length);
                 byte[] sizeB = BitConverter.GetBytes(fileB.Length);
+                byte[] sizeC = BitConverter.GetBytes(fileC.Length);
 
                 Array.Copy(sizeA, 0, message, 8, sizeA.Length);
                 Array.Copy(sizeB, 0, message, 16, sizeB.Length);
-
-                Console.WriteLine(BitConverter.ToInt64(message, 8));
-                Console.WriteLine(BitConverter.ToInt64(message, 16));
+                Array.Copy(sizeC, 0, message, 24, sizeC.Length);
 
             }
 

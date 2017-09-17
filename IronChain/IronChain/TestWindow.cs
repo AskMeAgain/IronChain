@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -69,6 +70,8 @@ namespace IronChain {
         private void onClickChangeGlobalPath(object sender, EventArgs e) {
             button15.Enabled = false;
             button15.Text = "Path changed";
+
+            Directory.CreateDirectory("C:\\IronChain\\TestChain\\");
 
             Form1.instance.globalChainPath = "C:\\IronChain\\TestChain\\";
 
