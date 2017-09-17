@@ -41,6 +41,10 @@ If you are connected to some servers, the transaction will be pushed to all serv
 Your account contains your private key. Without private key, your iron is lost. So keep the .acc file if you want to use this program somewhere. If you want to create a new account, just click on File -> add account. You can drag and drop an .acc file too to import it.
 Important to note is that when importing a file, the file is copied. Which means you will have two .acc files. One in C:\IronChain and one in the original location.
 
+## Segregated Witnesses (SegWit)
+
+The proof for each transaction is stored inside an extended block. You can safely delete the extended block from an earlier block, as long as you keep the latest two extended blocks. 
+
 ## Testing the IronChain
 
 ![alt text](https://puu.sh/xz1Eb/60d078a387.png "Testing Window")
@@ -53,9 +57,11 @@ Important to note is that when importing a file, the file is copied. Which means
 6. Disable auto download
 7. Use the provided buttons to test each feature
 
-## Current bugs and missing features (v1.1)
+## Current bugs and missing features (v1.2)
 
 1. In theory you should be able to connect to others over the internet, in practice this is not working because of different things (router blocking connections, ISP's sometimes not using IPv6 and other stuff). I try to fix this, but testing it locally is proof enough that it works. 
+
+2. Currently you cant act as a server when you delete your extended blocks, but i will add this in V1.3
 
 ## Download
 
