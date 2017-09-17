@@ -430,6 +430,20 @@ namespace IronChain {
                 }
             }
 
+            int counter = latestBlock-2;
+
+            while (true) {
+
+                if (File.Exists(globalChainPath + "E" + counter + ".blk"))
+                    File.Delete(globalChainPath + "E" + counter + ".blk");
+
+                counter--;
+
+                if (counter <= 0)
+                    break;
+            }
+
+
             if (InvokeRequired) {
                 Invoke(new Action(() => {
                     updateCoinBalanceGUI();
