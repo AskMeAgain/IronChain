@@ -19,7 +19,7 @@ PS: Note that this software only has a pseudo P2P system. I only wanted to see i
 
 ## General Guide
 
-![alt text](https://puu.sh/xz0o9/64641f92e6.png "Main Window")
+![alt text](https://puu.sh/xO48i/3bc9b216f5.png "Main Window")
 
 1. Host your Server and connect to a server (if you connect over the internet you need to open port 4712 to host a server, still WIP)
 2. Wait 20 Seconds and the client should auto update the blocks (or go Window -> Test Window -> Download blocks from server)
